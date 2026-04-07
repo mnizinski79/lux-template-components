@@ -5,4 +5,9 @@
 *.mov
 *.mp4
 *.avi
-_assets/_live/*.png
+
+# Excluded folders
+regent-brand-com/_assets/_mockups/
+regent-brand-com/_assets/_live/
+regent-brand-com/_HTML/
+regent-brand-com/.claude/
