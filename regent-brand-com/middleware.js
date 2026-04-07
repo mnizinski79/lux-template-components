@@ -1,5 +1,5 @@
 export const config = {
-  matcher: ['/_prototype/:path*'],
+  matcher: ['/_prototype/:path*', '/index.html', '/'],
 }
 
 export default function middleware(request) {
