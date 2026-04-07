@@ -8,6 +8,9 @@
 
 # Excluded files
 regent-brand-com/CLAUDE.md
+CLAUDE.md
+tokens/
+zTest/
 
 # Excluded folders
 regent-brand-com/_assets/_mockups/
