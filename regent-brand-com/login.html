@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent Brand.com — Protected Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:     #211551;
+      --teal:      #1F4456;
+      --cream:     #FAF8F5;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--inter);
+      background: var(--brand);
+      color: var(--cream);
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+    }
+
+    .gate {
+      width: 100%;
+      max-width: 420px;
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    /* Wordmark */
+    .wordmark {
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cream);
+      opacity: 0.9;
+    }
+
+    /* Divider */
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(250, 248, 245, 0.3);
+    }
+
+    /* Heading */
+    .heading {
+      text-align: center;
+    }
+
+    .heading h1 {
+      font-family: var(--canela);
+      font-size: 32px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--cream);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .heading p {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(250, 248, 245, 0.55);
+      letter-spacing: 0.02em;
+      line-height: 1.6;
+    }
+
+    /* Form */
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      background: rgba(250, 248, 245, 0.06);
+      border: 1px solid rgba(250, 248, 245, 0.18);
+      border-radius: 2px;
+      color: var(--cream);
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      padding: 14px 44px 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="password"]::placeholder {
+      color: rgba(250, 248, 245, 0.35);
+    }
+
+    input[type="password"]:focus {
+      border-color: rgba(250, 248, 245, 0.5);
+    }
+
+    .input-wrap .ph {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: rgba(250, 248, 245, 0.35);
+      pointer-events: none;
+    }
+
+    /* Error */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: #E88080;
+      letter-spacing: 0.02em;
+    }
+
+    .error-msg.visible {
+      display: flex;
+    }
+
+    /* Button */
+    button[type="submit"] {
+      width: 100%;
+      background: var(--cream);
+      color: var(--brand);
+      border: none;
+      border-radius: 2px;
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 15px 24px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      opacity: 0.88;
+    }
+
+    /* Footer label */
+    .gate-footer {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(250, 248, 245, 0.25);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="gate">
+    <div class="wordmark">Regent Hotels &amp; Resorts</div>
+    <div class="divider"></div>
+
+    <div class="heading">
+      <h1>Design Preview</h1>
+      <p>This prototype is password protected.<br>Enter the access code to continue.</p>
+    </div>
+
+    <form method="POST" action="/api/auth" id="loginForm">
+      <input type="hidden" name="next" id="nextInput" value="/_prototype/">
+
+      <div class="input-wrap">
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="Access code"
+          autocomplete="current-password"
+          autofocus
+          required
+        >
+        <i class="ph ph-lock"></i>
+      </div>
+
+      <div class="error-msg" id="errorMsg">
+        <i class="ph ph-warning-circle"></i>
+        Incorrect access code. Please try again.
+      </div>
+
+      <button type="submit">Enter</button>
+    </form>
+
+    <p class="gate-footer">IHG Wilson Design System &mdash; Internal Preview</p>
+  </div>
+
+  <script>
+    // Restore ?next param into hidden field
+    const params = new URLSearchParams(location.search)
+    const next = params.get('next')
+    if (next) document.getElementById('nextInput').value = next
+
+    // Show error if redirected back with ?error=1
+    if (params.get('error') === '1') {
+      document.getElementById('errorMsg').classList.add('visible')
+    }
+  </script>
+
+</body>
+</html>
