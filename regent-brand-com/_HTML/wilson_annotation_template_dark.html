@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wilson Component Annotation Template — Dark</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #111110;
+    --bg-2: #1a1a18;
+    --bg-3: #222220;
+    --bg-4: #2a2a28;
+    --border: rgba(255,255,255,0.08);
+    --border-2: rgba(255,255,255,0.12);
+    --text-primary: #e8e6e0;
+    --text-secondary: #888780;
+    --text-tertiary: #555450;
+    --mono: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --badge-sticky-bg: rgba(186,117,23,0.15);
+    --badge-sticky-text: #EF9F27;
+    --badge-sticky-border: rgba(186,117,23,0.25);
+    --badge-variant-bg: rgba(255,255,255,0.05);
+    --badge-variant-text: #666460;
+    --badge-variant-border: rgba(255,255,255,0.08);
+    --badge-new-bg: rgba(163,45,45,0.15);
+    --badge-new-text: #F09595;
+    --badge-new-border: rgba(163,45,45,0.25);
+    --status-existing: #5DCAA5;
+    --status-variant: #EF9F27;
+    --status-gap: #F09595;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 36px 28px;
+  }
+
+  .header { margin-bottom: 36px; border-bottom: 0.5px solid var(--border); padding-bottom: 24px; }
+  .eyebrow { font-size: 10px; letter-spacing: 0.16em; color: var(--text-tertiary); text-transform: uppercase; font-family: var(--mono); margin-bottom: 8px; }
+  .title { font-size: 22px; font-weight: 500; color: var(--text-primary); letter-spacing: -0.02em; }
+  .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 5px; line-height: 1.6; max-width: 520px; }
+
+  .section { margin-bottom: 28px; }
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    font-family: var(--mono);
+    margin-bottom: 10px;
+  }
+
+  .page-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: var(--bg-3);
+    border: 0.5px solid var(--border-2);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-family: var(--mono);
+  }
+
+  .card {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    max-width: 400px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s;
+  }
+  .card:hover { border-color: rgba(255,255,255,0.18); }
+  .card.variant { border-style: dashed; border-color: var(--border); }
+  .card.variant:hover { border-color: rgba(255,255,255,0.14); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px 11px;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--bg-3);
+  }
+
+  .num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg-4);
+    border: 0.5px solid var(--border-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    font-family: var(--mono);
+  }
+
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); flex: 1; }
+
+  .badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+  .badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 0.5px solid transparent;
+  }
+  .badge-sticky { background: var(--badge-sticky-bg); color: var(--badge-sticky-text); border-color: var(--badge-sticky-border); }
+  .badge-variant { background: var(--badge-variant-bg); color: var(--badge-variant-text); border-color: var(--badge-variant-border); }
+  .badge-new { background: var(--badge-new-bg); color: var(--badge-new-text); border-color: var(--badge-new-border); }
+
+  .card-body { padding: 11px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .row { display: flex; gap: 10px; align-items: flex-start; }
+  .label { font-size: 11px; color: var(--text-tertiary); width: 100px; flex-shrink: 0; padding-top: 1px; font-family: var(--mono); }
+  .value { font-size: 11px; color: #444240; font-family: var(--mono); font-style: italic; line-height: 1.5; }
+  .divider { height: 0.5px; background: var(--border); margin: 5px 0; }
+
+  .legend {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .legend-row { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-secondary); }
+
+  .swatch { width: 36px; height: 20px; border-radius: var(--radius-sm); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .swatch-header { background: var(--bg-4); border: 0.5px solid var(--border-2); }
+  .swatch-solid { background: var(--bg-2); border: 0.5px solid var(--border-2); }
+  .swatch-dashed { background: var(--bg-2); border: 0.5px dashed var(--border-2); }
+  .swatch-num { background: var(--bg-4); border: 0.5px solid var(--border-2); font-size: 10px; font-weight: 600; color: var(--text-secondary); font-family: var(--mono); }
+  .swatch-text { font-size: 8px; font-weight: 600; letter-spacing: 0.1em; color: var(--text-tertiary); text-transform: uppercase; font-family: var(--mono); }
+
+  .status-card {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .status-row { display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: var(--mono); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  .ref-card {
+    background: var(--bg-2);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    max-width: 400px;
+  }
+  .ref-text { font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
+  .ref-mono { font-family: var(--mono); color: var(--text-primary); font-size: 11px; background: var(--bg-4); padding: 1px 6px; border-radius: 4px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 880px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">IHG · Wilson Design System · Regent Brand.com</div>
+  <div class="title">Component annotation template</div>
+  <div class="subtitle">Copy this format for each component sticky in Figma — one card per component, variants share the same number with a dashed border.</div>
+</div>
+
+<div class="grid">
+
+  <div>
+    <div class="section">
+      <div class="section-label">Page header — sits above each group</div>
+      <div class="page-header">— Page name —</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Standard component</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="num">00</div>
+          <span class="card-title">Component name</span>
+          <div class="badges">
+            <span class="badge badge-sticky">Sticky</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row"><span class="label">Wilson name</span><span class="value">wl-component-name</span></div>
+          <div class="row"><span class="label">Variant</span><span class="value">variant-name</span></div>
+          <div class="row"><span class="label">Behavior</span><span class="value">sticky · auto-advance · collapse</span></div>
+          <div class="divider"></div>
+          <div class="row"><span class="label">Regent override</span><span class="value">brand-specific changes</span></div>
+          <div class="row"><span class="label">Status</span><span class="value">Existing · New variant · Gap</span></div>
+          <div class="row"><span class="label">Page(s)</span><span class="value">homepage · all pages · etc.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Variant — dashed border, same number</div>
+      <div class="card variant">
+        <div class="card-header">
+          <div class="num">00</div>
+          <span class="card-title">Component name — variant</span>
+          <div class="badges">
+            <span class="badge badge-variant">Variant</span>
+            <span class="badge badge-sticky">Sticky</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row"><span class="label">Wilson name</span><span class="value">wl-component-name</span></div>
+          <div class="row"><span class="label">Variant</span><span class="value">variant-name</span></div>
+          <div class="row"><span class="label">Behavior</span><span class="value">how this variant differs</span></div>
+          <div class="divider"></div>
+          <div class="row"><span class="label">Regent override</span><span class="value">brand-specific changes</span></div>
+          <div class="row"><span class="label">Status</span><span class="value">Existing · New variant · Gap</span></div>
+          <div class="row"><span class="label">Page(s)</span><span class="value">where this variant appears</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:24px;">
+
+    <div class="section">
+      <div class="section-label">Legend</div>
+      <div class="legend">
+        <div class="legend-row">
+          <div class="swatch swatch-header"><span class="swatch-text">Page</span></div>
+          Page header — resets numbering per page
+        </div>
+        <div class="legend-row">
+          <div class="swatch swatch-num">01</div>
+          Number = order of component top to bottom
+        </div>
+        <div class="legend-row">
+          <div class="swatch swatch-solid"></div>
+          Standard component — solid border
+        </div>
+        <div class="legend-row">
+          <div class="swatch swatch-dashed"></div>
+          Variant — dashed border, same number as parent
+        </div>
+        <div class="legend-row">
+          <span class="badge badge-sticky" style="width:36px;text-align:center;flex-shrink:0">Sticky</span>
+          Fixed/sticky on scroll
+        </div>
+        <div class="legend-row">
+          <span class="badge badge-variant" style="width:36px;text-align:center;flex-shrink:0">Var</span>
+          Alternate state of parent component
+        </div>
+        <div class="legend-row">
+          <span class="badge badge-new" style="width:36px;text-align:center;flex-shrink:0">New</span>
+          Gap — needs Wilson approval via Bill
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Status values — use exactly one</div>
+      <div class="status-card">
+        <div class="status-row">
+          <div class="status-dot" style="background: var(--status-existing)"></div>
+          <span style="color: var(--status-existing)">Existing Wilson component</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot" style="background: var(--status-variant)"></div>
+          <span style="color: var(--status-variant)">New variant needed</span>
+        </div>
+        <div class="status-row">
+          <div class="status-dot" style="background: var(--status-gap)"></div>
+          <span style="color: var(--status-gap)">Gap — needs Wilson approval</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Page numbering reference</div>
+      <div class="ref-card">
+        <div class="ref-text">
+          Numbers reset per page.<br>
+          Reference format: <span class="ref-mono">Homepage / 04</span><br>
+          vs <span class="ref-mono">Hotels &amp; Resorts / 04</span><br><br>
+          Same number + dashed card = variant of the component above it.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

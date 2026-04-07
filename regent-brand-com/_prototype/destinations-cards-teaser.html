@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Destinations Teaser Carousel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F3F7F5;
+      color: #211551;
+    }
+
+    :root {
+      --brand:      #211551;
+      --teal:       #1F4456; /* color/bg/primary-inverse */
+      --canela:     'Cormorant Garamond', Georgia, serif;
+      --engravers:  'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+      --dur:        0.55s;
+      --card-gap:   28px;
+    }
+
+    /* ─── Section ─────────────────────────────────────────── */
+    .section {
+      padding-bottom: 80px;
+      overflow: hidden;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 56px 120px 48px;
+    }
+
+    .section-header h2 {
+      font-family: var(--canela);
+      font-size: 52px;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--brand);
+      flex: 0 0 auto;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: #4a4a4a;
+      max-width: 420px;
+      padding-top: 8px;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    /* ─── Carousel wrapper ───────────────────────────────── */
+    .carousel-outer {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 120px;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: var(--card-gap);
+      transition: transform var(--dur) var(--ease);
+    }
+
+    /* ─── Card ───────────────────────────────────────────── */
+    .card {
+      position: relative;
+      flex: 0 0 400px;
+      height: 499px;
+      overflow: hidden;
+    }
+
+    /* ─── Image ──────────────────────────────────────────── */
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s var(--ease);
+    }
+
+    /* ─── Dark overlay ───────────────────────────────────── */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 38%,
+        rgba(6, 5, 15, 0.35) 62%,
+        rgba(6, 5, 15, 0.78) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Card body (bottom text) ────────────────────────── */
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 16px 28px 28px;
+      color: #fff;
+      z-index: 2;
+    }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+    }
+
+    .card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .card__meta .sep {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ─── Standard card CTA ──────────────────────────────── */
+    .card__cta-link {
+      display: inline-block;
+      margin-top: 14px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      padding-bottom: 2px;
+      transition: border-color 0.2s ease, letter-spacing 0.2s ease;
+    }
+
+    .card__cta-link:hover {
+      border-color: rgba(255, 255, 255, 0.95);
+      letter-spacing: 0.22em;
+    }
+
+    /* ─── Teaser card: + button ──────────────────────────── */
+    .card__plus-btn {
+      position: absolute;
+      bottom: 28px;
+      right: 16px;
+      z-index: 3;
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .card__plus-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* ─── Teaser expanded state ──────────────────────────── */
+    .card__expanded {
+      position: absolute;
+      inset: 0;
+      background: var(--teal);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      padding: 40px 16px 28px 28px;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition:
+        opacity var(--dur) var(--ease),
+        transform var(--dur) var(--ease);
+    }
+
+    .card.is-expanded .card__expanded {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Fade out image & overlay when expanded */
+    .card.is-expanded .card__img,
+    .card.is-expanded .card__overlay,
+    .card.is-expanded .card__body,
+    .card.is-expanded .card__plus-btn {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .card__expanded-content {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px; /* space/sm */
+    }
+
+    /* EXPLORE + × on same row */
+    .card__expanded-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card__expanded-close {
+      -webkit-appearance: none;
+      appearance: none;
+      background: none;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      color: #D6D6D6;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      transition: color 0.2s ease;
+    }
+
+    .card__expanded-close:hover {
+      color: #fff;
+    }
+
+    .card__expanded-close svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    .card__expanded-title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      color: #fff;
+    }
+
+    .card__expanded-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .card__expanded-meta .sep {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .card__expanded-desc {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      letter-spacing: 0;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .card__expanded-cta {
+      display: inline;
+      width: fit-content;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      padding-bottom: 2px;
+      transition: border-color 0.2s ease;
+    }
+
+    .card__expanded-cta:hover {
+      border-color: rgba(255, 255, 255, 0.95);
+    }
+
+    /* ─── Carousel nav ───────────────────────────────────── */
+    .carousel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 28px 120px 0;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--brand);
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px 8px;
+      opacity: 0.45;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-btn:hover { opacity: 1; }
+    .nav-btn:disabled { opacity: 0.18; cursor: default; }
+
+    .nav-btn svg {
+      display: block;
+      width: 20px;
+      height: 14px;
+    }
+
+    .progress-track {
+      flex: 1;
+      max-width: 860px;
+      height: 1px;
+      background: rgba(33, 21, 81, 0.18);
+      position: relative;
+    }
+
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: var(--brand);
+      transition: width var(--dur) var(--ease);
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+
+  <div class="section-header">
+    <h2>The world, hand-selected</h2>
+    <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+  </div>
+
+  <div class="carousel-outer" id="viewport">
+    <div class="carousel-track" id="track">
+
+      <!-- Card 1 — STANDARD (linked) -->
+      <div class="card card--standard">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Santa Monica Beach">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Santa Monica Beach</div>
+          <div class="card__meta">
+            <span>Santa Monica Beach</span>
+            <span class="sep">·</span>
+            <span>USA</span>
+          </div>
+          <a href="#" class="card__cta-link">Explore</a>
+        </div>
+      </div>
+
+      <!-- Card 2 — TEASER (expandable) -->
+      <div class="card card--teaser" data-index="0">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali, Indonesia">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Bali, Indonesia</div>
+          <div class="card__meta">
+            <span>Canggu Beach</span>
+            <span class="sep">·</span>
+            <span>Asia Pacific</span>
+          </div>
+        </div>
+        <button class="card__plus-btn" aria-label="Learn more about Bali, Indonesia">+</button>
+        <!-- Expanded panel -->
+        <div class="card__expanded">
+          <div class="card__expanded-content">
+            <div class="card__expanded-title">Bali, Indonesia</div>
+            <div class="card__expanded-meta">
+              <span>Canggu Beach</span>
+              <span class="sep">·</span>
+              <span>Asia Pacific</span>
+            </div>
+            <p class="card__expanded-desc">A coastal haven where Bali's spirit unravels — surf, ceremony, and the Indian Ocean at your door.</p>
+            <div class="card__expanded-footer">
+              <a href="#" class="card__expanded-cta">Explore</a>
+              <button class="card__expanded-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 — STANDARD -->
+      <div class="card card--standard">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Bali Highlands">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Bali Highlands</div>
+          <div class="card__meta">
+            <span>Ubud</span>
+            <span class="sep">·</span>
+            <span>Asia Pacific</span>
+          </div>
+          <a href="#" class="card__cta-link">Explore</a>
+        </div>
+      </div>
+
+      <!-- Card 4 — TEASER -->
+      <div class="card card--teaser" data-index="1">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Bali Coastline">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Bali Coastline</div>
+          <div class="card__meta">
+            <span>Nusa Dua</span>
+            <span class="sep">·</span>
+            <span>Asia Pacific</span>
+          </div>
+        </div>
+        <button class="card__plus-btn" aria-label="Learn more about Bali Coastline">+</button>
+        <div class="card__expanded">
+          <div class="card__expanded-content">
+            <div class="card__expanded-title">Bali Coastline</div>
+            <div class="card__expanded-meta">
+              <span>Nusa Dua</span>
+              <span class="sep">·</span>
+              <span>Asia Pacific</span>
+            </div>
+            <p class="card__expanded-desc">Cliffside villas suspended above the Indian Ocean — privacy at its most dramatic, with the horizon as your constant companion.</p>
+            <div class="card__expanded-footer">
+              <a href="#" class="card__expanded-cta">Explore</a>
+              <button class="card__expanded-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 — STANDARD -->
+      <div class="card card--standard">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-hong-kong-1180x664.jpeg" alt="Hong Kong">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Hong Kong</div>
+          <div class="card__meta">
+            <span>Victoria Harbour</span>
+            <span class="sep">·</span>
+            <span>Asia Pacific</span>
+          </div>
+          <a href="#" class="card__cta-link">Explore</a>
+        </div>
+      </div>
+
+      <!-- Card 6 — TEASER -->
+      <div class="card card--teaser" data-index="2">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Cannes, French Riviera">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Cannes, French Riviera</div>
+          <div class="card__meta">
+            <span>France</span>
+            <span class="sep">·</span>
+            <span>Europe</span>
+          </div>
+        </div>
+        <button class="card__plus-btn" aria-label="Learn more about Cannes">+</button>
+        <div class="card__expanded">
+          <div class="card__expanded-content">
+            <div class="card__expanded-title">Cannes, French Riviera</div>
+            <div class="card__expanded-meta">
+              <span>France</span>
+              <span class="sep">·</span>
+              <span>Europe</span>
+            </div>
+            <p class="card__expanded-desc">Sunlit promenades, private beaches, and the enduring glamour of the Côte d'Azur — rediscovered entirely at your own pace.</p>
+            <div class="card__expanded-footer">
+              <a href="#" class="card__expanded-cta">Explore</a>
+              <button class="card__expanded-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /track -->
+  </div><!-- /viewport -->
+
+  <!-- Navigation -->
+  <div class="carousel-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous" disabled>
+      <svg viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 7H1M1 7L7 1M1 7L7 13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <button class="nav-btn" id="nextBtn" aria-label="Next">
+      <svg viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 7H19M19 7L13 1M19 7L13 13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+</section>
+
+<script>
+  const track       = document.getElementById('track');
+  const prevBtn     = document.getElementById('prevBtn');
+  const nextBtn     = document.getElementById('nextBtn');
+  const progressFill = document.getElementById('progressFill');
+  const cards       = Array.from(track.querySelectorAll('.card'));
+  const CARDS_VISIBLE = 3;
+  const total       = cards.length;
+  const maxIndex    = total - CARDS_VISIBLE; // 3
+  let currentIndex  = 0;
+
+  // ── Carousel positioning ──────────────────────────────────
+  function cardWidth() {
+    return cards[0].getBoundingClientRect().width;
+  }
+
+  function goTo(index) {
+    currentIndex = Math.max(0, Math.min(index, maxIndex));
+    const gap    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-gap')) || 3;
+    track.style.transform = `translateX(-${currentIndex * (cardWidth() + gap)}px)`;
+
+    // Progress bar — shows filled portion based on cards seen
+    progressFill.style.width = `${((currentIndex + CARDS_VISIBLE) / total) * 100}%`;
+
+    // Button states
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === maxIndex;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+  nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
+
+  // Init progress
+  goTo(0);
+
+  // ── Teaser expand / collapse ──────────────────────────────
+  track.addEventListener('click', e => {
+    // Open: + button
+    const plusBtn = e.target.closest('.card__plus-btn');
+    if (plusBtn) {
+      const card = plusBtn.closest('.card');
+      // Close any other open teasers
+      track.querySelectorAll('.card.is-expanded').forEach(c => {
+        if (c !== card) c.classList.remove('is-expanded');
+      });
+      card.classList.add('is-expanded');
+      return;
+    }
+
+    // Close: × button
+    const closeBtn = e.target.closest('.card__expanded-close');
+    if (closeBtn) {
+      closeBtn.closest('.card').classList.remove('is-expanded');
+    }
+  });
+</script>
+
+</body>
+</html>

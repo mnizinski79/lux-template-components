@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Events</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #FAF8F5;
+      color: #211551;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    :root {
+      --brand:     #211551;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease-out:  cubic-bezier(0.25, 0.46, 0.45, 0.94);  /* smooth decelerate */
+      --ease-in:   cubic-bezier(0.55, 0, 1, 0.45);        /* smooth accelerate */
+    }
+
+    /* ─── Outer container: full 1440px viewport width ────────── */
+    .events-wrap {
+      width: 100%;
+      max-width: 1440px;
+    }
+
+    /* ─── Two-column layout: 32px gap per Figma spec ─────────── */
+    .events-layout {
+      display: grid;
+      grid-template-columns: 560px 1fr;
+      gap: 0;
+      align-items: stretch;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       IMAGE PANEL
+    ═══════════════════════════════════════════════════════════ */
+    .image-panel {
+      position: relative;
+      width: 100%;
+      height: 749px;      /* matches Figma hug height — never resizes */
+      overflow: hidden;
+      background: #d6cfc6;
+    }
+
+    .event-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transform: scale(1.04);        /* subtler start point */
+      transition:
+        opacity   1.4s ease,
+        transform 2.8s var(--ease-out);
+      will-change: opacity, transform;
+    }
+
+    .event-img.is-active {
+      opacity: 1;
+      transform: scale(1.0);
+    }
+
+    /* Outgoing: slow, unhurried fade */
+    .event-img.is-leaving {
+      opacity: 0;
+      transform: scale(1.0);
+      transition: opacity 1.0s ease;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CONTENT PANEL
+    ═══════════════════════════════════════════════════════════ */
+    .content-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 48px 32px 48px 32px;
+      background: #ffffff;        /* color/bg/primary */
+      height: 749px;              /* fixed — same as image panel */
+      overflow: hidden;           /* accordion expands within, no outer jump */
+    }
+
+    /* ─── Location label ──────────────────────────────────────── */
+    .location-wrap {
+      height: 24px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* Flex spacer: absorbs accordion height changes so the outer
+       container never grows or jumps                             */
+    .content-spacer {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .location-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8277;
+      opacity: 0;
+      transform: translateY(4px);    /* subtler lift */
+      transition:
+        opacity   0.9s ease 0.1s,
+        transform 0.9s var(--ease-out) 0.1s;
+    }
+
+    .location-text.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .location-text.is-leaving {
+      opacity: 0;
+      transform: translateY(-4px);
+      transition:
+        opacity   0.5s ease,
+        transform 0.5s var(--ease-in);
+    }
+
+    /* ─── Accordion ───────────────────────────────────────────── */
+    .accordion {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Each accordion item ─────────────────────────────────── */
+    .acc-item {
+      border-top: 1px solid rgba(33, 21, 81, 0.14);
+    }
+
+    /* Remove line before the very first item */
+    .acc-item:first-child {
+      border-top: none;
+    }
+
+    /* ─── Trigger row ─────────────────────────────────────────── */
+    .acc-trigger {
+      width: 100%;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 0 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    /* heading/3 — same size in all states, 52px hug height */
+    .acc-title {
+      font-family: var(--canela);
+      font-size: 40px;
+      font-weight: 300;
+      line-height: 1.3;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── Icon button (btn/size/sm = 40×40) ──────────────────────
+       Transparent bg + border, brand icon color, 12px h-padding  */
+    .acc-plus {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      color: var(--brand);
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    .acc-plus svg {
+      display: block;
+    }
+
+    /* No hover animation — static icon */
+
+    .acc-item.is-active .acc-plus {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ─── Expandable body ─────────────────────────────────────── */
+    .acc-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 1.1s var(--ease-out);
+    }
+
+    .acc-item.is-active .acc-body {
+      grid-template-rows: 1fr;
+    }
+
+    .acc-body-inner {
+      overflow: hidden;
+    }
+
+    /* ─── Body content ────────────────────────────────────────── */
+    .acc-content {
+      padding-bottom: 36px;
+      opacity: 0;
+      transition: opacity 0.72s ease 0.34s;
+    }
+
+    .acc-item.is-active .acc-content {
+      opacity: 1;
+    }
+
+    /* Closing: content fades out faster with no delay */
+    .acc-item.is-closing .acc-content {
+      opacity: 0;
+      transition: opacity 0.3s ease 0s;
+    }
+
+    .acc-desc {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: #5a5566;
+      max-width: 520px;
+      margin-bottom: 24px;
+    }
+
+    .acc-cta {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33, 21, 81, 0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease, letter-spacing 0.3s ease;
+    }
+
+    .acc-cta:hover {
+      border-color: var(--brand);
+      letter-spacing: 0.26em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="events-wrap">
+  <div class="events-layout">
+
+    <!-- ① Image panel -->
+    <div class="image-panel" id="imagePanel">
+      <img class="event-img" data-idx="0" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg"        alt="Cannes">
+      <img class="event-img" data-idx="1" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg"      alt="Phu Quoc">
+      <img class="event-img" data-idx="2" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg"      alt="Singapore">
+      <img class="event-img" data-idx="3" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg"      alt="Hong Kong">
+    </div>
+
+    <!-- ② Content panel -->
+    <div class="content-panel">
+
+      <!-- Location (crossfades on switch) -->
+      <div class="location-wrap" id="locationWrap"></div>
+
+      <!-- Auto spacer: pins location top, accordion lower -->
+      <div class="content-spacer"></div>
+
+      <!-- Accordion -->
+      <div class="accordion" id="accordion">
+
+        <div class="acc-item" data-idx="0">
+          <button class="acc-trigger">
+            <span class="acc-title">Carlton Cannes Hotel</span>
+            <span class="acc-plus" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/>
+                <line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/>
+              </svg>
+            </span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <div class="acc-content">
+                <p class="acc-desc">Carlton Cannes, a Regent Hotel, invites you to experience the Côte d'Azur and the opulence of this annual spectacle of cinema as we celebrate talent across the world of film.</p>
+                <a href="#" class="acc-cta">Discover More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item" data-idx="1">
+          <button class="acc-trigger">
+            <span class="acc-title">Taste Studio Phu Quoc</span>
+            <span class="acc-plus" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/>
+                <line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/>
+              </svg>
+            </span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <div class="acc-content">
+                <p class="acc-desc">Take your seat at A Spectrum of Contrasts — an exclusive celebration of Vietnamese culinary artistry. Immerse in light and shadow, flavor and sensation, where every instant transforms into an unforgettable experience.</p>
+                <a href="#" class="acc-cta">Discover More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item" data-idx="2">
+          <button class="acc-trigger">
+            <span class="acc-title">An Evening at Regent Singapore</span>
+            <span class="acc-plus" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/>
+                <line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/>
+              </svg>
+            </span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <div class="acc-content">
+                <p class="acc-desc">Step into an evening of quiet magnificence at Regent Singapore — where the art of hospitality becomes an immersive journey through the city's most elevated spaces, gardens, and private salons.</p>
+                <a href="#" class="acc-cta">Discover More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item" data-idx="3">
+          <button class="acc-trigger">
+            <span class="acc-title">The Art of Tea, Hong Kong</span>
+            <span class="acc-plus" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/>
+                <line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/>
+              </svg>
+            </span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <div class="acc-content">
+                <p class="acc-desc">A journey through centuries of tea ceremony tradition, reimagined for the modern connoisseur at Regent Hong Kong. Join a master of the craft for an intimate afternoon of ritual, stillness, and rare teas from across Asia.</p>
+                <a href="#" class="acc-cta">Discover More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /content-panel -->
+
+  </div>
+</div>
+
+<script>
+  const EVENTS = [
+    { location: 'Cannes, France'      },
+    { location: 'Phu Quoc, Vietnam'   },
+    { location: 'Singapore'           },
+    { location: 'Hong Kong'           },
+  ];
+
+  const items    = Array.from(document.querySelectorAll('.acc-item'));
+  const images   = Array.from(document.querySelectorAll('.event-img'));
+  const locWrap  = document.getElementById('locationWrap');
+
+  let activeIdx  = 0;
+  let switching  = false;
+
+  // ─── Build location spans ──────────────────────────────────────
+  const locSpans = EVENTS.map((e, i) => {
+    const span = document.createElement('span');
+    span.className = 'location-text';
+    span.textContent = e.location.toUpperCase();
+    locWrap.appendChild(span);
+    return span;
+  });
+
+  // ─── Activate an item ──────────────────────────────────────────
+  function switchTo(idx) {
+    if (idx === activeIdx || switching) return;
+    switching = true;
+
+    const prev = activeIdx;
+    activeIdx  = idx;
+
+    // 1. Swap accordion states in the same frame — open and close start
+    //    simultaneously so their grid-template-rows animations cancel out
+    //    perfectly, keeping the accordion height constant throughout.
+    items[prev].classList.add('is-closing');
+    requestAnimationFrame(() => {
+      items[prev].classList.remove('is-active');
+      items[idx].classList.add('is-active');
+      setTimeout(() => items[prev].classList.remove('is-closing'), 400);
+    });
+
+    // 3. Image crossfade
+    images[prev].classList.remove('is-active');
+    images[prev].classList.add('is-leaving');
+    setTimeout(() => images[prev].classList.remove('is-leaving'), 600);
+
+    images[idx].classList.add('is-active');
+
+    // 4. Location crossfade
+    locSpans[prev].classList.remove('is-visible');
+    locSpans[prev].classList.add('is-leaving');
+    setTimeout(() => {
+      locSpans[prev].classList.remove('is-leaving');
+      locSpans[idx].classList.add('is-visible');
+    }, 320);
+
+    // Unlock after transition
+    setTimeout(() => { switching = false; }, 800);
+  }
+
+  // ─── Bind clicks ──────────────────────────────────────────────
+  items.forEach((item, i) => {
+    item.querySelector('.acc-trigger').addEventListener('click', () => switchTo(i));
+  });
+
+  // ─── Initial state ────────────────────────────────────────────
+  items[0].classList.add('is-active');
+  images[0].classList.add('is-active');
+  locSpans[0].classList.add('is-visible');
+</script>
+
+</body>
+</html>

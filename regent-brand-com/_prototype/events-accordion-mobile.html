@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Events (Mobile)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #FAF8F5;
+      color: #211551;
+      min-height: 100vh;
+    }
+
+    :root {
+      --brand:     #211551;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease-out:  cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-in:   cubic-bezier(0.55, 0, 1, 0.45);
+    }
+
+    /* ─── Outer ───────────────────────────────────────────────── */
+    .events-wrap {
+      width: 100%;
+      max-width: 390px;   /* iPhone 14 Pro width reference */
+      margin: 0 auto;
+      background: #ffffff;
+    }
+
+    /* ─── Image panel: 16:9-ish, fixed-height feel ───────────── */
+    .image-panel {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      overflow: hidden;
+      background: #d6cfc6;
+    }
+
+    .event-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transform: scale(1.04);
+      transition:
+        opacity   1.4s ease,
+        transform 2.8s var(--ease-out);
+      will-change: opacity, transform;
+    }
+
+    .event-img.is-active {
+      opacity: 1;
+      transform: scale(1.0);
+    }
+
+    .event-img.is-leaving {
+      opacity: 0;
+      transform: scale(1.0);
+      transition: opacity 1.0s ease;
+    }
+
+    /* Location overlay on image (mobile: shows over image) */
+    .location-overlay {
+      position: absolute;
+      bottom: 16px;
+      left: 20px;
+      z-index: 2;
+      height: 20px;
+      overflow: hidden;
+    }
+
+    .location-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      opacity: 0;
+      transform: translateY(4px);
+      transition:
+        opacity   0.9s ease 0.1s,
+        transform 0.9s var(--ease-out) 0.1s;
+      white-space: nowrap;
+    }
+
+    .location-text.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .location-text.is-leaving {
+      opacity: 0;
+      transform: translateY(-4px);
+      transition:
+        opacity   0.5s ease,
+        transform 0.5s var(--ease-in);
+    }
+
+    /* Subtle gradient so location text is readable */
+    .image-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 55%, rgba(6,5,15,0.45) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Content panel ───────────────────────────────────────── */
+    .content-panel {
+      padding: 0 20px 40px;
+      background: #ffffff;
+    }
+
+    /* ─── Accordion ───────────────────────────────────────────── */
+    .accordion {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .acc-item {
+      border-top: 1px solid rgba(33, 21, 81, 0.14);
+    }
+
+    .acc-item:first-child {
+      border-top: none;
+    }
+
+    .acc-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 0 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .acc-title {
+      font-family: var(--canela);
+      font-size: 26px;
+      font-weight: 300;
+      line-height: 1.2;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+    }
+
+    .acc-plus {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      color: var(--brand);
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    .acc-plus svg {
+      display: block;
+    }
+
+    .acc-item.is-active .acc-plus {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .acc-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 1.1s var(--ease-out);
+    }
+
+    .acc-item.is-active .acc-body {
+      grid-template-rows: 1fr;
+    }
+
+    .acc-body-inner {
+      overflow: hidden;
+    }
+
+    .acc-content {
+      padding-bottom: 28px;
+      opacity: 0;
+      transition: opacity 0.72s ease 0.34s;
+    }
+
+    .acc-item.is-active .acc-content {
+      opacity: 1;
+    }
+
+    .acc-item.is-closing .acc-content {
+      opacity: 0;
+      transition: opacity 0.3s ease 0s;
+    }
+
+    .acc-desc {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: #5a5566;
+      margin-bottom: 20px;
+    }
+
+    .acc-cta {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33, 21, 81, 0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .acc-cta:hover {
+      border-color: var(--brand);
+    }
+
+    /* ─── Device chrome preview ───────────────────────────────── */
+    body {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px;
+      background: #F3F0EC;
+    }
+
+    .phone-frame {
+      width: 390px;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 10px #1a1a1a,
+        0 32px 80px rgba(0,0,0,0.35);
+      background: #fff;
+    }
+
+    /* Status bar mock */
+    .status-bar {
+      height: 52px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px 0;
+    }
+
+    .status-bar__time {
+      font-family: var(--engravers);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #1a1a1a;
+    }
+
+    .status-bar__icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-bar__icons svg {
+      fill: #1a1a1a;
+    }
+
+    /* Scrollable content within frame */
+    .phone-scroll {
+      height: 780px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .phone-scroll::-webkit-scrollbar { display: none; }
+
+    /* Home indicator */
+    .home-indicator {
+      height: 34px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-indicator::after {
+      content: '';
+      width: 134px;
+      height: 5px;
+      background: #1a1a1a;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-bar__time">9:41</span>
+    <div class="status-bar__icons">
+      <!-- Signal -->
+      <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="3" width="3" height="9" rx="1"/><rect x="9" y="1.5" width="3" height="10.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+      <!-- Wifi -->
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 9.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0-3.5a6 6 0 014.24 1.76l-1.42 1.42A4 4 0 008 8a4 4 0 00-2.83 1.17L3.76 7.76A6 6 0 018 6zm0-3.5a9.5 9.5 0 016.72 2.78L13.3 6.7A7.5 7.5 0 008 4.5a7.5 7.5 0 00-5.3 2.2L1.28 5.28A9.5 9.5 0 018 2.5z" fill-rule="evenodd"/></svg>
+      <!-- Battery -->
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="#1a1a1a" stroke-width="1" fill="none"/><rect x="1.5" y="2.5" width="17" height="7" rx="1.5" fill="#1a1a1a"/><path d="M23 4v4a2 2 0 000-4z" fill="#1a1a1a" opacity=".4"/></svg>
+    </div>
+  </div>
+
+  <div class="phone-scroll">
+    <div class="events-wrap">
+
+      <!-- Image panel -->
+      <div class="image-panel" id="imagePanel">
+        <img class="event-img" data-idx="0" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Cannes">
+        <img class="event-img" data-idx="1" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Phu Quoc">
+        <img class="event-img" data-idx="2" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Singapore">
+        <img class="event-img" data-idx="3" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Hong Kong">
+        <div class="location-overlay" id="locationWrap"></div>
+      </div>
+
+      <!-- Accordion -->
+      <div class="content-panel">
+        <div class="accordion" id="accordion">
+
+          <div class="acc-item" data-idx="0">
+            <button class="acc-trigger">
+              <span class="acc-title">Carlton Cannes Hotel</span>
+              <span class="acc-plus" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/><line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/></svg>
+              </span>
+            </button>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <div class="acc-content">
+                  <p class="acc-desc">Carlton Cannes, a Regent Hotel, invites you to experience the Côte d'Azur and the opulence of this annual spectacle of cinema as we celebrate talent across the world of film.</p>
+                  <a href="#" class="acc-cta">Discover More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" data-idx="1">
+            <button class="acc-trigger">
+              <span class="acc-title">Taste Studio Phu Quoc</span>
+              <span class="acc-plus" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/><line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/></svg>
+              </span>
+            </button>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <div class="acc-content">
+                  <p class="acc-desc">Take your seat at A Spectrum of Contrasts — an exclusive celebration of Vietnamese culinary artistry. Immerse in light and shadow, flavor and sensation, where every instant transforms into an unforgettable experience.</p>
+                  <a href="#" class="acc-cta">Discover More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" data-idx="2">
+            <button class="acc-trigger">
+              <span class="acc-title">An Evening at Regent Singapore</span>
+              <span class="acc-plus" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/><line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/></svg>
+              </span>
+            </button>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <div class="acc-content">
+                  <p class="acc-desc">Step into an evening of quiet magnificence at Regent Singapore — where the art of hospitality becomes an immersive journey through the city's most elevated spaces, gardens, and private salons.</p>
+                  <a href="#" class="acc-cta">Discover More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="acc-item" data-idx="3">
+            <button class="acc-trigger">
+              <span class="acc-title">The Art of Tea, Hong Kong</span>
+              <span class="acc-plus" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/><line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/></svg>
+              </span>
+            </button>
+            <div class="acc-body">
+              <div class="acc-body-inner">
+                <div class="acc-content">
+                  <p class="acc-desc">A journey through centuries of tea ceremony tradition, reimagined for the modern connoisseur at Regent Hong Kong. Join a master of the craft for an intimate afternoon of ritual, stillness, and rare teas from across Asia.</p>
+                  <a href="#" class="acc-cta">Discover More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /content-panel -->
+
+    </div>
+  </div><!-- /phone-scroll -->
+
+  <!-- Home indicator -->
+  <div class="home-indicator"></div>
+
+</div><!-- /phone-frame -->
+
+<script>
+  const EVENTS = [
+    { location: 'Cannes, France'    },
+    { location: 'Phu Quoc, Vietnam' },
+    { location: 'Singapore'         },
+    { location: 'Hong Kong'         },
+  ];
+
+  const items    = Array.from(document.querySelectorAll('.acc-item'));
+  const images   = Array.from(document.querySelectorAll('.event-img'));
+  const locWrap  = document.getElementById('locationWrap');
+
+  let activeIdx  = 0;
+  let switching  = false;
+
+  const locSpans = EVENTS.map((e) => {
+    const span = document.createElement('span');
+    span.className = 'location-text';
+    span.textContent = e.location.toUpperCase();
+    locWrap.appendChild(span);
+    return span;
+  });
+
+  function switchTo(idx) {
+    if (idx === activeIdx || switching) return;
+    switching = true;
+
+    const prev = activeIdx;
+    activeIdx  = idx;
+
+    items[prev].classList.add('is-closing');
+    requestAnimationFrame(() => {
+      items[prev].classList.remove('is-active');
+      items[idx].classList.add('is-active');
+      setTimeout(() => items[prev].classList.remove('is-closing'), 400);
+    });
+
+    images[prev].classList.remove('is-active');
+    images[prev].classList.add('is-leaving');
+    setTimeout(() => images[prev].classList.remove('is-leaving'), 600);
+    images[idx].classList.add('is-active');
+
+    locSpans[prev].classList.remove('is-visible');
+    locSpans[prev].classList.add('is-leaving');
+    setTimeout(() => {
+      locSpans[prev].classList.remove('is-leaving');
+      locSpans[idx].classList.add('is-visible');
+    }, 320);
+
+    setTimeout(() => { switching = false; }, 800);
+  }
+
+  items.forEach((item, i) => {
+    item.querySelector('.acc-trigger').addEventListener('click', () => switchTo(i));
+  });
+
+  items[0].classList.add('is-active');
+  images[0].classList.add('is-active');
+  locSpans[0].classList.add('is-visible');
+</script>
+
+</body>
+</html>

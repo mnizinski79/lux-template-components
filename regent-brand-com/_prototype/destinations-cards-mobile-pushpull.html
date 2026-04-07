@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Regent — Destinations Push/Pull (Mobile)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0ede8;
+      color: #211551;
+      max-width: 390px;
+      margin: 0 auto;
+    }
+
+    :root {
+      --brand:     #211551;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+      --dur:       0.7s;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .section-header {
+      padding: 52px 28px 40px;
+      background: #fff;
+    }
+
+    .section-header h2 {
+      font-family: var(--canela);
+      font-size: 42px;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: #4a4a4a;
+    }
+
+    /* ─── Cards column ───────────────────────────────────── */
+    .cards-track {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 100%;
+    }
+
+    /* ─── Card ───────────────────────────────────────────── */
+    .card {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: height var(--dur) var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* compressed when another is active */
+    .cards-track.has-active .card {
+      height: 72px;
+    }
+
+    /* the active card expands */
+    .cards-track.has-active .card.is-active {
+      height: 480px;
+    }
+
+    /* ─── Image ──────────────────────────────────────────── */
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform var(--dur) var(--ease);
+    }
+
+    .card.is-active .card__img {
+      transform: scale(1.04);
+    }
+
+    /* ─── Gradient ───────────────────────────────────────── */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 25%,
+        rgba(6, 5, 15, 0.3) 55%,
+        rgba(6, 5, 15, 0.78) 100%
+      );
+      transition: background var(--dur) ease;
+    }
+
+    /* ─── Dim for compressed cards ───────────────────────── */
+    .card__dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(6, 5, 15, 0.38);
+      opacity: 0;
+      transition: opacity var(--dur) var(--ease);
+    }
+
+    .cards-track.has-active .card:not(.is-active) .card__dim {
+      opacity: 1;
+    }
+
+    /* ─── Card body ──────────────────────────────────────── */
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 24px 20px;
+      color: #fff;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .card__meta { flex: 1; }
+
+    /* ─── Default (collapsed) title ─────────────────────── */
+    .card__title-sm {
+      font-family: var(--canela);
+      font-size: 18px;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.3s ease, transform 0.3s var(--ease);
+    }
+
+    .card__details-sm {
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.3s ease;
+    }
+
+    /* hide small text on active card */
+    .card.is-active .card__title-sm,
+    .card.is-active .card__details-sm {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    /* ─── Expanded content ───────────────────────────────── */
+    .card__content {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s ease 0.28s, transform 0.5s var(--ease) 0.28s;
+      pointer-events: none;
+    }
+
+    .card.is-active .card__content {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    .card__title-lg {
+      font-family: var(--canela);
+      font-size: 32px;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      margin-bottom: 7px;
+    }
+
+    .card__details-lg {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      flex-shrink: 0;
+    }
+
+    .card__desc {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.72);
+      max-width: 270px;
+      margin-bottom: 20px;
+    }
+
+    .card__link {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      padding-bottom: 3px;
+      text-decoration: none;
+    }
+
+    /* ─── Close button ───────────────────────────────────── */
+    .card__close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255,255,255,0.45);
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.35s ease 0.3s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .card.is-active .card__close {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="section-header">
+    <h2>The world, hand-selected</h2>
+    <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+  </div>
+
+  <div class="cards-track" id="track">
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Santa Monica Beach">
+      <div class="card__overlay"></div>
+      <div class="card__dim"></div>
+      <button class="card__close" aria-label="Close">×</button>
+      <div class="card__body">
+        <div class="card__meta">
+          <div class="card__title-sm">Santa Monica Beach</div>
+          <div class="card__details-sm">Detail · Detail</div>
+          <div class="card__content">
+            <div class="card__title-lg">Santa Monica Beach</div>
+            <div class="card__details-lg">
+              <span>Detail</span><span class="dot"></span><span>Detail</span>
+            </div>
+            <p class="card__desc">Sunlit promenades, private beaches, and the enduring glamour of the California coast — rediscovered at your own pace.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali">
+      <div class="card__overlay"></div>
+      <div class="card__dim"></div>
+      <button class="card__close" aria-label="Close">×</button>
+      <div class="card__body">
+        <div class="card__meta">
+          <div class="card__title-sm">Bali, Indonesia</div>
+          <div class="card__details-sm">Indonesia · Asia Pacific</div>
+          <div class="card__content">
+            <div class="card__title-lg">Bali, Indonesia</div>
+            <div class="card__details-lg">
+              <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+            </div>
+            <p class="card__desc">Ancient temples, terraced rice fields, and an ocean that quietly invites you to stay — and never leave.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Bali Highlands">
+      <div class="card__overlay"></div>
+      <div class="card__dim"></div>
+      <button class="card__close" aria-label="Close">×</button>
+      <div class="card__body">
+        <div class="card__meta">
+          <div class="card__title-sm">Bali Highlands</div>
+          <div class="card__details-sm">Indonesia · Asia Pacific</div>
+          <div class="card__content">
+            <div class="card__title-lg">Bali Highlands</div>
+            <div class="card__details-lg">
+              <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+            </div>
+            <p class="card__desc">Mist-wrapped valleys and emerald pools — where the mountain meets ceremony and the landscape stills the mind.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Bali Coastline">
+      <div class="card__overlay"></div>
+      <div class="card__dim"></div>
+      <button class="card__close" aria-label="Close">×</button>
+      <div class="card__body">
+        <div class="card__meta">
+          <div class="card__title-sm">Bali Coastline</div>
+          <div class="card__details-sm">Indonesia · Asia Pacific</div>
+          <div class="card__content">
+            <div class="card__title-lg">Bali Coastline</div>
+            <div class="card__details-lg">
+              <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+            </div>
+            <p class="card__desc">Cliffside villas suspended above the Indian Ocean — privacy at its most dramatic, where the sun falls into the horizon.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  const track = document.getElementById('track');
+  const cards = track.querySelectorAll('.card');
+
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.card__close')) return;
+      if (card.classList.contains('is-active')) return;
+      cards.forEach(c => c.classList.remove('is-active'));
+      card.classList.add('is-active');
+      track.classList.add('has-active');
+    });
+
+    card.querySelector('.card__close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.classList.remove('is-active');
+      track.classList.remove('has-active');
+    });
+  });
+</script>
+
+</body>
+</html>

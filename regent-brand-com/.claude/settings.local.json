@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude install:*)",
+      "mcp__claude_ai_Figma__get_metadata",
+      "mcp__claude_ai_Figma__get_screenshot",
+      "mcp__claude_ai_Figma__use_figma",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(python3 -c \":*)",
+      "mcp__figma__get_screenshot",
+      "mcp__figma__get_design_context",
+      "mcp__figma__use_figma",
+      "mcp__claude_ai_Figma__get_design_context",
+      "mcp__claude_ai_Granola__query_granola_meetings",
+      "mcp__claude_ai_Granola__get_meetings",
+      "Bash(find /Users/franciscovivar/_claudecode-ihg/regent-brand-com -type f -name README* -o -type f -name *.md -o -type f -name *guide* -o -type f -name *standard*)",
+      "Bash(grep -r \"voice\\\\|tone\\\\|messaging\\\\|brand voice\\\\|copy\\\\|guidelines\" /Users/franciscovivar/_claudecode-ihg/regent-brand-com --include=*.html --include=*.md --include=*.json)",
+      "Bash(grep -h -i \"regent\\\\|brand\\\\|voice\\\\|tone\\\\|luxury\\\\|elegant\\\\|messaging\" /Users/franciscovivar/_claudecode-ihg/regent-brand-com/*.html)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(open:*)",
+      "mcp__figma__get_metadata",
+      "Bash(jq \".variables[] | select\\(.name == \"\"color/bg/primary\"\"\\)\")",
+      "Bash(jq \".variables[] | select\\(.name == \"\"color/white\"\"\\)\")",
+      "Bash(jq \".variables[] | select\\(.name == \"\"color/gray/0\"\"\\)\")",
+      "mcp__figma__whoami",
+      "mcp__figma-ihg__get_design_context",
+      "mcp__figma-ihg__generate_figma_design",
+      "Read(//Users/franciscovivar/**)",
+      "Read(//Users/franciscovivar/.ssh/**)"
+    ]
+  },
+  "prefersReducedMotion": true
+}

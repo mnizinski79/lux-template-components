@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Destinations Cards (Overlap)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F3F7F5;
+      color: #211551;
+    }
+
+    :root {
+      --brand:     #211551;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+      --dur:       0.72s;
+    }
+
+    .section { padding-bottom: 80px; }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+      width: 1200px;
+      margin: 0 auto;
+      padding: 56px 0 48px;
+    }
+
+    .section-header h2 {
+      font-family: var(--canela);
+      font-size: 52px;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--brand);
+      flex: 0 0 683px;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: #4a4a4a;
+      flex: 0 0 477px;
+      padding-top: 8px;
+    }
+
+    /* ─── Track: clips expanding cards ──────────────────────── */
+    .cards-track {
+      position: relative;
+      height: 600px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    /* ─── Card: absolutely positioned
+       JS sets left + width. Center point is stored in data-center.
+       Expanding from center = no image pan.                     */
+    .card {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      overflow: hidden;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    /* Transitions only after initial JS layout               */
+    .cards-track.ready .card {
+      transition:
+        left    var(--dur) var(--ease),
+        width   var(--dur) var(--ease),
+        z-index 0s linear  var(--dur),
+        box-shadow var(--dur) var(--ease);
+    }
+
+    .cards-track.ready .card.is-hovered {
+      z-index: 10;
+      transition:
+        left    var(--dur) var(--ease),
+        width   var(--dur) var(--ease),
+        z-index 0s linear  0s,
+        box-shadow var(--dur) var(--ease);
+    }
+
+    /* Depth shadow — makes the expanded card feel physically on top */
+    .card.is-hovered {
+      box-shadow:
+        -20px 0 48px rgba(0,0,0,0.36),
+         20px 0 48px rgba(0,0,0,0.36);
+    }
+
+    /* ─── Image: natural width, height-locked ───────────────────
+       Renders at 1066px wide × 600px tall (natural aspect ratio).
+       Card clips it as a window. Expanding reveals more image.
+       No object-fit recalculation = smooth GPU transition.       */
+    .card__img {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 100%;
+      width: auto;
+      max-width: none;
+    }
+
+    /* ─── Dim veil on non-active cards ──────────────────────── */
+    .card__dim {
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      transition: background 0.5s ease;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .cards-track.has-hover .card:not(.is-hovered) .card__dim {
+      background: rgba(0, 0, 0, 0.32);
+    }
+
+    /* ─── Gradient overlay ───────────────────────────────────── */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 35%,
+        rgba(6, 5, 15, 0.38) 62%,
+        rgba(6, 5, 15, 0.80) 100%
+      );
+      transition: background var(--dur) ease;
+      z-index: 3;
+    }
+
+    .card.is-hovered .card__overlay {
+      background: linear-gradient(
+        to bottom,
+        transparent 18%,
+        rgba(6, 5, 15, 0.48) 58%,
+        rgba(6, 5, 15, 0.90) 100%
+      );
+    }
+
+    /* ─── Card body ──────────────────────────────────────────── */
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 28px 32px;
+      color: #fff;
+      transition: opacity 0.3s ease, padding var(--dur) var(--ease);
+      z-index: 4;
+    }
+
+    .cards-track.has-hover .card:not(.is-hovered) .card__body {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .card.is-hovered .card__body {
+      padding: 0 44px 48px;
+    }
+
+    /* ─── Title ──────────────────────────────────────────────── */
+    .card__title-sm {
+      font-family: var(--canela);
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ─── Details ────────────────────────────────────────────── */
+    .card__details {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 5px;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      flex-shrink: 0;
+    }
+
+    /* ─── Reveal (description + CTA) ────────────────────────── */
+    .card__reveal {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition:
+        grid-template-rows 0.5s var(--ease) 0.2s,
+        opacity            0.3s ease        0.28s;
+    }
+
+    .card.is-hovered .card__reveal {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .card__reveal-inner { overflow: hidden; }
+
+    .card__desc {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.7);
+      margin-top: 12px;
+      max-width: 360px;
+    }
+
+    .card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      padding-bottom: 3px;
+      transition: gap 0.25s ease, border-color 0.25s ease;
+    }
+
+    .card__cta:hover {
+      gap: 14px;
+      border-color: rgba(255,255,255,0.9);
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+
+  <div class="section-header">
+    <h2>The world, hand-selected</h2>
+    <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+  </div>
+
+  <div class="cards-track" id="track">
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Cannes">
+      <div class="card__dim"></div>
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Cannes, French Riviera</div>
+        <div class="card__details">
+          <span>France</span><span class="dot"></span><span>Europe</span>
+        </div>
+        <div class="card__reveal"><div class="card__reveal-inner">
+          <p class="card__desc">Sunlit promenades, private beaches, and the enduring glamour of the Côte d'Azur — rediscovered at your own pace.</p>
+          <a href="#" class="card__cta">Explore</a>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali">
+      <div class="card__dim"></div>
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Bali, Indonesia</div>
+        <div class="card__details">
+          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        </div>
+        <div class="card__reveal"><div class="card__reveal-inner">
+          <p class="card__desc">Ancient temples, terraced rice fields, and an ocean that invites you to stay forever.</p>
+          <a href="#" class="card__cta">Explore</a>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Bali Highlands">
+      <div class="card__dim"></div>
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Bali Highlands</div>
+        <div class="card__details">
+          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        </div>
+        <div class="card__reveal"><div class="card__reveal-inner">
+          <p class="card__desc">Mist-wrapped valleys and emerald pools — where the mountain meets ceremony.</p>
+          <a href="#" class="card__cta">Explore</a>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Bali Coast">
+      <div class="card__dim"></div>
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Bali Coastline</div>
+        <div class="card__details">
+          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        </div>
+        <div class="card__reveal"><div class="card__reveal-inner">
+          <p class="card__desc">Cliffside villas suspended above the Indian Ocean — privacy at its most dramatic.</p>
+          <a href="#" class="card__cta">Explore</a>
+        </div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const CARD_GAP   = 0;
+  const EXPANDED_W = 1066; // natural image width at 600px height
+
+  const track = document.getElementById('track');
+  const cards = Array.from(track.querySelectorAll('.card'));
+  const count  = cards.length;
+
+  let defaultW = 0;
+
+  // ─── Layout: position each card, store its center ────────────
+  function layout() {
+    const trackW = track.offsetWidth;
+    const cardW  = (trackW - CARD_GAP * (count - 1)) / count;
+    defaultW = cardW;
+
+    cards.forEach((card, i) => {
+      const left   = i * (cardW + CARD_GAP);
+      const center = left + cardW / 2;
+
+      card.dataset.defaultLeft = left;
+      card.dataset.center      = center;
+
+      card.style.left  = left + 'px';
+      card.style.right = 'auto';
+      card.style.width = cardW + 'px';
+    });
+  }
+
+  // ─── Initial layout (no transitions) ─────────────────────────
+  layout();
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => track.classList.add('ready'))
+  );
+
+  // Re-layout on resize
+  window.addEventListener('resize', () => {
+    track.classList.remove('ready');
+    layout();
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => track.classList.add('ready'))
+    );
+  });
+
+  // ─── Hover: expand from center so image never pans ───────────
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      const center     = parseFloat(card.dataset.center);
+      const trackW     = track.offsetWidth;
+      const expandedW  = Math.min(EXPANDED_W, trackW);
+      const idealLeft  = center - expandedW / 2;
+      // Clamp: never let the card bleed outside the track
+      const newLeft    = Math.max(0, Math.min(idealLeft, trackW - expandedW));
+
+      card.style.left  = newLeft + 'px';
+      card.style.width = expandedW + 'px';
+      card.classList.add('is-hovered');
+      track.classList.add('has-hover');
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.left  = card.dataset.defaultLeft + 'px';
+      card.style.width = defaultW + 'px';
+      card.classList.remove('is-hovered');
+      track.classList.remove('has-hover');
+    });
+  });
+</script>
+
+</body>
+</html>

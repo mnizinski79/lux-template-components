@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Hero Animation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Josefin+Sans:wght@100;200;300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ease-lux: cubic-bezier(0.16, 1, 0.3, 1);
+      --color-text-inverse: #ffffff;
+      --color-text-primary: #121212;
+      --color-text-secondary: #4a4a4a;
+      --color-border-light: #eaeaea;
+      --btn-bg-primary: #c7370f;
+      --font-canela: 'Cormorant Garamond', Georgia, serif;
+      --font-engravers: 'Josefin Sans', 'Letter Gothic', sans-serif;
+      --font-inter: 'Inter', system-ui, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #121212;
+    }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Background image — Ken Burns */
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://www.figma.com/api/mcp/asset/f37fc24f-2de4-44d4-96f1-84fc8a741133');
+      background-size: cover;
+      background-position: center;
+      background-color: #1a2a35;
+      transform: scale(1.06);
+      animation: kenBurns 10s var(--ease-lux) 0.3s forwards;
+      will-change: transform;
+    }
+
+    @keyframes kenBurns {
+      to { transform: scale(1); }
+    }
+
+    /* Bottom gradient */
+    .hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(18,18,18,0) 50%,
+        rgba(18,18,18,0.05) 55%,
+        rgba(18,18,18,0.18) 60%,
+        rgba(18,18,18,0.42) 70%,
+        rgba(18,18,18,0.65) 85%,
+        rgba(18,18,18,0.80) 100%
+      );
+      z-index: 1;
+    }
+
+    /* Dark reveal overlay */
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: #121212;
+      opacity: 0.88;
+      z-index: 2;
+      animation: fadeOut 2.4s var(--ease-lux) 0.3s forwards;
+      will-change: opacity;
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; pointer-events: none; }
+    }
+
+    /* ── NAV ───────────────────────────────────────────────── */
+    .nav {
+      position: relative;
+      z-index: 3;
+      padding: 20px 120px 0;
+      opacity: 0;
+      animation: fadeUp 1s var(--ease-lux) 1.0s forwards;
+    }
+
+    .nav__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+    }
+
+    .nav__side {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .nav__side--right {
+      justify-content: flex-end;
+    }
+
+    .nav__btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--color-text-inverse);
+      font-family: var(--font-inter);
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 4px 0;
+      transition: border-color 0.3s ease;
+    }
+
+    .nav__btn:hover {
+      border-bottom-color: rgba(255,255,255,0.5);
+    }
+
+    .nav__btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: white;
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .nav__logo {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .nav__logo-word {
+      display: block;
+      color: white;
+      font-family: var(--font-engravers);
+      font-size: 26px;
+      font-weight: 100;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+    }
+
+    .nav__logo-sub {
+      display: block;
+      color: white;
+      font-family: var(--font-engravers);
+      font-size: 8px;
+      font-weight: 200;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Subnav */
+    .nav__sub {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 16px;
+    }
+
+    .nav__link {
+      color: var(--color-text-inverse);
+      font-family: var(--font-engravers);
+      font-size: 13px;
+      font-weight: 200;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 12px 0;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+
+    .nav__link:hover {
+      border-bottom-color: rgba(255,255,255,0.7);
+    }
+
+    /* ── HERO CONTENT ──────────────────────────────────────── */
+    .hero__content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 120px 48px;
+      gap: 16px;
+    }
+
+    .hero__supertitle {
+      color: var(--color-text-inverse);
+      font-family: var(--font-engravers);
+      font-size: 13px;
+      font-weight: 200;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 1.2s var(--ease-lux) 1.4s forwards;
+    }
+
+    .hero__h1 {
+      color: var(--color-text-inverse);
+      font-family: var(--font-canela);
+      font-size: clamp(42px, 5vw, 68px);
+      font-weight: 300;
+      line-height: 1.12;
+      letter-spacing: -0.5px;
+      text-align: center;
+      max-width: 900px;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      animation: fadeUp 1.4s var(--ease-lux) 1.8s forwards;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── BOOKING BAR ───────────────────────────────────────── */
+    .booking {
+      position: relative;
+      z-index: 3;
+      background: #fff;
+      border-top: 1px solid var(--color-border-light);
+      height: 94px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 28px;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: slideUp 1s var(--ease-lux) 2.6s forwards;
+      will-change: opacity, transform;
+    }
+
+    @keyframes slideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .booking__inner {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .booking__field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .booking__label {
+      font-family: var(--font-inter);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+    }
+
+    .booking__value {
+      font-family: var(--font-inter);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--color-text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .booking__value svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--color-text-secondary);
+      fill: none;
+      stroke-width: 1.5;
+      flex-shrink: 0;
+    }
+
+    .booking__divider {
+      width: 1px;
+      height: 52px;
+      background: var(--color-border-light);
+      flex-shrink: 0;
+    }
+
+    .booking__select {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 200px;
+    }
+
+    .booking__placeholder {
+      font-family: var(--font-inter);
+      font-size: 16px;
+      color: #aaa;
+    }
+
+    .booking__chevron {
+      width: 18px;
+      height: 18px;
+      stroke: var(--color-text-secondary);
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .booking__cta {
+      background: var(--btn-bg-primary);
+      color: #fff;
+      font-family: var(--font-inter);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: none;
+      padding: 0 32px;
+      height: 52px;
+      cursor: pointer;
+      border-radius: 4px;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+
+    .booking__cta:hover {
+      background: #a52e0c;
+    }
+
+    /* Pause button */
+    .hero__pause {
+      position: absolute;
+      bottom: 112px;
+      left: 120px;
+      z-index: 4;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      animation: fadeUp 1s var(--ease-lux) 2.8s forwards;
+    }
+
+    .hero__pause svg {
+      width: 16px;
+      height: 16px;
+      stroke: white;
+      fill: none;
+      stroke-width: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <!-- Background -->
+  <div class="hero__bg"></div>
+  <div class="hero__gradient"></div>
+  <div class="hero__overlay"></div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav__top">
+      <div class="nav__side">
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          EN
+        </a>
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+          1-800-456-7890
+        </a>
+      </div>
+
+      <div class="nav__logo">
+        <span class="nav__logo-word">Regent</span>
+        <span class="nav__logo-sub">Santa Monica</span>
+      </div>
+
+      <div class="nav__side nav__side--right">
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Sign In
+        </a>
+      </div>
+    </div>
+
+    <div class="nav__sub">
+      <a class="nav__link" href="#">Accommodations</a>
+      <a class="nav__link" href="#">Spa &amp; Wellness</a>
+      <a class="nav__link" href="#">Dining</a>
+      <a class="nav__link" href="#">Destination</a>
+      <a class="nav__link" href="#">Events</a>
+      <a class="nav__link" href="#">Offers</a>
+      <a class="nav__link" href="#">About</a>
+    </div>
+  </nav>
+
+  <!-- Hero Content -->
+  <div class="hero__content">
+    <p class="hero__supertitle">Regent Santa Monica Beach</p>
+    <h1 class="hero__h1">Intimate getaways on the Pacific Ocean</h1>
+  </div>
+
+  <!-- Pause button -->
+  <div class="hero__pause">
+    <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+  </div>
+
+  <!-- Booking Bar -->
+  <div class="booking">
+    <div class="booking__inner">
+      <div class="booking__field">
+        <span class="booking__label">1 Night</span>
+        <div class="booking__value">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          01/01/2026 &nbsp;→&nbsp; 02/01/2026
+        </div>
+      </div>
+
+      <div class="booking__divider"></div>
+
+      <div class="booking__field">
+        <span class="booking__label">Rooms &amp; Guest</span>
+        <div class="booking__value booking__select">
+          <span class="booking__placeholder">Select</span>
+          <svg class="booking__chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="booking__divider"></div>
+
+      <div class="booking__field">
+        <span class="booking__label">Rate Preference</span>
+        <div class="booking__value booking__select">
+          <span class="booking__placeholder">Select</span>
+          <svg class="booking__chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <button class="booking__cta">Book Now</button>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

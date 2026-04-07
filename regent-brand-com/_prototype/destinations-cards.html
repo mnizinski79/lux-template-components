@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Destinations Cards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F3F7F5;
+      color: #211551;
+    }
+
+    :root {
+      --brand:     #211551;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+      --dur:       0.7s;
+    }
+
+    /* ─── Section ─────────────────────────────────────────── */
+    .section { padding-bottom: 80px; }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+      width: 1200px;
+      margin: 0 auto;
+      padding: 56px 0 48px;
+    }
+
+    .section-header h2 {
+      font-family: var(--canela);
+      font-size: 52px;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--brand);
+      flex: 0 0 683px;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: #4a4a4a;
+      flex: 0 0 477px;
+      padding-top: 8px;
+    }
+
+    /* ─── Cards track ────────────────────────────────────── */
+    .cards-track {
+      display: flex;
+      gap: 3px;
+      height: 600px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    /* ─── Card defaults: flex:1 so 4 cards fill container equally */
+    .card {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      overflow: hidden;
+      cursor: pointer;
+      transition:
+        flex var(--dur) var(--ease);
+    }
+
+    /* When track has an active hover: compress all cards,
+       flex: 1 so they always fill the remaining space      */
+    .cards-track.has-hover .card {
+      flex: 1 1 0;
+    }
+
+    /* The hovered card expands to exactly the image's natural
+       rendered width at card height: 600 × (1180/664) = 1066px */
+    .cards-track.has-hover .card.is-hovered {
+      flex: 0 0 1066px;
+      max-width: 1066px;
+    }
+
+    /* ─── Image: height-locked, centered ────────────────────
+       Renders at natural aspect ratio (height = card height).
+       Card clips it when narrow; expanded card = full image. */
+    .card__img {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 100%;
+      width: auto;
+      max-width: none;
+    }
+
+    /* ─── Gradient overlay ───────────────────────────────── */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 35%,
+        rgba(6, 5, 15, 0.38) 62%,
+        rgba(6, 5, 15, 0.80) 100%
+      );
+      transition: background var(--dur) ease;
+    }
+
+    .card.is-hovered .card__overlay {
+      background: linear-gradient(
+        to bottom,
+        transparent 18%,
+        rgba(6, 5, 15, 0.48) 58%,
+        rgba(6, 5, 15, 0.90) 100%
+      );
+    }
+
+    /* ─── Card body ──────────────────────────────────────── */
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 28px 32px;
+      color: #fff;
+      transition: opacity 0.3s ease, padding var(--dur) var(--ease);
+    }
+
+    /* Fade out text on compressed cards */
+    .cards-track.has-hover .card:not(.is-hovered) .card__body {
+      opacity: 0;
+    }
+
+    /* More padding on the active card */
+    .card.is-hovered .card__body {
+      padding: 0 44px 48px;
+    }
+
+    /* ─── Title (same style in both states) ─────────────── */
+    .card__title-sm {
+      font-family: var(--canela);
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ─── Details ────────────────────────────────────────── */
+    .card__details {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 5px;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      flex-shrink: 0;
+    }
+
+    /* ─── Reveal content (description + CTA) ────────────── */
+    .card__reveal {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition:
+        grid-template-rows 0.5s var(--ease) 0.18s,
+        opacity            0.3s ease        0.25s;
+    }
+
+    .card.is-hovered .card__reveal {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .card__reveal-inner { overflow: hidden; }
+
+    .card__desc {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.7);
+      margin-top: 12px;
+      max-width: 360px;
+    }
+
+    .card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      padding-bottom: 3px;
+      transition: gap 0.25s ease, border-color 0.25s ease;
+    }
+
+    .card__cta:hover {
+      gap: 14px;
+      border-color: rgba(255,255,255,0.9);
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+
+  <div class="section-header">
+    <h2>The world, hand-selected</h2>
+    <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+  </div>
+
+  <div class="cards-track" id="track">
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Cannes">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Cannes, French Riviera</div>
+        <div class="card__details">
+          <span>France</span><span class="dot"></span><span>Europe</span>
+        </div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">Sunlit promenades, private beaches, and the enduring glamour of the Côte d'Azur — rediscovered at your own pace.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Bali, Indonesia</div>
+        <div class="card__details">
+          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        </div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">Ancient temples, terraced rice fields, and an ocean that invites you to stay forever.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Bali Highlands">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Bali Highlands</div>
+        <div class="card__details">
+          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        </div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">Mist-wrapped valleys and emerald pools — where the mountain meets ceremony.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Bali Coast">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Bali Coastline</div>
+        <div class="card__details">
+          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        </div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">Cliffside villas suspended above the Indian Ocean — privacy at its most dramatic.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const track = document.getElementById('track');
+  const cards = track.querySelectorAll('.card');
+
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      track.classList.add('has-hover');
+      card.classList.add('is-hovered');
+    });
+    card.addEventListener('mouseleave', () => {
+      track.classList.remove('has-hover');
+      card.classList.remove('is-hovered');
+    });
+  });
+</script>
+
+</body>
+</html>

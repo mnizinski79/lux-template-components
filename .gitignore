@@ -1,0 +1,8 @@
+.DS_Store
+.claude/settings.local.json
+
+# Large media files
+*.mov
+*.mp4
+*.avi
+_assets/_live/*.png

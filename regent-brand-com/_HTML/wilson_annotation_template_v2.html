@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wilson Component Annotation Template</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F9F7F4; color: #1a1a2e; min-height: 100vh; padding: 32px 24px; }
+
+  .header { margin-bottom: 32px; }
+  .eyebrow { font-size: 10px; letter-spacing: 0.14em; color: #999; text-transform: uppercase; font-family: 'SF Mono', 'Fira Mono', monospace; margin-bottom: 6px; }
+  .title { font-size: 22px; font-weight: 600; color: #1a1a2e; }
+  .subtitle { font-size: 13px; color: #888; margin-top: 4px; }
+
+  .section { margin-bottom: 32px; }
+  .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #aaa; font-family: 'SF Mono', 'Fira Mono', monospace; margin-bottom: 10px; }
+
+  .page-header { display: inline-block; padding: 6px 18px; background: #fff; border: 0.5px solid #e0ddd8; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #888; font-family: 'SF Mono', 'Fira Mono', monospace; }
+
+  .card { background: #fff; border: 0.5px solid #d8d5cf; border-radius: 12px; overflow: hidden; max-width: 400px; margin-bottom: 12px; }
+  .card.variant { border-style: dashed; }
+
+  .card-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px 10px; border-bottom: 0.5px solid #eeece8; }
+  .num { width: 22px; height: 22px; border-radius: 50%; background: #f1efe8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #888; flex-shrink: 0; font-family: 'SF Mono', 'Fira Mono', monospace; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1a1a2e; flex: 1; }
+
+  .badges { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+  .badge { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+  .badge-sticky { background: #FFF3CD; color: #856404; }
+  .badge-variant { background: #f1efe8; color: #888; }
+  .badge-new { background: #FCEBEB; color: #A32D2D; }
+
+  .card-body { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .row { display: flex; gap: 8px; align-items: flex-start; }
+  .label { font-size: 11px; color: #aaa; width: 100px; flex-shrink: 0; padding-top: 1px; }
+  .value { font-size: 11px; color: #bbb; font-family: 'SF Mono', 'Fira Mono', monospace; font-style: italic; line-height: 1.5; }
+  .divider { height: 0.5px; background: #eeece8; margin: 4px 0; }
+
+  .legend { background: #fff; border: 0.5px solid #e0ddd8; border-radius: 12px; padding: 16px 18px; max-width: 400px; display: flex; flex-direction: column; gap: 10px; }
+  .legend-row { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #666; }
+  .swatch { width: 36px; height: 20px; border-radius: 5px; flex-shrink: 0; }
+  .swatch-header { background: #f1efe8; border: 0.5px solid #e0ddd8; display: flex; align-items: center; justify-content: center; }
+  .swatch-solid { background: #fff; border: 0.5px solid #d8d5cf; }
+  .swatch-dashed { background: #fff; border: 0.5px dashed #d8d5cf; }
+  .swatch-num { background: #f1efe8; border: 0.5px solid #e0ddd8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #888; font-family: 'SF Mono', monospace; }
+  .swatch-text { font-size: 8px; font-weight: 600; letter-spacing: 0.1em; color: #aaa; text-transform: uppercase; font-family: 'SF Mono', monospace; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 840px; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">IHG · Wilson Design System · Regent Brand.com</div>
+  <div class="title">Component annotation template</div>
+  <div class="subtitle">Copy this format for each component sticky in Figma — one card per component, variants share the same number with a dashed border.</div>
+</div>
+
+<div class="grid">
+
+  <div>
+    <div class="section">
+      <div class="section-label">Page header — sits above each group, resets numbering</div>
+      <div class="page-header">— Page name —</div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Standard component</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="num">00</div>
+          <span class="card-title">Component name</span>
+          <div class="badges">
+            <span class="badge badge-sticky">Sticky</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row"><span class="label">Wilson name</span><span class="value">wl-component-name</span></div>
+          <div class="row"><span class="label">Variant</span><span class="value">variant-name</span></div>
+          <div class="row"><span class="label">Behavior</span><span class="value">e.g. sticky · auto-advance · collapse</span></div>
+          <div class="divider"></div>
+          <div class="row"><span class="label">Regent override</span><span class="value">brand-specific changes</span></div>
+          <div class="row"><span class="label">Status</span><span class="value">Existing · New variant · Gap</span></div>
+          <div class="row"><span class="label">Page(s)</span><span class="value">homepage · all pages · etc.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Variant — dashed border, same number as parent</div>
+      <div class="card variant">
+        <div class="card-header">
+          <div class="num">00</div>
+          <span class="card-title">Component name — variant</span>
+          <div class="badges">
+            <span class="badge badge-variant">Variant</span>
+            <span class="badge badge-sticky">Sticky</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row"><span class="label">Wilson name</span><span class="value">wl-component-name</span></div>
+          <div class="row"><span class="label">Variant</span><span class="value">variant-name</span></div>
+          <div class="row"><span class="label">Behavior</span><span class="value">how this variant differs</span></div>
+          <div class="divider"></div>
+          <div class="row"><span class="label">Regent override</span><span class="value">brand-specific changes</span></div>
+          <div class="row"><span class="label">Status</span><span class="value">Existing · New variant · Gap</span></div>
+          <div class="row"><span class="label">Page(s)</span><span class="value">where this variant appears</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section">
+      <div class="section-label">Legend</div>
+      <div class="legend">
+        <div class="legend-row">
+          <div class="swatch swatch-header"><span class="swatch-text">Page</span></div>
+          Page header — resets numbering per page
+        </div>
+        <div class="legend-row">
+          <div class="swatch swatch-num">01</div>
+          Number = order of component top to bottom
+        </div>
+        <div class="legend-row">
+          <div class="swatch swatch-solid"></div>
+          Standard component — solid border
+        </div>
+        <div class="legend-row">
+          <div class="swatch swatch-dashed"></div>
+          Variant — dashed border, same number as parent
+        </div>
+        <div class="legend-row">
+          <span class="badge badge-sticky" style="width:36px;text-align:center;flex-shrink:0">Sticky</span>
+          Component is fixed/sticky on scroll
+        </div>
+        <div class="legend-row">
+          <span class="badge badge-variant" style="width:36px;text-align:center;flex-shrink:0">Var</span>
+          Alternate state of parent component
+        </div>
+        <div class="legend-row">
+          <span class="badge badge-new" style="width:36px;text-align:center;flex-shrink:0">New</span>
+          Gap — needs Wilson approval via Bill
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top: 24px;">
+      <div class="section-label">Status values — use exactly one</div>
+      <div class="legend">
+        <div class="legend-row" style="font-family: 'SF Mono', monospace; font-size: 11px; color: #3B6D11;">Existing Wilson component</div>
+        <div class="legend-row" style="font-family: 'SF Mono', monospace; font-size: 11px; color: #854F0B;">New variant needed</div>
+        <div class="legend-row" style="font-family: 'SF Mono', monospace; font-size: 11px; color: #A32D2D;">Gap — needs Wilson approval</div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top: 24px;">
+      <div class="section-label">Reference — page numbering</div>
+      <div class="legend">
+        <div style="font-size: 11px; color: #888; line-height: 1.7;">
+          Numbers reset per page.<br>
+          Reference format: <span style="font-family: 'SF Mono', monospace; color: #666;">Homepage / 04</span><br>
+          vs <span style="font-family: 'SF Mono', monospace; color: #666;">Hotels & Resorts / 04</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

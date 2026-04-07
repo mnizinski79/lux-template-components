@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Mobile Preview (iPhone 17)</title>
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: #0f0f0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+    }
+
+    /* ─── Scene ─────────────────────────────────────────────── */
+    .scene {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .label {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+    }
+
+    /* ─── Device shell ───────────────────────────────────────── */
+    .device {
+      position: relative;
+      width: 414px;
+      height: 900px;
+      background: linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #111 100%);
+      border-radius: 58px;
+      box-shadow:
+        0 0 0 1.5px rgba(255,255,255,0.12),
+        0 0 0 3px rgba(255,255,255,0.05),
+        0 60px 120px rgba(0,0,0,0.8),
+        0 20px 40px rgba(0,0,0,0.5),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+
+    /* Titanium-like edge sheen */
+    .device::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 58px;
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.12) 0%,
+        transparent 30%,
+        transparent 70%,
+        rgba(255,255,255,0.06) 100%
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ─── Side buttons — left ────────────────────────────────── */
+    /* Action button */
+    .btn-action {
+      position: absolute;
+      left: -4px;
+      top: 148px;
+      width: 4px;
+      height: 34px;
+      background: linear-gradient(to right, #1a1a1a, #2e2e2e);
+      border-radius: 3px 0 0 3px;
+      box-shadow: -1px 0 3px rgba(0,0,0,0.6);
+    }
+
+    /* Volume up */
+    .btn-vol-up {
+      position: absolute;
+      left: -4px;
+      top: 212px;
+      width: 4px;
+      height: 66px;
+      background: linear-gradient(to right, #1a1a1a, #2e2e2e);
+      border-radius: 3px 0 0 3px;
+      box-shadow: -1px 0 3px rgba(0,0,0,0.6);
+    }
+
+    /* Volume down */
+    .btn-vol-down {
+      position: absolute;
+      left: -4px;
+      top: 292px;
+      width: 4px;
+      height: 66px;
+      background: linear-gradient(to right, #1a1a1a, #2e2e2e);
+      border-radius: 3px 0 0 3px;
+      box-shadow: -1px 0 3px rgba(0,0,0,0.6);
+    }
+
+    /* ─── Side buttons — right ───────────────────────────────── */
+    /* Power / side button */
+    .btn-power {
+      position: absolute;
+      right: -4px;
+      top: 228px;
+      width: 4px;
+      height: 90px;
+      background: linear-gradient(to left, #1a1a1a, #2e2e2e);
+      border-radius: 0 3px 3px 0;
+      box-shadow: 1px 0 3px rgba(0,0,0,0.6);
+    }
+
+    /* ─── Screen bezel ───────────────────────────────────────── */
+    .screen-bezel {
+      position: absolute;
+      inset: 12px;
+      background: #000;
+      border-radius: 47px;
+      overflow: hidden;
+    }
+
+    /* ─── Dynamic Island ─────────────────────────────────────── */
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 122px;
+      height: 36px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 20;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.04);
+    }
+
+    /* ─── iframe (the actual prototype) ─────────────────────── */
+    .screen-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 47px;
+    }
+
+    /* ─── Bottom bar indicator ───────────────────────────────── */
+    .home-bar {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: 5px;
+      background: rgba(255,255,255,0.28);
+      border-radius: 3px;
+      z-index: 20;
+    }
+
+    /* ─── Camera pill inside island ─────────────────────────── */
+    .island-camera {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle at 40% 35%, #1a3a5c, #0a1a2a);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 1.5px rgba(255,255,255,0.06),
+        inset 0 0 4px rgba(0,80,160,0.4);
+    }
+
+    .island-camera::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 4px;
+      height: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+    }
+
+    /* ─── USB-C port ─────────────────────────────────────────── */
+    .usb-c {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 54px;
+      height: 6px;
+      background: #0d0d0d;
+      border-radius: 4px 4px 0 0;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .usb-c::before,
+    .usb-c::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      width: 16px;
+      height: 4px;
+      background: #1a1a1a;
+      border-radius: 2px;
+    }
+
+    .usb-c::before { left: 4px; }
+    .usb-c::after  { right: 4px; }
+
+    /* ─── Speaker grille ─────────────────────────────────────── */
+    .speaker {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 3px;
+      z-index: 5;
+    }
+
+    .speaker-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* ─── Scale to fit viewport ──────────────────────────────── */
+    .device-wrapper {
+      transform-origin: center center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="device-wrapper" id="deviceWrapper">
+    <div class="device" id="device">
+
+      <!-- Left buttons -->
+      <div class="btn-action"></div>
+      <div class="btn-vol-up"></div>
+      <div class="btn-vol-down"></div>
+
+      <!-- Right button -->
+      <div class="btn-power"></div>
+
+      <!-- USB-C -->
+      <div class="usb-c"></div>
+
+      <!-- Speaker -->
+      <div class="speaker">
+        <div class="speaker-dot"></div>
+        <div class="speaker-dot"></div>
+        <div class="speaker-dot"></div>
+        <div class="speaker-dot"></div>
+        <div class="speaker-dot"></div>
+        <div class="speaker-dot"></div>
+        <div class="speaker-dot"></div>
+      </div>
+
+      <!-- Screen -->
+      <div class="screen-bezel">
+        <!-- Dynamic Island -->
+        <div class="dynamic-island">
+          <div class="island-camera"></div>
+        </div>
+
+        <!-- Prototype iframe -->
+        <iframe
+          class="screen-frame"
+          src="destinations-cards-mobile.html"
+          title="Regent Destinations — Mobile Prototype"
+          scrolling="no"
+        ></iframe>
+
+        <!-- Home bar -->
+        <div class="home-bar"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="label">Regent — Destinations · iPhone 17</div>
+</div>
+
+<script>
+  // Scale the device to fit the viewport with comfortable padding
+  function scaleDevice() {
+    const wrapper = document.getElementById('deviceWrapper');
+    const device  = document.getElementById('device');
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const deviceW = device.offsetWidth  + 8; // include button overhang
+    const deviceH = device.offsetHeight + 60; // include label
+
+    const scaleX = (vw - 48) / deviceW;
+    const scaleY = (vh - 48) / deviceH;
+    const scale  = Math.min(scaleX, scaleY, 1); // never upscale past 1×
+
+    wrapper.style.transform = `scale(${scale})`;
+  }
+
+  scaleDevice();
+  window.addEventListener('resize', scaleDevice);
+</script>
+
+</body>
+</html>
