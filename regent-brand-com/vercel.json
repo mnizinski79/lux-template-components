@@ -1,6 +1,3 @@
 {
-  "version": 2,
-  "env": {
-    "PROTOTYPE_PASSWORD": "@prototype-password"
-  }
+  "version": 2
 }
