@@ -249,10 +249,9 @@
 
   /* ── Update progress bar ── */
   function updateProgress(idx) {
-    const i = ((idx % REAL) + REAL) % REAL;
-    const pct = ((i + 1) / REAL * 100).toFixed(2) + '%';
+    const pct = ((idx + 1) / REAL * 100).toFixed(2) + '%';
     progressFill.style.width = pct;
-    progressBar.setAttribute('aria-valuenow', i + 1);
+    progressBar.setAttribute('aria-valuenow', idx + 1);
   }
 
   /* ── Initialise: jump to real item 0, no animation ── */
@@ -268,30 +267,24 @@
     track.style.transform = `translateX(${offsetFor(idx)}px)`;
   }
 
-  /* ── Navigate forward ── */
+  /* ── Navigate forward — stops at last image ── */
   function next() {
-    if (busy) return;
+    if (busy || current >= REAL - 1) return;
     busy = true;
     current++;
     go(current);
     updateProgress(current);
-    track.addEventListener('transitionend', () => {
-      if (current >= REAL) { current = 0; go(current, false); updateProgress(0); }
-      busy = false;
-    }, { once: true });
+    track.addEventListener('transitionend', () => { busy = false; }, { once: true });
   }
 
-  /* ── Navigate backward ── */
+  /* ── Navigate backward — stops at first image ── */
   function prev() {
-    if (busy) return;
+    if (busy || current <= 0) return;
     busy = true;
     current--;
     go(current);
     updateProgress(current);
-    track.addEventListener('transitionend', () => {
-      if (current < 0) { current = REAL - 1; go(current, false); updateProgress(REAL - 1); }
-      busy = false;
-    }, { once: true });
+    track.addEventListener('transitionend', () => { busy = false; }, { once: true });
   }
 
   /* ── Event listeners ── */
