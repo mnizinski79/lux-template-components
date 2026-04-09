@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440">
+  <title>Regent — Content Block Carousel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:   #211551;
+      --gold:    #A68B5B;
+      --canela:  'Cormorant Garamond', Georgia, serif;
+      --josefin: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:   'Inter', system-ui, sans-serif;
+      --ease:    cubic-bezier(0.4, 0, 0.2, 1);
+      --dur:     0.7s;
+      --col-w:   460px;
+      --gap:     20px;
+      --step:    480px; /* col-w + gap */
+    }
+
+    body {
+      background: #fff;
+      color: var(--brand);
+      width: 1440px;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+
+    /* ─── Section ──────────────────────────────────────────────── */
+    .section {
+      padding: 80px 0 72px;
+    }
+
+    /* ─── Carousel wrapper ─────────────────────────────────────── */
+    .carousel {
+      position: relative;
+    }
+
+    .carousel__viewport {
+      overflow: hidden;
+      width: 100%;
+    }
+
+    /* ─── Track
+         Array order: [r1c, r2c, r3c | r0, r1, r2, r3 | r0c, r1c, r2c]
+         3 clones prepended (last 3 real items), 3 clones appended (first 3)
+         This enables seamless infinite looping in both directions.
+    ──────────────────────────────────────────────────────────────── */
+    .carousel__track {
+      display: flex;
+      gap: var(--gap);
+      align-items: flex-end;   /* bottom-align so short + tall sit on same baseline */
+      height: 582px;           /* tallest tile height */
+      transition: transform var(--dur) var(--ease);
+      will-change: transform;
+    }
+
+    /* ─── Tiles ────────────────────────────────────────────────── */
+    .tile {
+      flex: 0 0 var(--col-w);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile--short { height: 480px; }
+    .tile--tall  { height: 582px; }
+
+    .tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.9s var(--ease);
+    }
+
+    .tile:hover img {
+      transform: scale(1.04);
+    }
+
+    /* ─── Controls row ─────────────────────────────────────────── */
+    .carousel__controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 0 0;
+    }
+
+    /* Dots */
+    .dots {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #c8c8c8;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .dot.is-active {
+      background: var(--brand);
+      transform: scale(1.6);
+    }
+
+    /* Arrows */
+    .arrows {
+      display: flex;
+      gap: 12px;
+    }
+
+    .arrow-btn {
+      width: 48px;
+      height: 48px;
+      background: transparent;
+      border: 1px solid var(--brand);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .arrow-btn:hover {
+      background: var(--brand);
+    }
+
+    .arrow-btn:hover svg path {
+      stroke: #fff;
+    }
+
+    .arrow-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .arrow-btn svg path {
+      stroke: var(--brand);
+      stroke-width: 1.5;
+      fill: none;
+      transition: stroke 0.2s;
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+  <div class="carousel" role="region" aria-label="Content carousel">
+
+    <div class="carousel__viewport">
+      <!--
+        Track item order (4 real images, height assignments r0=short r1=tall r2=short r3=tall):
+        [r1c(tall), r2c(short), r3c(tall)] + [r0(short), r1(tall), r2(short), r3(tall)] + [r0c(short), r1c(tall), r2c(short)]
+
+        Clone heights match their source image — the alternating short/tall
+        pattern stays visually consistent across the infinite loop boundary.
+      -->
+      <div class="carousel__track" id="track">
+
+        <!-- ── Prepended clones of last 3 real items ── -->
+        <div class="tile tile--tall" aria-hidden="true">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-taste-studio-img-2-svp-1340x1340.jpeg" alt="">
+        </div>
+        <div class="tile tile--short" aria-hidden="true">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-spa-wellness-img-2-lvp-1180x664.jpeg" alt="">
+        </div>
+        <div class="tile tile--tall" aria-hidden="true">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-2-svp-1340x1340.jpeg" alt="">
+        </div>
+
+        <!-- ── Real items ── -->
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-1-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-taste-studio-img-2-svp-1340x1340.jpeg" alt="Taste Studio">
+        </div>
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-spa-wellness-img-2-lvp-1180x664.jpeg" alt="Spa &amp; Wellness">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-2-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
+
+        <!-- ── Appended clones of first 3 real items ── -->
+        <div class="tile tile--short" aria-hidden="true">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-1-svp-1340x1340.jpeg" alt="">
+        </div>
+        <div class="tile tile--tall" aria-hidden="true">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-taste-studio-img-2-svp-1340x1340.jpeg" alt="">
+        </div>
+        <div class="tile tile--short" aria-hidden="true">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-spa-wellness-img-2-lvp-1180x664.jpeg" alt="">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="carousel__controls">
+      <div class="dots" id="dots" role="tablist" aria-label="Slides">
+        <div class="dot is-active" role="tab" aria-selected="true"  data-idx="0" tabindex="0"></div>
+        <div class="dot"           role="tab" aria-selected="false" data-idx="1" tabindex="0"></div>
+        <div class="dot"           role="tab" aria-selected="false" data-idx="2" tabindex="0"></div>
+        <div class="dot"           role="tab" aria-selected="false" data-idx="3" tabindex="0"></div>
+      </div>
+      <div class="arrows">
+        <button class="arrow-btn" id="prev" aria-label="Previous slide">
+          <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M12 3L6 9L12 15"/></svg>
+        </button>
+        <button class="arrow-btn" id="next" aria-label="Next slide">
+          <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M6 3L12 9L6 15"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const track  = document.getElementById('track');
+  const dots   = document.querySelectorAll('.dot');
+  const REAL   = 4;    // number of real images
+  const CLONES = 3;    // clones on each side
+  const STEP   = 480;  // col-w (460) + gap (20)
+
+  let current = 0;  // index into real items (0–3)
+  let busy    = false;
+
+  /* translateX so that real item at `idx` is leftmost visible column */
+  function offsetFor(idx) {
+    return -((idx + CLONES) * STEP);
+  }
+
+  /* ── Initialise: jump to real item 0, no animation ── */
+  track.style.transition = 'none';
+  track.style.transform  = `translateX(${offsetFor(0)}px)`;
+
+  /* ── Update dot indicators ── */
+  function updateDots(idx) {
+    const i = ((idx % REAL) + REAL) % REAL;
+    dots.forEach((d, n) => {
+      const active = n === i;
+      d.classList.toggle('is-active', active);
+      d.setAttribute('aria-selected', active);
+    });
+  }
+
+  /* ── Animate track to position ── */
+  function go(idx, animate = true) {
+    track.style.transition = animate
+      ? `transform var(--dur) var(--ease)`
+      : 'none';
+    track.style.transform = `translateX(${offsetFor(idx)}px)`;
+  }
+
+  /* ── Navigate forward ── */
+  function next() {
+    if (busy) return;
+    busy = true;
+    current++;
+    go(current);
+    updateDots(current);
+    track.addEventListener('transitionend', () => {
+      if (current >= REAL) { current = 0; go(current, false); updateDots(0); }
+      busy = false;
+    }, { once: true });
+  }
+
+  /* ── Navigate backward ── */
+  function prev() {
+    if (busy) return;
+    busy = true;
+    current--;
+    go(current);
+    updateDots(current);
+    track.addEventListener('transitionend', () => {
+      if (current < 0) { current = REAL - 1; go(current, false); updateDots(REAL - 1); }
+      busy = false;
+    }, { once: true });
+  }
+
+  /* ── Jump to specific slide via dot ── */
+  function goTo(idx) {
+    if (busy || idx === current) return;
+    busy = true;
+    current = idx;
+    go(current);
+    updateDots(current);
+    track.addEventListener('transitionend', () => { busy = false; }, { once: true });
+  }
+
+  /* ── Event listeners ── */
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+
+  dots.forEach(dot => {
+    dot.addEventListener('click',   () => goTo(parseInt(dot.dataset.idx)));
+    dot.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') goTo(parseInt(dot.dataset.idx));
+    });
+  });
+
+  /* ── Keyboard navigation ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft')  prev();
+  });
+
+  /* ── Touch / pointer swipe ── */
+  let pointerStartX = null;
+  track.addEventListener('pointerdown', e => { pointerStartX = e.clientX; });
+  track.addEventListener('pointerup',   e => {
+    if (pointerStartX === null) return;
+    const delta = e.clientX - pointerStartX;
+    if (delta < -40) next();
+    else if (delta > 40) prev();
+    pointerStartX = null;
+  });
+</script>
+
+</body>
+</html>
