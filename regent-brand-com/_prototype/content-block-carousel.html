@@ -87,68 +87,66 @@
     /* ─── Controls row ─────────────────────────────────────────── */
     .carousel__controls {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 16px;       /* --spacing/desktop/small */
       padding: 28px 0 0;
     }
 
-    /* Dots */
-    .dots {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #c8c8c8;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-
-    .dot.is-active {
-      background: var(--brand);
-      transform: scale(1.6);
-    }
-
-    /* Arrows */
-    .arrows {
-      display: flex;
-      gap: 12px;
-    }
-
+    /* Arrow icon buttons — no border, 36×36 with 4px padding */
     .arrow-btn {
-      width: 48px;
-      height: 48px;
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      padding: 4px;
       background: transparent;
-      border: 1px solid var(--brand);
+      border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s;
+      opacity: 0.85;
+      transition: opacity 0.2s;
     }
 
-    .arrow-btn:hover {
-      background: var(--brand);
-    }
-
-    .arrow-btn:hover svg path {
-      stroke: #fff;
-    }
+    .arrow-btn:hover { opacity: 1; }
 
     .arrow-btn svg {
-      width: 18px;
-      height: 18px;
+      width: 100%;
+      height: 100%;
     }
 
     .arrow-btn svg path {
       stroke: var(--brand);
       stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
       fill: none;
-      transition: stroke 0.2s;
+    }
+
+    /* Progress line */
+    .progress-track {
+      flex: 1;
+      position: relative;
+      height: 1px;
+    }
+
+    /* Background line — light warm gray */
+    .progress-track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(33, 21, 81, 0.15);
+    }
+
+    /* Animated fill — 1.75px tall, brand color */
+    .progress-fill {
+      position: absolute;
+      top: -0.375px;   /* centre the thicker bar over the 1px track */
+      left: 0;
+      height: 1.75px;
+      background: var(--brand);
+      width: 25%;      /* 1 of 4 slides */
+      transition: width var(--dur) var(--ease);
     }
   </style>
 </head>
@@ -207,28 +205,33 @@
     </div>
 
     <div class="carousel__controls">
-      <div class="dots" id="dots" role="tablist" aria-label="Slides">
-        <div class="dot is-active" role="tab" aria-selected="true"  data-idx="0" tabindex="0"></div>
-        <div class="dot"           role="tab" aria-selected="false" data-idx="1" tabindex="0"></div>
-        <div class="dot"           role="tab" aria-selected="false" data-idx="2" tabindex="0"></div>
-        <div class="dot"           role="tab" aria-selected="false" data-idx="3" tabindex="0"></div>
+      <!-- Lucide arrow-left -->
+      <button class="arrow-btn" id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+
+      <!-- Progress line -->
+      <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
-      <div class="arrows">
-        <button class="arrow-btn" id="prev" aria-label="Previous slide">
-          <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M12 3L6 9L12 15"/></svg>
-        </button>
-        <button class="arrow-btn" id="next" aria-label="Next slide">
-          <svg viewBox="0 0 18 18" aria-hidden="true"><path d="M6 3L12 9L6 15"/></svg>
-        </button>
-      </div>
+
+      <!-- Lucide arrow-right -->
+      <button class="arrow-btn" id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
     </div>
 
   </div>
 </section>
 
 <script>
-  const track  = document.getElementById('track');
-  const dots   = document.querySelectorAll('.dot');
+  const track       = document.getElementById('track');
+  const progressFill = document.getElementById('progressFill');
+  const progressBar  = progressFill.closest('[role="progressbar"]');
   const REAL   = 4;    // number of real images
   const CLONES = 3;    // clones on each side
   const STEP   = 480;  // col-w (460) + gap (20)
@@ -241,19 +244,18 @@
     return -((idx + CLONES) * STEP);
   }
 
+  /* ── Update progress bar ── */
+  function updateProgress(idx) {
+    const i = ((idx % REAL) + REAL) % REAL;
+    const pct = ((i + 1) / REAL * 100).toFixed(2) + '%';
+    progressFill.style.width = pct;
+    progressBar.setAttribute('aria-valuenow', i + 1);
+  }
+
   /* ── Initialise: jump to real item 0, no animation ── */
   track.style.transition = 'none';
   track.style.transform  = `translateX(${offsetFor(0)}px)`;
-
-  /* ── Update dot indicators ── */
-  function updateDots(idx) {
-    const i = ((idx % REAL) + REAL) % REAL;
-    dots.forEach((d, n) => {
-      const active = n === i;
-      d.classList.toggle('is-active', active);
-      d.setAttribute('aria-selected', active);
-    });
-  }
+  updateProgress(0);
 
   /* ── Animate track to position ── */
   function go(idx, animate = true) {
@@ -269,9 +271,9 @@
     busy = true;
     current++;
     go(current);
-    updateDots(current);
+    updateProgress(current);
     track.addEventListener('transitionend', () => {
-      if (current >= REAL) { current = 0; go(current, false); updateDots(0); }
+      if (current >= REAL) { current = 0; go(current, false); updateProgress(0); }
       busy = false;
     }, { once: true });
   }
@@ -282,33 +284,16 @@
     busy = true;
     current--;
     go(current);
-    updateDots(current);
+    updateProgress(current);
     track.addEventListener('transitionend', () => {
-      if (current < 0) { current = REAL - 1; go(current, false); updateDots(REAL - 1); }
+      if (current < 0) { current = REAL - 1; go(current, false); updateProgress(REAL - 1); }
       busy = false;
     }, { once: true });
-  }
-
-  /* ── Jump to specific slide via dot ── */
-  function goTo(idx) {
-    if (busy || idx === current) return;
-    busy = true;
-    current = idx;
-    go(current);
-    updateDots(current);
-    track.addEventListener('transitionend', () => { busy = false; }, { once: true });
   }
 
   /* ── Event listeners ── */
   document.getElementById('next').addEventListener('click', next);
   document.getElementById('prev').addEventListener('click', prev);
-
-  dots.forEach(dot => {
-    dot.addEventListener('click',   () => goTo(parseInt(dot.dataset.idx)));
-    dot.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') goTo(parseInt(dot.dataset.idx));
-    });
-  });
 
   /* ── Keyboard navigation ── */
   document.addEventListener('keydown', e => {
