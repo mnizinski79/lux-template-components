@@ -69,6 +69,10 @@
     .tile--short { height: 480px; }     /* odd images  — 466.667 × 480 */
     .tile--tall  { height: 582.703px; } /* even images — 466.667 × 582.703 */
 
+    .tile {
+      transition: opacity 0.4s ease;
+    }
+
     .tile img {
       width: 100%;
       height: 100%;
@@ -235,6 +239,17 @@
     return -(idx * STEP);
   }
 
+  /* ── Dim tiles that are cut off (partially outside the viewport) ── */
+  function updateOpacities(translateX) {
+    const scrolled = -translateX; // positive scroll amount
+    track.querySelectorAll('.tile').forEach((tile, i) => {
+      const tileLeft  = i * STEP - scrolled;
+      const tileRight = tileLeft + colW;
+      const fullyVisible = tileLeft >= -0.5 && tileRight <= viewW + 0.5;
+      tile.style.opacity = fullyVisible ? '1' : '0.8';
+    });
+  }
+
   /* ── Update progress bar — 0% start, 100% at last image ── */
   function updateProgress(idx) {
     const pct = (idx / MAX * 100).toFixed(2) + '%';
@@ -245,12 +260,15 @@
   /* ── Initialise: left-aligned, no animation ── */
   track.style.transition = 'none';
   track.style.transform  = `translateX(${offsetFor(current)}px)`;
+  updateOpacities(offsetFor(current));
   updateProgress(current);
 
   /* ── Animate track to position ── */
   function go(idx, animate = true) {
+    const tx = offsetFor(idx);
     track.style.transition = animate ? `transform var(--dur) var(--ease)` : 'none';
-    track.style.transform  = `translateX(${offsetFor(idx)}px)`;
+    track.style.transform  = `translateX(${tx}px)`;
+    updateOpacities(tx);
   }
 
   /* ── Navigate forward — stops at right edge (image 4 fully visible) ── */
