@@ -133,21 +133,21 @@
       height: 1px;
     }
 
-    /* Background line — light warm gray */
+    /* Background line — color/text/secondary */
     .progress-track::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba(33, 21, 81, 0.15);
+      background: #4a4a4a; /* color/text/secondary → color/gray/800 */
     }
 
-    /* Animated fill — 1.75px tall, brand color */
+    /* Animated fill — regent/color/grayscale/200 */
     .progress-fill {
       position: absolute;
       top: -0.375px;   /* centre the thicker bar over the 1px track */
       left: 0;
       height: 1.75px;
-      background: var(--brand);
+      background: #d6d6d6; /* regent/color/grayscale/200 → color/gray/200 */
       width: 25%;      /* 1 of 4 slides */
       transition: width var(--dur) var(--ease);
     }
