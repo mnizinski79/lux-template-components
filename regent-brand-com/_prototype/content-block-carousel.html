@@ -21,7 +21,7 @@
       --ease:    cubic-bezier(0.4, 0, 0.2, 1);
       --dur:     0.7s;
       --col-w:   466.667px;
-      --gap:     20px;
+      --gap:     32px;
     }
 
     body {
@@ -83,7 +83,7 @@
       gap: 16px;       /* --spacing/desktop/small */
       width: 787px;
       height: 36px;
-      margin: 28px auto 0;
+      margin: 40px auto 0;
       box-sizing: content-box;
     }
 
@@ -220,7 +220,7 @@
          = (4 cols + 3 gaps − 1440) / 2
   */
   const colW = track.querySelector('.tile').offsetWidth;  // (100vw - 40px) / 3
-  const STEP = colW + 20;   // one column + gap
+  const STEP = colW + 32;   // one column + gap (32px)
   const MAX  = 5;           // 8 images − 3 visible = 5 navigable positions (0–5)
 
   let current = 0;  // start left-aligned: images 1–3 fill 1440px edge to edge
