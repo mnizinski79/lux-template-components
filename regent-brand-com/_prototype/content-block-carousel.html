@@ -232,14 +232,15 @@
 </section>
 
 <script>
-  const track       = document.getElementById('track');
+  const track        = document.getElementById('track');
   const progressFill = document.getElementById('progressFill');
   const progressBar  = progressFill.closest('[role="progressbar"]');
-  const REAL   = 4;    // number of real images
+  const TOTAL  = 4;    // total images
   const CLONES = 3;    // clones on each side
   const STEP   = 480;  // col-w (460) + gap (20)
+  const MAX    = 1;    // last valid position: TOTAL(4) - visible cols(3) = 1
 
-  let current = 0;  // index into real items (0–3)
+  let current = 0;  // 0 = showing images 1–3, 1 = showing images 2–4
   let busy    = false;
 
   /* translateX so that real item at `idx` is leftmost visible column */
@@ -247,9 +248,9 @@
     return -((idx + CLONES) * STEP);
   }
 
-  /* ── Update progress bar ── */
+  /* ── Update progress bar — 50% at position 0, 100% at position 1 ── */
   function updateProgress(idx) {
-    const pct = ((idx + 1) / REAL * 100).toFixed(2) + '%';
+    const pct = ((idx + 1) / (MAX + 1) * 100).toFixed(2) + '%';
     progressFill.style.width = pct;
     progressBar.setAttribute('aria-valuenow', idx + 1);
   }
@@ -267,9 +268,9 @@
     track.style.transform = `translateX(${offsetFor(idx)}px)`;
   }
 
-  /* ── Navigate forward — stops at last image ── */
+  /* ── Navigate forward — stops when 4th image is rightmost ── */
   function next() {
-    if (busy || current >= REAL - 1) return;
+    if (busy || current >= MAX) return;
     busy = true;
     current++;
     go(current);
@@ -277,7 +278,7 @@
     track.addEventListener('transitionend', () => { busy = false; }, { once: true });
   }
 
-  /* ── Navigate backward — stops at first image ── */
+  /* ── Navigate backward — stops when 1st image is leftmost ── */
   function prev() {
     if (busy || current <= 0) return;
     busy = true;
