@@ -219,15 +219,19 @@
     STEP = half of (total strip width − viewport width)
          = (4 cols + 3 gaps − 1440) / 2
   */
-  const colW = track.querySelector('.tile').offsetWidth;  // (100vw - 40px) / 3
-  const STEP = colW + 32;   // one column + gap (32px)
-  const MAX  = 5;           // 8 images − 3 visible = 5 navigable positions (0–5)
+  const colW  = track.querySelector('.tile').offsetWidth;
+  const viewW = track.parentElement.offsetWidth;           // actual viewport width
+  const GAP   = 32;
+  const STEP  = colW + GAP;
+  const totalW = colW * 8 + GAP * 7;                      // full 8-image track width
+  const MAX   = Math.max(0, Math.floor((totalW - viewW) / STEP)); // dynamic, no hardcoding
 
   let current = 0;  // start left-aligned: images 1–3 fill 1440px edge to edge
   let busy    = false;
 
-  /* translateX for each position index */
+  /* translateX for each position — last position snaps flush to right edge */
   function offsetFor(idx) {
+    if (idx >= MAX) return -(totalW - viewW);
     return -(idx * STEP);
   }
 
