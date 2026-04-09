@@ -165,6 +165,18 @@
         <div class="tile tile--tall">
           <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-2-svp-1340x1340.jpeg" alt="Cuisine">
         </div>
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-1-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-taste-studio-img-2-svp-1340x1340.jpeg" alt="Taste Studio">
+        </div>
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-spa-wellness-img-2-lvp-1180x664.jpeg" alt="Spa &amp; Wellness">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-2-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
 
       </div>
     </div>
@@ -209,7 +221,7 @@
   */
   const colW = track.querySelector('.tile').offsetWidth;  // (100vw - 40px) / 3
   const STEP = colW + 20;   // one column + gap
-  const MAX  = 1;           // 2 positions: 0 = images 1-3 full-width, 1 = images 2-4 full-width
+  const MAX  = 5;           // 8 images − 3 visible = 5 navigable positions (0–5)
 
   let current = 0;  // start left-aligned: images 1–3 fill 1440px edge to edge
   let busy    = false;
