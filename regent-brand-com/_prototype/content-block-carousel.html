@@ -20,7 +20,7 @@
       --inter:   'Inter', system-ui, sans-serif;
       --ease:    cubic-bezier(0.4, 0, 0.2, 1);
       --dur:     0.7s;
-      --col-w:   calc((100vw - 40px) / 3); /* 3 cols + 2 gaps fill full browser width */
+      --col-w:   466.667px;
       --gap:     20px;
     }
 
@@ -54,7 +54,7 @@
       display: flex;
       gap: var(--gap);
       align-items: flex-end;   /* bottom-align so short + tall sit on same baseline */
-      height: 582px;           /* tallest tile height */
+      height: 582.703px;       /* tallest tile height */
       transition: transform var(--dur) var(--ease);
       will-change: transform;
     }
@@ -66,8 +66,8 @@
       overflow: hidden;
     }
 
-    .tile--short { height: 480px; }
-    .tile--tall  { height: 582px; }
+    .tile--short { height: 480px; }     /* odd images  — 466.667 × 480 */
+    .tile--tall  { height: 582.703px; } /* even images — 466.667 × 582.703 */
 
     .tile img {
       width: 100%;
