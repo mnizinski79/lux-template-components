@@ -20,15 +20,13 @@
       --inter:   'Inter', system-ui, sans-serif;
       --ease:    cubic-bezier(0.4, 0, 0.2, 1);
       --dur:     0.7s;
-      --col-w:   calc((1440px - 40px) / 3); /* 466.67px — 3 cols fill exactly 1440px */
+      --col-w:   calc((100vw - 40px) / 3); /* 3 cols + 2 gaps fill full browser width */
       --gap:     20px;
     }
 
     body {
       background: #fff;
       color: var(--brand);
-      width: 1440px;
-      margin: 0 auto;
       overflow-x: hidden;
     }
 
@@ -209,8 +207,8 @@
     STEP = half of (total strip width − viewport width)
          = (4 cols + 3 gaps − 1440) / 2
   */
-  const colW = track.querySelector('.tile').offsetWidth;  // 466.67px
-  const STEP = colW + 20;   // one column + gap ≈ 486.67px
+  const colW = track.querySelector('.tile').offsetWidth;  // (100vw - 40px) / 3
+  const STEP = colW + 20;   // one column + gap
   const MAX  = 1;           // 2 positions: 0 = images 1-3 full-width, 1 = images 2-4 full-width
 
   let current = 0;  // start left-aligned: images 1–3 fill 1440px edge to edge
