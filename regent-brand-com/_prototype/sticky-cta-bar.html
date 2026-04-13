@@ -37,6 +37,12 @@
       background: #ffffff;
       border-top: 1px solid #d6d6d6;
       padding: 12px 24px 12px;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sticky-cta.is-visible {
+      transform: translateY(0);
     }
 
     .cta-btn {
@@ -175,6 +181,16 @@
   <div class="sticky-cta">
     <button class="cta-btn">Reserve</button>
   </div>
+
+
+<script>
+  const cta = document.querySelector('.sticky-cta');
+  const CTA_THRESHOLD = window.innerHeight * 0.8;
+
+  window.addEventListener('scroll', () => {
+    cta.classList.toggle('is-visible', window.scrollY > CTA_THRESHOLD);
+  }, { passive: true });
+</script>
 
 </body>
 </html>
