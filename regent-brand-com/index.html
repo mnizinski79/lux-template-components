@@ -214,6 +214,44 @@
       width: 28px;
     }
 
+    /* ─── Multi-platform links (review cards) ────────────────── */
+    .card__links {
+      display: flex;
+      gap: 24px;
+      margin-top: 8px;
+    }
+
+    .card__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      opacity: 0.6;
+      transition: opacity 0.2s var(--ease);
+    }
+
+    .card__link::after {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.25s var(--ease);
+    }
+
+    .card__link:hover {
+      opacity: 1;
+    }
+
+    .card__link:hover::after {
+      width: 24px;
+    }
+
     /* ─── Footer ─────────────────────────────────────────────── */
     .site-footer {
       padding: 32px 80px;
@@ -252,33 +290,33 @@
     <p class="section__label section__label--review">Ready for Review</p>
     <div class="grid">
 
-      <a class="card" href="_shells/ios-safari.html" target="_blank">
-        <span class="card__tag card__tag--review">iOS Safari · Destinations</span>
+      <div class="card">
+        <span class="card__tag card__tag--review">Mobile · Destinations</span>
         <span class="card__title">Destinations Snap Scroll</span>
-        <p class="card__desc">Full-screen snap-scroll destination cards in an iPhone 17 shell — Dynamic Island, frosted toolbar, realistic scroll behavior.</p>
-        <span class="card__cta">Open</span>
-      </a>
+        <p class="card__desc">Full-screen snap-scroll destination cards in a realistic device shell — one destination per screen with entrance animations.</p>
+        <div class="card__links">
+          <a class="card__link" href="_shells/ios-safari.html" target="_blank">iOS Safari</a>
+          <a class="card__link" href="_shells/android-chrome.html?url=../_prototype/destinations-cards-mobile.html" target="_blank">Android Chrome</a>
+        </div>
+      </div>
 
-      <a class="card" href="_shells/android-chrome.html?url=../_prototype/destinations-cards-mobile.html" target="_blank">
-        <span class="card__tag card__tag--review">Android Chrome · Destinations</span>
-        <span class="card__title">Destinations Snap Scroll</span>
-        <p class="card__desc">Full-screen snap-scroll destination cards in a Pixel 9 Pro shell — Chrome address bar, gesture nav, punch-hole camera.</p>
-        <span class="card__cta">Open</span>
-      </a>
-
-      <a class="card" href="_shells/android-chrome.html" target="_blank">
-        <span class="card__tag card__tag--review">Android Chrome · Navigation</span>
+      <div class="card">
+        <span class="card__tag card__tag--review">Mobile · Navigation</span>
         <span class="card__title">Mobile Header</span>
-        <p class="card__desc">Scroll-aware header in Android Chrome — transparent over hero, transitions to solid white with dark icons on scroll.</p>
-        <span class="card__cta">Open</span>
-      </a>
+        <p class="card__desc">Scroll-aware header — transparent over hero, transitions to solid white with dark icons on scroll. Figma spec matched.</p>
+        <div class="card__links">
+          <a class="card__link" href="_shells/android-chrome.html" target="_blank">Android Chrome</a>
+        </div>
+      </div>
 
-      <a class="card" href="_prototype/sticky-cta-bar.html" target="_blank">
+      <div class="card">
         <span class="card__tag card__tag--review">Mobile · Navigation</span>
         <span class="card__title">Sticky CTA Bar</span>
         <p class="card__desc">Persistent "Reserve" bar pinned to the bottom of the viewport. Full-width, 56px tall, IHG blue-700. Always-available booking action.</p>
-        <span class="card__cta">Open</span>
-      </a>
+        <div class="card__links">
+          <a class="card__link" href="_prototype/sticky-cta-bar.html" target="_blank">Open</a>
+        </div>
+      </div>
 
     </div>
   </section>
