@@ -527,7 +527,9 @@
       let prevScrollTop = 0;
 
       iframeDoc.addEventListener('scroll', (e) => {
-        const scrollTop = e.target.scrollTop ?? 0;
+        // e.target.scrollTop works for inner scroll containers (e.g. .scroll-root)
+        // For document-level scrolls, fall back to scrollingElement.scrollTop
+        const scrollTop = e.target.scrollTop || iframeDoc.scrollingElement?.scrollTop || 0;
         const scrollingDown = scrollTop > prevScrollTop;
 
         if (scrollingDown && !scrolled && scrollTop > 40) {
