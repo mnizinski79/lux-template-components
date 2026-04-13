@@ -581,17 +581,32 @@
   const scrollRoot = document.querySelector('.scroll-root');
   const sectionHdr = document.querySelector('.section-header');
 
+  let lastScrollTop = 0;
+  let pastIntro = false;
+
   const navObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const overWhite = entry.isIntersecting;
+      pastIntro = !overWhite;
       header.classList.toggle('is-solid',       overWhite);
       header.classList.toggle('is-transparent', !overWhite);
-      // CTA appears once user scrolls past the intro section
-      cta.classList.toggle('is-visible', !overWhite);
     });
   }, { root: scrollRoot, threshold: 0.1 });
 
   navObserver.observe(sectionHdr);
+
+  scrollRoot.addEventListener('scroll', () => {
+    const scrollTop     = scrollRoot.scrollTop;
+    const scrollingDown = scrollTop > lastScrollTop;
+
+    if (scrollingDown && pastIntro) {
+      cta.classList.add('is-visible');
+    } else if (!scrollingDown) {
+      cta.classList.remove('is-visible');
+    }
+
+    lastScrollTop = scrollTop;
+  }, { passive: true });
 
   document.querySelectorAll('.card__toggle').forEach(btn => {
     btn.addEventListener('click', () => {

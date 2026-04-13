@@ -289,15 +289,25 @@
 <script>
   const header    = document.getElementById('mobileHeader');
   const cta       = document.querySelector('.sticky-cta');
-  const THRESHOLD = 64;
+  const THRESHOLD     = 64;
   const CTA_THRESHOLD = window.innerHeight * 0.45;
+  let lastScrollY = 0;
 
   window.addEventListener('scroll', () => {
-    const solid = window.scrollY > THRESHOLD;
+    const scrollY      = window.scrollY;
+    const scrollingDown = scrollY > lastScrollY;
+    const solid = scrollY > THRESHOLD;
+
     header.classList.toggle('is-transparent', !solid);
     header.classList.toggle('is-solid',        solid);
 
-    cta.classList.toggle('is-visible', window.scrollY > CTA_THRESHOLD);
+    if (scrollingDown && scrollY > CTA_THRESHOLD) {
+      cta.classList.add('is-visible');
+    } else if (!scrollingDown) {
+      cta.classList.remove('is-visible');
+    }
+
+    lastScrollY = scrollY;
   }, { passive: true });
 </script>
 
