@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-shell-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sticky CTA Bar — Regent Brand.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Josefin+Sans:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; height: 100%; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #FAF8F5;
+      overflow-y: auto;
+      /* bottom padding clears the sticky bar */
+      padding-bottom: 96px;
+    }
+
+    :root {
+      --brand: #211551;
+      --teal:  #1f4456;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       COMPONENT: Sticky CTA Bar
+       ─────────────────────────────────────────────────────────
+       Fixed at the bottom. Copy from here ↓
+       ═══════════════════════════════════════════════════════════ */
+    .sticky-cta {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-top: 1px solid #d6d6d6;
+      padding: 12px 24px 20px;
+    }
+
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 56px;
+      background: var(--teal);
+      color: #ffffff;
+      font-family: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s ease;
+    }
+
+    .cta-btn:active { background: #163240; }
+    /* ─────────────────────────────────────────────────────────
+       COMPONENT end — copy to here ↑
+       ═══════════════════════════════════════════════════════════ */
+
+
+    /* ═══════════════════════════════════════════════════════════
+       DEMO SCAFFOLD — not part of the component
+       ═══════════════════════════════════════════════════════════ */
+    .demo-hero {
+      height: 72vh;
+      background: url('../_assets/_imgs/regent-bali-canggu-main-pool-golden-hour.avif') center/cover no-repeat;
+    }
+
+    .demo-content {
+      padding: 48px 28px 64px;
+    }
+
+    .demo-content__eyebrow {
+      font-family: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(33,21,81,0.45);
+      margin-bottom: 16px;
+    }
+
+    .demo-content h2 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 38px;
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--brand);
+      margin-bottom: 24px;
+    }
+
+    .demo-content h2 em { font-style: italic; }
+
+    .demo-content p {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: rgba(33,21,81,0.55);
+      margin-bottom: 20px;
+    }
+
+    .demo-divider {
+      height: 1px;
+      background: rgba(33,21,81,0.10);
+      margin: 40px 28px;
+    }
+
+    .demo-details {
+      padding: 0 28px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .demo-detail__label {
+      font-family: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(33,21,81,0.4);
+      margin-bottom: 4px;
+    }
+
+    .demo-detail__value {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Demo scaffold -->
+  <div class="demo-hero"></div>
+
+  <div class="demo-content">
+    <div class="demo-content__eyebrow">Bali, Indonesia · Asia Pacific</div>
+    <h2>Regent Bali<br><em>Canggu</em></h2>
+    <p>A sanctuary set between verdant rice terraces and the Indian Ocean, where the art of unhurried living finds its highest expression.</p>
+    <p>Each residence is conceived as a private world — open to sea breezes, alive with the scent of frangipani, and attended by a personal butler who anticipates before you ask.</p>
+  </div>
+
+  <div class="demo-divider"></div>
+
+  <div class="demo-details">
+    <div>
+      <div class="demo-detail__label">Rooms &amp; Suites</div>
+      <div class="demo-detail__value">72 Villas</div>
+    </div>
+    <div>
+      <div class="demo-detail__label">Location</div>
+      <div class="demo-detail__value">Canggu, Bali</div>
+    </div>
+    <div>
+      <div class="demo-detail__label">Best Time to Visit</div>
+      <div class="demo-detail__value">April – October</div>
+    </div>
+    <div>
+      <div class="demo-detail__label">Dining</div>
+      <div class="demo-detail__value">4 Restaurants &amp; Bars</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       COMPONENT: Sticky CTA Bar
+       ═══════════════════════════════════════════════════════════ -->
+  <div class="sticky-cta">
+    <button class="cta-btn">Reserve</button>
+  </div>
+
+</body>
+</html>
