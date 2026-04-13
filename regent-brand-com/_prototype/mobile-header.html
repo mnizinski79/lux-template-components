@@ -6,7 +6,7 @@
   <title>Mobile Header — Regent Brand.com</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
 
   <style>
     /* ─── Regent Design Tokens (from Figma) ──────────────────── */
@@ -41,6 +41,7 @@
       background: #FAF8F5;
       min-height: 250vh;
       overflow-y: auto;
+      padding-bottom: 80px;
     }
 
     /* ═══════════════════════════════════════════════════════════
@@ -159,6 +160,39 @@
       line-height: 1.8;
       color: rgba(33,21,81,0.55);
     }
+
+    /* ═══════════════════════════════════════════════════════════
+       COMPONENT: Sticky CTA Bar
+       ═══════════════════════════════════════════════════════════ */
+    .sticky-cta {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-top: 1px solid #d6d6d6;
+      padding: 12px 24px 12px;
+    }
+
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 56px;
+      background: #1f4456;
+      color: #ffffff;
+      font-family: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s ease;
+    }
+
+    .cta-btn:active { background: #163240; }
   </style>
 </head>
 <body>
@@ -234,7 +268,12 @@
   <div class="demo-hero"></div>
   <div class="demo-content">
     <h2>An Address Without<br><em>Compare</em></h2>
-    <p>Scroll down past the hero to see the header transition to its solid state.</p>
+    <p>Scroll down past the hero to see the header transition to its solid state. The Reserve bar is pinned to the bottom.</p>
+  </div>
+
+  <!-- Sticky CTA Bar -->
+  <div class="sticky-cta">
+    <button class="cta-btn">Reserve</button>
   </div>
 
 <script>
