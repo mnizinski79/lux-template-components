@@ -52,13 +52,17 @@
     }
 
     /* ─── Prototype iframe ────────────────────────────────────── */
+    /* Starts below iOS status bar (59px) so prototype content isn't
+       hidden behind the Dynamic Island / status bar chrome           */
     .proto-frame {
       position: absolute;
-      inset: 0;
+      top: 59px;
+      left: 0;
+      right: 0;
+      bottom: 0;
       width: 100%;
-      height: 100%;
+      height: calc(100% - 59px);
       border: none;
-      border-radius: 47px;   /* match device — prevents rectangular clip on mobile */
     }
 
     /* ─── Status bar ──────────────────────────────────────────── */
@@ -485,6 +489,27 @@
 
   document.getElementById('scrollPill').addEventListener('click', () => {
     if (scrolled) toggleScroll();
+  });
+
+  /* ── Auto dark/light — reads prototype's data-shell-mode hint,
+       falls back to body background luminance                  ── */
+  frame.addEventListener('load', () => {
+    if (!params.get('mode')) {
+      try {
+        const iframeDoc = frame.contentDocument || frame.contentWindow.document;
+        const hint = iframeDoc.documentElement.dataset.shellMode;
+        if (hint === 'dark' || hint === 'light') {
+          setMode(hint);
+        } else {
+          const bg  = getComputedStyle(iframeDoc.body).backgroundColor;
+          const rgb = bg.match(/\d+/g);
+          if (rgb && rgb.length >= 3) {
+            const lum = (0.299 * +rgb[0] + 0.587 * +rgb[1] + 0.114 * +rgb[2]) / 255;
+            setMode(lum > 0.5 ? 'light' : 'dark');
+          }
+        }
+      } catch(e) {}
+    }
   });
 
   /* ── Scroll detection — same-origin direct listener ─────── */
