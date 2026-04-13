@@ -50,13 +50,15 @@
     }
 
     /* ─── Prototype iframe ────────────────────────────────────── */
-    /* Starts below Android chrome: status bar (40px) + address bar (56px) = 96px */
+    /* top: 96px — status bar (40px) + address bar (56px)
+       bottom: 24px — gesture navigation bar                     */
     .proto-frame {
       position: absolute;
       top: 96px;
       left: 0;
+      bottom: 24px;
       width: 100%;
-      height: calc(100% - 96px);
+      height: calc(100% - 96px - 24px);
       border: none;
       display: block;
     }
