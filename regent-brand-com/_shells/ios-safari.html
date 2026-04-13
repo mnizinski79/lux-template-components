@@ -436,9 +436,12 @@
 <script>
   /* ── Params ───────────────────────────────────────────────── */
   const params   = new URLSearchParams(location.search);
-  const protoURL = params.get('url')    || '../_prototype/destinations-cards-mobile.html';
-  const initMode = params.get('mode')   || 'light';
-  const domain   = params.get('domain') || 'regent.com';
+  /* null  → no ?url param → load default prototype
+     ''    → ?url= passed explicitly → bare shell, no prototype */
+  const urlParam  = params.get('url');
+  const protoURL  = urlParam === null ? '../_prototype/destinations-cards-mobile.html' : urlParam;
+  const initMode  = params.get('mode')   || 'light';
+  const domain    = params.get('domain') || 'regent.com';
 
   const device     = document.getElementById('device');
   const frame      = document.getElementById('protoFrame');
@@ -454,7 +457,7 @@
   pillDomain.textContent = domain;
 
   /* ── Load prototype ───────────────────────────────────────── */
-  frame.src = protoURL + (protoURL.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+  if (protoURL) frame.src = protoURL + (protoURL.includes('?') ? '&' : '?') + '_cb=' + Date.now();
 
   /* ── Live clock ───────────────────────────────────────────── */
   function updateClock() {

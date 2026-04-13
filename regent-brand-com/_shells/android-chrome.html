@@ -331,7 +331,10 @@
 
 <script>
   const params   = new URLSearchParams(location.search);
-  const protoURL = params.get('url')    || '../_prototype/mobile-header.html';
+  /* null  → no ?url param → load default prototype
+     ''    → ?url= passed explicitly → bare shell, no prototype */
+  const urlParam  = params.get('url');
+  const protoURL  = urlParam === null ? '../_prototype/mobile-header.html' : urlParam;
   const initMode = params.get('mode')   || 'light';
   const domain   = params.get('domain') || 'regent.com';
 
@@ -342,7 +345,7 @@
 
   urlDomain.textContent = domain;
 
-  frame.src = protoURL + (protoURL.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+  if (protoURL) frame.src = protoURL + (protoURL.includes('?') ? '&' : '?') + '_cb=' + Date.now();
 
   function updateClock() {
     const now = new Date();
