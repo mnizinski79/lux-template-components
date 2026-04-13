@@ -52,16 +52,17 @@
     }
 
     /* ─── Prototype iframe ────────────────────────────────────── */
-    /* Starts below iOS status bar (59px) so prototype content isn't
-       hidden behind the Dynamic Island / status bar chrome           */
+    /* top: 59px  — clears Dynamic Island / status bar
+       bottom: 84px — clears toolbar (48px) + its 34px bottom offset
+       Prototype content lives in the safe area between both chrome bars */
     .proto-frame {
       position: absolute;
       top: 59px;
       left: 0;
       right: 0;
-      bottom: 0;
+      bottom: 84px;
       width: 100%;
-      height: calc(100% - 59px);
+      height: calc(100% - 59px - 84px);
       border: none;
     }
 
