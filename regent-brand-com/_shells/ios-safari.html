@@ -52,17 +52,14 @@
     }
 
     /* ─── Prototype iframe ────────────────────────────────────── */
-    /* top: 59px  — clears Dynamic Island / status bar
-       bottom: 84px — clears toolbar (48px) + its 34px bottom offset
-       Prototype content lives in the safe area between both chrome bars */
+    /* Full bleed — mirrors real iOS Safari behavior.
+       Status bar and toolbar are z-index overlays, same as the browser.
+       Prototypes use bottom: 34px for sticky elements (home indicator). */
     .proto-frame {
       position: absolute;
-      top: 59px;
-      left: 0;
-      right: 0;
-      bottom: 84px;
+      inset: 0;
       width: 100%;
-      height: calc(100% - 59px - 84px);
+      height: 100%;
       border: none;
     }
 
