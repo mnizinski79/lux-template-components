@@ -64,6 +64,7 @@
       width: 100%;
       height: calc(100% - 59px - 94px);
       border: none;
+      transition: bottom 0.3s ease, height 0.3s ease;
     }
 
     /* ─── Status bar ──────────────────────────────────────────── */
@@ -486,6 +487,11 @@
     scrolled = !scrolled;
     device.classList.toggle('scrolled', scrolled);
     btnScroll.classList.toggle('active', scrolled);
+    // Resize iframe bottom to match toolbar state so sticky elements
+    // in the prototype track the visible chrome edge
+    const bottom = scrolled ? '24px' : '94px';
+    frame.style.bottom = bottom;
+    frame.style.height = `calc(100% - 59px - ${bottom})`;
   }
 
   document.getElementById('scrollPill').addEventListener('click', () => {
