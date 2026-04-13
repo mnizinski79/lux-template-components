@@ -171,12 +171,16 @@
       background: #ffffff;
       border-top: 1px solid #d6d6d6;
       padding: 12px 24px 12px;
-      transform: translateY(100%);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.55s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sticky-cta.is-visible {
+      opacity: 1;
       transform: translateY(0);
+      pointer-events: auto;
     }
 
     .cta-btn {
@@ -187,11 +191,10 @@
       height: 56px;
       background: #1f4456;
       color: #ffffff;
-      font-family: 'Josefin Sans', 'Arial Narrow', sans-serif; /* Engravers Gothic FS — Josefin Sans as stand-in */
-      font-size: 15px;
-      font-weight: 500;
-      line-height: 22px;
-      letter-spacing: 1.5px;
+      font-family: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       border: none;
       cursor: pointer;
@@ -287,7 +290,7 @@
   const header    = document.getElementById('mobileHeader');
   const cta       = document.querySelector('.sticky-cta');
   const THRESHOLD = 64;
-  const CTA_THRESHOLD = window.innerHeight * 0.8;
+  const CTA_THRESHOLD = window.innerHeight * 0.45;
 
   window.addEventListener('scroll', () => {
     const solid = window.scrollY > THRESHOLD;

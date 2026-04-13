@@ -77,6 +77,49 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* ═══════════════════════════════════════════════════════════
+       COMPONENT: Sticky CTA Bar
+       ═══════════════════════════════════════════════════════════ */
+    .sticky-cta {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-top: 1px solid #d6d6d6;
+      padding: 12px 24px 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.55s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sticky-cta.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 56px;
+      background: #1f4456;
+      color: #ffffff;
+      font-family: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s ease;
+    }
+
+    .cta-btn:active { background: #163240; }
+
     .scroll-root {
       width: 100%;
       height: 100%;
@@ -444,6 +487,11 @@
     </div>
   </header>
 
+  <!-- Sticky CTA Bar -->
+  <div class="sticky-cta" id="stickyCta">
+    <button class="cta-btn">Reserve</button>
+  </div>
+
 <div class="scroll-root">
 
   <div class="section-header">
@@ -529,6 +577,7 @@
 <script>
   /* ── Nav: solid over white section-header, transparent over image cards ── */
   const header     = document.getElementById('mobileHeader');
+  const cta        = document.getElementById('stickyCta');
   const scrollRoot = document.querySelector('.scroll-root');
   const sectionHdr = document.querySelector('.section-header');
 
@@ -537,6 +586,8 @@
       const overWhite = entry.isIntersecting;
       header.classList.toggle('is-solid',       overWhite);
       header.classList.toggle('is-transparent', !overWhite);
+      // CTA appears once user scrolls past the intro section
+      cta.classList.toggle('is-visible', !overWhite);
     });
   }, { root: scrollRoot, threshold: 0.1 });
 
