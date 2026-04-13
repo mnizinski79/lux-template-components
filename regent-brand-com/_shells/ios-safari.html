@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iOS Safari Shell</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #1c1c1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Device frame ────────────────────────────────────────── */
+    .device {
+      position: relative;
+      width: 393px;
+      height: 852px;
+      border-radius: 47px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.15),
+        0 40px 120px rgba(0,0,0,0.8);
+    }
+
+    /* CSS variables for icon fill/stroke color — inherited by all inline SVGs */
+    .device[data-mode="light"] {
+      background: #fff;
+      --fill-0: #1b1b1b;
+      --stroke-0: #1b1b1b;
+      --icon-color: #1b1b1b;
+      --icon-muted: rgba(0,0,0,0.4);
+      --text-primary: #1b1b1b;
+      --text-muted: rgba(0,0,0,0.45);
+    }
+    .device[data-mode="dark"] {
+      background: #000;
+      --fill-0: #ffffff;
+      --stroke-0: #ffffff;
+      --icon-color: #ffffff;
+      --icon-muted: rgba(255,255,255,0.4);
+      --text-primary: #ffffff;
+      --text-muted: rgba(255,255,255,0.5);
+    }
+
+    /* ─── Prototype iframe ────────────────────────────────────── */
+    .proto-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 47px;   /* match device — prevents rectangular clip on mobile */
+    }
+
+    /* ─── Status bar ──────────────────────────────────────────── */
+    .status-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 59px;
+      z-index: 20;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      padding-top: 13px;
+    }
+
+    /* Blur layer — masked so it fades out at the bottom */
+    .status-bar__blur {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+    }
+
+    .status-bar__time {
+      position: absolute;
+      left: 0;
+      width: 135px;           /* left wing: from edge to DI start */
+      text-align: center;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .status-bar__icons {
+      position: absolute;
+      right: 35px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 7.33px;
+    }
+
+    /* Battery wrapper — fill bar + shell overlay */
+    .battery-wrap {
+      position: relative;
+      width: 27.333px;
+      height: 13.667px;
+      flex-shrink: 0;
+    }
+    .battery-wrap__fill {
+      position: absolute;
+      left: 2px;
+      top: 50%; transform: translateY(-50%);
+      width: 21px;
+      height: 9px;
+      border-radius: 2.667px;
+      background: var(--fill-0, #1b1b1b);
+    }
+    .battery-wrap svg {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* ─── Dynamic Island ──────────────────────────────────────── */
+    .dynamic-island {
+      position: absolute;
+      top: 13px;
+      left: 50%; transform: translateX(-50%);
+      width: 122px;
+      height: 36px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    /* ─── Bottom blur backdrop ────────────────────────────────── */
+    .bottom-blur {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 110px;
+      z-index: 19;
+      pointer-events: none;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      -webkit-mask-image: linear-gradient(to top, black 30%, transparent 100%);
+      mask-image: linear-gradient(to top, black 30%, transparent 100%);
+    }
+
+    /* ─── Toolbar — three separate floating pills ─────────────── */
+    .toolbar {
+      position: absolute;
+      bottom: 34px;
+      left: 50%; transform: translateX(-50%) scale(1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 20;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
+      transform-origin: center bottom;
+    }
+
+    .tb-pill {
+      height: 48px;
+      border-radius: 24px;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      border: 1px solid;
+    }
+
+    .device[data-mode="light"] .tb-pill {
+      background: rgba(250,250,250,0.7);
+      border-color: #fff;
+      box-shadow: 0 2px 40px rgba(0,0,0,0.10);
+    }
+    .device[data-mode="dark"] .tb-pill {
+      background: rgba(21,21,21,0.8);
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 2px 40px rgba(0,0,0,0.10);
+    }
+
+    /* Back button */
+    .tb-back { width: 48px; }
+    .tb-back svg { width: 22px; height: 22px; color: var(--icon-color); }
+
+    /* URL bar */
+    .tb-url {
+      width: 218px;
+      height: 48px;
+      position: relative;
+      box-shadow: 0 2px 42px rgba(0,0,0,0.10) !important;
+    }
+
+    .tb-url__icon-left {
+      position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      width: 15.2px; height: 18.2px;
+    }
+    .tb-url__icon-left svg { width: 100%; height: 100%; }
+
+    .tb-url__domain {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      color: var(--text-primary);
+    }
+
+    .tb-url__icon-right {
+      position: absolute;
+      right: 12.24px; top: 50%; transform: translateY(-50%);
+      width: 14.957px; height: 18.182px;
+    }
+    .tb-url__icon-right svg { width: 100%; height: 100%; }
+
+    /* More button */
+    .tb-more { width: 48px; }
+    .tb-more__dots {
+      display: flex; gap: 3.5px; align-items: center;
+    }
+    .tb-more__dots span {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--icon-color);
+    }
+
+    /* ─── Scrolled pill ───────────────────────────────────────── */
+    .scroll-pill {
+      position: absolute;
+      bottom: 34px;
+      left: 50%; transform: translateX(-50%) scale(0.82);
+      height: 32px;
+      padding: 9px 18px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      cursor: pointer;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border: 1px solid;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
+      box-shadow: 0 2px 40px rgba(0,0,0,0.10);
+      transform-origin: center bottom;
+    }
+
+    .device[data-mode="light"] .scroll-pill {
+      background: rgba(250,250,250,0.7);
+      border-color: #fff;
+    }
+    .device[data-mode="dark"] .scroll-pill {
+      background: rgba(21,21,21,0.8);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .scroll-pill__text {
+      font-size: 12px;
+      font-weight: 510;
+      letter-spacing: 0.12px;
+      color: var(--text-primary);
+    }
+
+    /* ─── Scrolled state ──────────────────────────────────────── */
+    .device.scrolled .toolbar     { opacity: 0; pointer-events: none; transform: translateX(-50%) scale(0.82); }
+    .device.scrolled .scroll-pill { opacity: 1; pointer-events: auto; transform: translateX(-50%) scale(1); }
+
+    /* ─── Home indicator ──────────────────────────────────────── */
+    .home-bar {
+      position: absolute;
+      bottom: 8px;
+      left: 50%; transform: translateX(-50%);
+      width: 134px; height: 5px;
+      border-radius: 3px;
+      z-index: 25;
+      pointer-events: none;
+    }
+    .device[data-mode="light"] .home-bar { background: rgba(0,0,0,0.22); }
+    .device[data-mode="dark"]  .home-bar { background: rgba(255,255,255,0.28); }
+
+    /* ─── External controls ───────────────────────────────────── */
+    .controls {
+      position: fixed;
+      bottom: 24px;
+      left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px;
+      z-index: 200;
+    }
+
+    .ctrl-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      letter-spacing: 0.03em;
+      transition: background 0.15s;
+    }
+    .ctrl-btn:hover  { background: rgba(255,255,255,0.18); }
+    .ctrl-btn.active { background: rgba(255,255,255,0.28); }
+  </style>
+</head>
+<body>
+
+  <div class="device" id="device" data-mode="light">
+
+    <!-- Prototype iframe -->
+    <iframe class="proto-frame" id="protoFrame" src="about:blank" allow="autoplay"></iframe>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <div class="status-bar__blur" aria-hidden="true"></div>
+
+        <div class="status-bar__time" id="clock">9:41</div>
+
+        <div class="status-bar__icons">
+
+          <!-- Cellular (19.333×12.333px) — Figma asset -->
+          <svg width="19.333" height="12.333" viewBox="0 0 19.3333 12.3333" fill="none" preserveAspectRatio="none" overflow="visible" style="display:block;" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <path d="M17 0C16.4477 0 16 0.447715 16 0.999999V11.3333C16 11.8856 16.4477 12.3333 17 12.3333H18.3333C18.8856 12.3333 19.3333 11.8856 19.3333 11.3333V1C19.3333 0.447715 18.8856 0 18.3333 0H17Z" fill="var(--fill-0, black)"/>
+              <path d="M10.6667 3.66667C10.6667 3.11438 11.1144 2.66667 11.6667 2.66667H13C13.5523 2.66667 14 3.11438 14 3.66667V11.3333C14 11.8856 13.5523 12.3333 13 12.3333H11.6667C11.1144 12.3333 10.6667 11.8856 10.6667 11.3333V3.66667Z" fill="var(--fill-0, black)"/>
+              <path d="M6.33333 5.33333C5.78105 5.33333 5.33333 5.78105 5.33333 6.33333V11.3333C5.33333 11.8856 5.78105 12.3333 6.33333 12.3333H7.66667C8.21895 12.3333 8.66667 11.8856 8.66667 11.3333V6.33333C8.66667 5.78105 8.21895 5.33333 7.66667 5.33333H6.33333Z" fill="var(--fill-0, black)"/>
+              <path d="M1 7.66667C0.447715 7.66667 0 8.11438 0 8.66667V11.3333C0 11.8856 0.447715 12.3333 0.999999 12.3333H2.33333C2.88562 12.3333 3.33333 11.8856 3.33333 11.3333V8.66667C3.33333 8.11438 2.88562 7.66667 2.33333 7.66667H1Z" fill="var(--fill-0, black)"/>
+            </g>
+          </svg>
+
+          <!-- WiFi (17×12.333px) — Figma asset -->
+          <svg width="17" height="12.333" viewBox="0 0 17 12.3333" fill="none" preserveAspectRatio="none" overflow="visible" style="display:block;" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.50046 2.56141C10.967 2.56152 13.3393 3.51917 15.1269 5.23644C15.2615 5.36901 15.4766 5.36734 15.6092 5.23269L16.896 3.92048C16.9631 3.85219 17.0005 3.75967 17 3.66342C16.9994 3.56716 16.9609 3.4751 16.893 3.4076C12.2011 -1.13587 4.79908 -1.13587 0.107163 3.4076C0.0391973 3.47505 0.000634479 3.56708 7.75932e-06 3.66334C-0.00061896 3.7596 0.0367421 3.85214 0.103824 3.92048L1.39096 5.23269C1.52346 5.36754 1.73878 5.36922 1.87331 5.23644C3.66116 3.51906 6.03367 2.56141 8.50046 2.56141ZM8.50049 6.8305C9.8557 6.83041 11.1626 7.3394 12.1671 8.25855C12.303 8.389 12.517 8.38617 12.6495 8.25217L13.9347 6.93997C14.0024 6.87114 14.04 6.77777 14.039 6.68074C14.038 6.58372 13.9986 6.49114 13.9296 6.42371C10.8705 3.54843 6.1331 3.54843 3.07403 6.42371C3.00493 6.49114 2.9655 6.58376 2.9646 6.68082C2.96369 6.77788 3.00138 6.87124 3.0692 6.93997L4.35412 8.25217C4.48656 8.38617 4.7006 8.389 4.83647 8.25855C5.84036 7.34 7.14617 6.83106 8.50049 6.8305ZM11.0751 9.70276C11.0771 9.80006 11.0392 9.89387 10.9705 9.96203L8.74721 12.2291C8.68203 12.2958 8.59318 12.3333 8.50047 12.3333C8.40775 12.3333 8.3189 12.2958 8.25373 12.2291L6.03008 9.96203C5.96139 9.89382 5.9236 9.79998 5.92564 9.70268C5.92767 9.60538 5.96935 9.51325 6.04084 9.44803C7.46071 8.23456 9.54023 8.23456 10.9601 9.44803C11.0315 9.5133 11.0731 9.60547 11.0751 9.70276Z" fill="var(--fill-0, black)"/>
+          </svg>
+
+          <!-- Battery (27.333×13.667px) — fill bar + shell SVG -->
+          <div class="battery-wrap">
+            <div class="battery-wrap__fill"></div>
+            <svg viewBox="0 0 27.3333 13" fill="none" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+              <g opacity="0.4">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M18.5188 0H6.48123C5.56534 0 4.85217 0 4.27734 0.03922C3.69406 0.0790172 3.21655 0.160859 2.77792 0.342542C1.6753 0.799265 0.799265 1.6753 0.342542 2.77792C0.160859 3.21655 0.0790172 3.69406 0.03922 4.27734C0 4.85217 0 5.56511 0 6.481V6.51877C0 7.43467 0 8.14783 0.03922 8.72266C0.0790172 9.30594 0.160859 9.78345 0.342542 10.2221C0.799265 11.3247 1.6753 12.2007 2.77792 12.6575C3.21655 12.8391 3.69406 12.921 4.27734 12.9608C4.85221 13 5.56522 13 6.48122 13H18.5188C19.4348 13 20.1478 13 20.7227 12.9608C21.3059 12.921 21.7835 12.8391 22.2221 12.6575C23.3247 12.2007 24.2007 11.3247 24.6575 10.2221C24.8391 9.78345 24.921 9.30594 24.9608 8.72266C25 8.14779 25 7.43479 25 6.51881V6.48123C25 5.56524 25 4.85221 24.9608 4.27734C24.921 3.69406 24.8391 3.21655 24.6575 2.77792C24.2007 1.6753 23.3247 0.799265 22.2221 0.342542C21.7835 0.160859 21.3059 0.0790172 20.7227 0.03922C20.1478 0 19.4347 0 18.5188 0ZM3.16061 1.26642C3.45707 1.14362 3.81304 1.07322 4.34541 1.0369C4.88227 1.00027 5.56128 1 6.5 1H18.5C19.4387 1 20.1177 1.00027 20.6546 1.0369C21.187 1.07322 21.5429 1.14362 21.8394 1.26642C22.697 1.62165 23.3783 2.30301 23.7336 3.16061C23.8564 3.45707 23.9268 3.81304 23.9631 4.34541C23.9997 4.88227 24 5.56128 24 6.5C24 7.43872 23.9997 8.11773 23.9631 8.65459C23.9268 9.18696 23.8564 9.54293 23.7336 9.83939C23.3783 10.697 22.697 11.3783 21.8394 11.7336C21.5429 11.8564 21.187 11.9268 20.6546 11.9631C20.1177 11.9997 19.4387 12 18.5 12H6.5C5.56128 12 4.88227 11.9997 4.34541 11.9631C3.81304 11.9268 3.45707 11.8564 3.16061 11.7336C2.30301 11.3783 1.62165 10.697 1.26642 9.83939C1.14362 9.54293 1.07322 9.18696 1.0369 8.65459C1.00027 8.11773 1 7.43872 1 6.5C1 5.56128 1.00027 4.88227 1.0369 4.34541C1.07322 3.81304 1.14362 3.45707 1.26642 3.16061C1.62165 2.30301 2.30301 1.62165 3.16061 1.26642Z" fill="var(--fill-0, black)"/>
+                <path d="M26 4.49927C26.783 4.82579 27.3333 5.59856 27.3333 6.49988C27.3333 7.4012 26.783 8.17397 26 8.50049V4.49927Z" fill="var(--fill-0, black)"/>
+              </g>
+            </svg>
+          </div>
+
+        </div>
+
+    </div>
+
+    <!-- Dynamic Island -->
+    <div class="dynamic-island" aria-hidden="true"></div>
+
+    <!-- Bottom blur backdrop -->
+    <div class="bottom-blur" aria-hidden="true"></div>
+
+    <!-- Bottom toolbar: three separate frosted pills -->
+    <div class="toolbar" id="toolbar">
+
+      <!-- Back button — SVG chevron (Figma uses SF Compact PUA, not cross-platform) -->
+      <div class="tb-pill tb-back" role="button" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </div>
+
+      <!-- URL bar -->
+      <div class="tb-pill tb-url" role="button" id="urlBar" aria-label="Address bar">
+
+        <!-- Site settings icon — Figma asset (15.2×18.2px) -->
+        <div class="tb-url__icon-left" aria-hidden="true">
+          <svg viewBox="0 0 15.2 18.2" fill="none" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M4.01957 0.1H11.1804C11.7146 0.0999898 12.1604 0.099981 12.5247 0.12974C12.9046 0.160778 13.2612 0.227889 13.5985 0.399733C14.1159 0.663385 14.5366 1.08408 14.8003 1.60153C14.9721 1.93879 15.0392 2.29545 15.0703 2.67533C15.1 3.03956 15.1 3.4854 15.1 4.01955V5.68045C15.1 6.2146 15.1 6.66044 15.0703 7.02467C15.0392 7.40456 14.9721 7.76121 14.8003 8.09848C14.5366 8.61592 14.1159 9.03662 13.5985 9.30027C13.2612 9.47211 12.9046 9.53922 12.5247 9.57026C12.1604 9.60002 11.7146 9.60001 11.1805 9.6H4.01955C3.4854 9.60001 3.03956 9.60002 2.67533 9.57026C2.29545 9.53922 1.93879 9.47211 1.60153 9.30027C1.08408 9.03662 0.663385 8.61592 0.399733 8.09847C0.227889 7.76121 0.160778 7.40456 0.12974 7.02467C0.099981 6.66044 0.0999898 6.21459 0.1 5.68044V4.01957C0.0999898 3.48541 0.099981 3.03956 0.12974 2.67533C0.160778 2.29545 0.227889 1.93879 0.399733 1.60153C0.663385 1.08408 1.08408 0.663385 1.60153 0.399733C1.93879 0.227889 2.29545 0.160778 2.67533 0.12974C3.03956 0.099981 3.48541 0.0999898 4.01957 0.1ZM2.79748 1.62476C2.51036 1.64822 2.37307 1.6901 2.28251 1.73624C2.04731 1.85608 1.85608 2.04731 1.73624 2.28251C1.6901 2.37307 1.64822 2.51036 1.62476 2.79748C1.60058 3.09336 1.6 3.47757 1.6 4.05V5.65C1.6 6.22243 1.60058 6.60664 1.62476 6.90252C1.64822 7.18965 1.6901 7.32693 1.73624 7.41749C1.85608 7.65269 2.04731 7.84392 2.28251 7.96376C2.37307 8.0099 2.51036 8.05178 2.79748 8.07524C3.09336 8.09942 3.47757 8.1 4.05 8.1H11.15C11.7224 8.1 12.1066 8.09942 12.4025 8.07524C12.6896 8.05178 12.8269 8.0099 12.9175 7.96376C13.1527 7.84392 13.3439 7.65269 13.4638 7.41749C13.5099 7.32693 13.5518 7.18965 13.5752 6.90252C13.5994 6.60664 13.6 6.22243 13.6 5.65V4.05C13.6 3.47757 13.5994 3.09336 13.5752 2.79748C13.5518 2.51036 13.5099 2.37307 13.4638 2.28251C13.3439 2.04731 13.1527 1.85608 12.9175 1.73624C12.8269 1.6901 12.6896 1.64822 12.4025 1.62476C12.1066 1.60058 11.7224 1.6 11.15 1.6H4.05C3.47757 1.6 3.09336 1.60058 2.79748 1.62476ZM0.100001 13.35C0.100001 12.9358 0.435787 12.6 0.850001 12.6H14.35C14.7642 12.6 15.1 12.9358 15.1 13.35C15.1 13.7642 14.7642 14.1 14.35 14.1H0.850001C0.435787 14.1 0.100001 13.7642 0.100001 13.35ZM0.100001 17.35C0.100001 16.9358 0.435787 16.6 0.850001 16.6H10.35C10.7642 16.6 11.1 16.9358 11.1 17.35C11.1 17.7642 10.7642 18.1 10.35 18.1H0.850001C0.435787 18.1 0.100001 17.7642 0.100001 17.35Z" fill="var(--fill-0, #1B1B1B)" stroke="var(--stroke-0, #1B1B1B)" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Domain -->
+        <span class="tb-url__domain" id="urlDomain">regent.com</span>
+
+        <!-- Reload icon — Figma asset (14.957×18.182px) -->
+        <div class="tb-url__icon-right" aria-hidden="true">
+          <svg viewBox="0 0 14.9568 18.1824" fill="none" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.19277 8.51113C7.4125 8.51113 7.57949 8.44082 7.71133 8.30898L11.1303 4.86367C11.2885 4.70547 11.3588 4.52969 11.3588 4.32754C11.3588 4.13418 11.2797 3.94082 11.1303 3.79141L7.71133 0.319727C7.57949 0.179102 7.4125 0.1 7.19277 0.1C6.79727 0.1 6.48965 0.425195 6.48965 0.838281C6.48965 1.02285 6.55996 1.19863 6.68301 1.34805L8.82754 3.43984C8.3793 3.36074 7.92227 3.32559 7.47402 3.32559C3.37832 3.32559 0.1 6.59512 0.1 10.6908C0.1 14.7865 3.38711 18.0824 7.48281 18.0824C11.5697 18.0824 14.8568 14.7865 14.8568 10.6908C14.8568 10.2602 14.5492 9.94375 14.1098 9.94375C13.6879 9.94375 13.4066 10.2602 13.4066 10.6908C13.4066 13.9867 10.7699 16.6322 7.48281 16.6322C4.18691 16.6322 1.5502 13.9867 1.5502 10.6908C1.5502 7.38613 4.17813 4.7582 7.47402 4.7582C8.08047 4.7582 8.62539 4.80215 9.10879 4.89883L6.6918 7.29824C6.55996 7.43887 6.48965 7.60586 6.48965 7.79043C6.48965 8.20352 6.79727 8.51113 7.19277 8.51113Z" fill="var(--fill-0, #1B1B1B)" stroke="var(--stroke-0, #1B1B1B)" stroke-width="0.2"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- More button — three dots (Figma uses SF Compact PUA, not cross-platform) -->
+      <div class="tb-pill tb-more" role="button" aria-label="More">
+        <div class="tb-more__dots" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Scrolled pill -->
+    <div class="scroll-pill" id="scrollPill" role="button" aria-label="URL bar">
+      <span class="scroll-pill__text" id="pillDomain">regent.com</span>
+    </div>
+
+    <!-- Home indicator -->
+    <div class="home-bar" aria-hidden="true"></div>
+
+  </div>
+
+  <!-- Controls (outside device) -->
+  <div class="controls">
+    <button class="ctrl-btn active" id="btnLight" onclick="setMode('light')">Light</button>
+    <button class="ctrl-btn" id="btnDark"  onclick="setMode('dark')">Dark</button>
+    <button class="ctrl-btn" id="btnScroll" onclick="toggleScroll()">Scrolled</button>
+  </div>
+
+<script>
+  /* ── Params ───────────────────────────────────────────────── */
+  const params   = new URLSearchParams(location.search);
+  const protoURL = params.get('url')    || '';
+  const initMode = params.get('mode')   || 'light';
+  const domain   = params.get('domain') || 'regent.com';
+
+  const device     = document.getElementById('device');
+  const frame      = document.getElementById('protoFrame');
+  const clock      = document.getElementById('clock');
+  const urlDomain  = document.getElementById('urlDomain');
+  const pillDomain = document.getElementById('pillDomain');
+  const btnLight   = document.getElementById('btnLight');
+  const btnDark    = document.getElementById('btnDark');
+  const btnScroll  = document.getElementById('btnScroll');
+
+  /* ── Domain ───────────────────────────────────────────────── */
+  urlDomain.textContent  = domain;
+  pillDomain.textContent = domain;
+
+  /* ── Load prototype ───────────────────────────────────────── */
+  if (protoURL) frame.src = protoURL + (protoURL.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+
+  /* ── Live clock ───────────────────────────────────────────── */
+  function updateClock() {
+    const now = new Date();
+    clock.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  }
+  updateClock();
+  setInterval(updateClock, 15000);
+
+  /* ── Mode ─────────────────────────────────────────────────── */
+  function setMode(mode) {
+    device.dataset.mode = mode;
+    btnLight.classList.toggle('active', mode === 'light');
+    btnDark.classList.toggle('active',  mode === 'dark');
+  }
+  setMode(initMode);
+
+  /* ── Scroll state ─────────────────────────────────────────── */
+  let scrolled = false;
+  function toggleScroll() {
+    scrolled = !scrolled;
+    device.classList.toggle('scrolled', scrolled);
+    btnScroll.classList.toggle('active', scrolled);
+  }
+
+  document.getElementById('scrollPill').addEventListener('click', () => {
+    if (scrolled) toggleScroll();
+  });
+
+  /* ── Scroll detection — same-origin direct listener ─────── */
+  frame.addEventListener('load', () => {
+    try {
+      const iframeDoc = frame.contentDocument || frame.contentWindow.document;
+      // Listen on the document in capture phase to catch scroll on any element
+      let prevScrollTop = 0;
+
+      iframeDoc.addEventListener('scroll', (e) => {
+        const scrollTop = e.target.scrollTop ?? 0;
+        const scrollingDown = scrollTop > prevScrollTop;
+
+        if (scrollingDown && !scrolled && scrollTop > 40) {
+          // Scrolling down past threshold → collapse to pill
+          toggleScroll();
+        } else if (!scrollingDown && scrolled) {
+          // Any upward scroll → restore toolbar
+          toggleScroll();
+        }
+
+        prevScrollTop = scrollTop;
+      }, { capture: true, passive: true });
+    } catch (e) {
+      // Cross-origin fallback — listen for postMessage
+    }
+  });
+
+  /* ── postMessage fallback (non-same-origin prototypes) ───── */
+  window.addEventListener('message', e => {
+    if (e.data?.type === 'scroll') {
+      if (e.data.scrolled !== scrolled) toggleScroll();
+    }
+  });
+</script>
+
+</body>
+</html>
