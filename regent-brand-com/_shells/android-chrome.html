@@ -50,12 +50,14 @@
     }
 
     /* ─── Prototype iframe ────────────────────────────────────── */
-    /* Fills the full device — chrome overlays on top (same as iOS) */
+    /* Starts below Android chrome (status bar 40px + address bar 56px = 96px) */
     .proto-frame {
       position: absolute;
-      inset: 0;
+      top: 96px;
+      left: 0;
+      right: 0;
+      bottom: 0;
       width: 100%;
-      height: 100%;
       border: none;
     }
 
