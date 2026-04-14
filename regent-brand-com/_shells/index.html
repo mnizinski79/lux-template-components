@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent Brand.com — Device Shells</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Thin.otf') format('opentype');
+      font-weight: 100;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 300;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Medium.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:     #211551;
+      --teal:      #1F4456;
+      --canela:    'Canela', Georgia, serif;
+      --engravers: 'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: var(--inter);
+      background: #FAF8F5;
+      color: var(--brand);
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────── */
+    .site-header {
+      border-bottom: 1px solid rgba(33,21,81,0.1);
+      padding: 40px 80px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .site-header__wordmark {
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--brand);
+    }
+
+    .site-header__nav {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .site-header__link {
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(33,21,81,0.45);
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .site-header__link:hover { color: var(--brand); }
+
+    .site-header__meta {
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(33,21,81,0.45);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── Hero ───────────────────────────────────────────────── */
+    .hero {
+      padding: 80px 80px 64px;
+      max-width: 720px;
+    }
+
+    .hero__eyebrow {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(33,21,81,0.45);
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-family: var(--canela);
+      font-size: 56px;
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--brand);
+      margin-bottom: 24px;
+    }
+
+    .hero__title em { font-style: italic; }
+
+    .hero__desc {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(33,21,81,0.6);
+      max-width: 480px;
+    }
+
+    /* ─── Device selector ─────────────────────────────────────── */
+    .device-bar {
+      padding: 0 80px 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .device-bar__label {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(33,21,81,0.4);
+      margin-right: 4px;
+    }
+
+    .device-bar__divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(33,21,81,0.15);
+      margin: 0 4px;
+    }
+
+    .device-pill {
+      height: 30px;
+      padding: 0 14px;
+      border-radius: 4px;
+      background: transparent;
+      border: 1px solid rgba(33,21,81,0.15);
+      color: rgba(33,21,81,0.4);
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .device-pill:hover  { background: rgba(33,21,81,0.04); color: rgba(33,21,81,0.75); border-color: rgba(33,21,81,0.25); }
+    .device-pill.active { background: var(--brand); color: #FAF8F5; border-color: var(--brand); }
+
+    /* ─── Section ────────────────────────────────────────────── */
+    .section {
+      padding: 0 80px 80px;
+    }
+
+    .section__label {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(33,21,81,0.4);
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(33,21,81,0.1);
+      margin-bottom: 0;
+    }
+
+    /* ─── Grid ───────────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-left: 1px solid rgba(33,21,81,0.1);
+    }
+
+    /* ─── Card ───────────────────────────────────────────────── */
+    .card {
+      border-right: 1px solid rgba(33,21,81,0.1);
+      border-bottom: 1px solid rgba(33,21,81,0.1);
+      padding: 36px 32px 32px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: background 0.3s var(--ease);
+      cursor: pointer;
+    }
+
+    .card:hover { background: rgba(33,21,81,0.03); }
+
+    .card__tag {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(33,21,81,0.4);
+    }
+
+    .card__tag--ios     { color: var(--teal); opacity: 0.85; }
+    .card__tag--android { color: #3d6b3f;    opacity: 0.85; }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 24px;
+      font-weight: 300;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      color: var(--brand);
+    }
+
+    .card__device {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(33,21,81,0.35);
+      letter-spacing: 0.02em;
+    }
+
+    .card__desc {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(33,21,81,0.55);
+      flex: 1;
+    }
+
+    .card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-top: 8px;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+
+    .card__cta::after {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.25s var(--ease);
+    }
+
+    .card:hover .card__cta { opacity: 1; transform: translateX(0); }
+    .card:hover .card__cta::after { width: 28px; }
+
+    /* ─── Footer ─────────────────────────────────────────────── */
+    .site-footer {
+      padding: 32px 80px;
+      border-top: 1px solid rgba(33,21,81,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-footer__note {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(33,21,81,0.35);
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <span class="site-header__wordmark">Regent Hotels &amp; Resorts</span>
+    <nav class="site-header__nav">
+      <a class="site-header__link" href="../index.html">← Prototype Index</a>
+      <span class="site-header__meta">Device Shells — Sprint 2.1</span>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <p class="hero__eyebrow">Wilson Design System · IHG CXD</p>
+    <h1 class="hero__title">Device<br><em>Shells</em></h1>
+    <p class="hero__desc">Preview prototypes as a user would see them on device — iOS Safari and Android Chrome shells with realistic status bars, address bars, and navigation. Select a device then open any prototype.</p>
+  </div>
+
+  <!-- Device selector -->
+  <div class="device-bar">
+    <span class="device-bar__label">Device</span>
+    <button class="device-pill active" data-id="iphone-15-pro">iPhone 15 Pro</button>
+    <button class="device-pill" data-id="iphone-15-pro-max">iPhone 15 Pro Max</button>
+    <button class="device-pill" data-id="iphone-se">iPhone SE</button>
+    <div class="device-bar__divider"></div>
+    <button class="device-pill" data-id="pixel-9-pro">Pixel 9 Pro</button>
+    <button class="device-pill" data-id="galaxy-s24">Galaxy S24</button>
+  </div>
+
+  <!-- Prototype grid (populated by JS) -->
+  <div id="sections"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <span class="site-footer__note">IHG · Wilson Design System · Regent Brand.com · 2026</span>
+    <span class="site-footer__note">Francisco Vivar</span>
+  </footer>
+
+<script>
+  const DEVICES = {
+    'iphone-15-pro':     { shell: 'ios-safari.html',     w: 393,  h: 852,  label: 'iPhone 15 Pro',     tag: 'iOS Safari',     tagClass: 'card__tag--ios' },
+    'iphone-15-pro-max': { shell: 'ios-safari.html',     w: 430,  h: 932,  label: 'iPhone 15 Pro Max',  tag: 'iOS Safari',     tagClass: 'card__tag--ios' },
+    'iphone-se':         { shell: 'ios-safari.html',     w: 375,  h: 667,  label: 'iPhone SE',          tag: 'iOS Safari',     tagClass: 'card__tag--ios' },
+    'pixel-9-pro':       { shell: 'android-chrome.html', w: 412,  h: 892,  label: 'Pixel 9 Pro',        tag: 'Android Chrome', tagClass: 'card__tag--android' },
+    'galaxy-s24':        { shell: 'android-chrome.html', w: 360,  h: 780,  label: 'Galaxy S24',         tag: 'Android Chrome', tagClass: 'card__tag--android' },
+  };
+
+  const PROTOS = {
+    'Pages': [
+      { label: 'Homepage',         desc: 'Full Regent Brand.com homepage — hero, destinations, residences, and footer.',        path: '../index.html' },
+      { label: 'Login',            desc: 'IHG One Rewards login flow.',                                                         path: '../login.html' },
+    ],
+    'Destinations Cards': [
+      { label: 'Mobile Snap Scroll',    desc: 'Full-screen snap-scroll experience — one destination per screen with entrance animations.',          path: '../_prototype/destinations-cards-mobile.html' },
+      { label: 'Device Frame Preview',  desc: 'Mobile snap-scroll wrapped in an iPhone device frame for standalone presentation.',                   path: '../_prototype/destinations-cards-mobile-device.html' },
+      { label: 'Push / Pull',           desc: 'Interaction exploration using a push/pull gesture metaphor for navigating destinations.',              path: '../_prototype/destinations-cards-mobile-pushpull.html' },
+      { label: 'Desktop Carousel',      desc: '3-up card carousel with standard and expandable teaser cards. Progress bar navigation.',              path: '../_prototype/destinations-cards.html' },
+      { label: 'Overlap Layout',        desc: 'Alternative card layout with overlapping elements — an exploration in layered depth.',                path: '../_prototype/destinations-cards-overlap.html' },
+      { label: 'Teaser Variant',        desc: 'Refined teaser card variant with updated expand interaction values from Figma spec.',                  path: '../_prototype/destinations-cards-teaser.html' },
+      { label: 'A11y Review',           desc: 'Accessibility-annotated version of the destinations cards component.',                                path: '../_prototype/destinations-cards-a11y.html' },
+    ],
+    'Events Accordion': [
+      { label: 'Desktop',          desc: 'Two-column layout with a crossfading image panel and accordion. Location label animates on switch.',  path: '../_prototype/events-accordion.html' },
+      { label: 'Mobile',           desc: 'Stacked mobile layout — image on top, accordion below.',                                             path: '../_prototype/events-accordion-mobile.html' },
+    ],
+    'Content Block Carousel': [
+      { label: 'Image Strip',      desc: 'Four-image editorial strip with alternating tall/short heights and infinite-loop navigation.',        path: '../_prototype/content-block-carousel.html' },
+    ],
+    'Misc': [
+      { label: 'Sticky CTA Bar',   desc: 'Persistent bottom CTA bar — appears on scroll, dismissable.',                                       path: '../_prototype/sticky-cta-bar.html' },
+    ],
+  };
+
+  let currentDevice = 'iphone-15-pro';
+
+  function buildUrl(deviceId, protoPath) {
+    const d    = DEVICES[deviceId];
+    const base = location.href.replace(/\/[^/]*$/, '/');
+    const abs  = new URL(protoPath, base).href;
+    return `${d.shell}?url=${encodeURIComponent(abs)}`;
+  }
+
+  function renderSections() {
+    const d        = DEVICES[currentDevice];
+    const container = document.getElementById('sections');
+    container.innerHTML = '';
+
+    for (const [sectionName, files] of Object.entries(PROTOS)) {
+      const section = document.createElement('section');
+      section.className = 'section';
+      section.innerHTML = `<p class="section__label">${sectionName}</p>`;
+
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      for (const f of files) {
+        const card = document.createElement('a');
+        card.className = 'card';
+        card.href      = buildUrl(currentDevice, f.path);
+        card.target    = '_blank';
+        card.innerHTML = `
+          <span class="card__tag ${d.tagClass}">${d.tag}</span>
+          <span class="card__title">${f.label}</span>
+          <span class="card__device">${d.label} · ${d.w} × ${d.h}</span>
+          <p class="card__desc">${f.desc}</p>
+          <span class="card__cta">Open</span>
+        `;
+        grid.appendChild(card);
+      }
+
+      section.appendChild(grid);
+      container.appendChild(section);
+    }
+  }
+
+  document.querySelectorAll('.device-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentDevice = btn.dataset.id;
+      document.querySelectorAll('.device-pill').forEach(b => {
+        b.classList.toggle('active', b.dataset.id === currentDevice);
+      });
+      renderSections();
+    });
+  });
+
+  renderSections();
+</script>
+
+</body>
+</html>

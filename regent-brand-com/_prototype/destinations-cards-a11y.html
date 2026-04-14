@@ -61,9 +61,10 @@
       display: flex;
       align-items: flex-start;
       gap: 40px;
-      width: 1200px;
+      max-width: 1200px;     /* fix: was fixed width, now responsive */
+      width: 100%;
       margin: 0 auto;
-      padding: 56px 0 48px;
+      padding: 56px 24px 48px;
     }
 
     .section-header h2 {
@@ -96,33 +97,33 @@
       width: 100%;
     }
 
-    /* ─── Card defaults: flex:1 so 4 cards fill container equally */
+    /* ─── Card ───────────────────────────────────────────── */
     .card {
       position: relative;
       flex: 1 1 0;
       min-width: 0;
       overflow: hidden;
       cursor: pointer;
-      transition:
-        flex var(--dur) var(--ease);
+      transition: flex var(--dur) var(--ease);
     }
 
-    /* When track has an active hover: compress all cards,
-       flex: 1 so they always fill the remaining space      */
+    /* fix: keyboard focus visible outline */
+    .card:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: -3px;
+      z-index: 1;
+    }
+
     .cards-track.has-hover .card {
       flex: 1 1 0;
     }
 
-    /* The hovered card expands to exactly the image's natural
-       rendered width at card height: 600 × (1180/664) = 1066px */
     .cards-track.has-hover .card.is-hovered {
       flex: 0 0 1066px;
       max-width: 1066px;
     }
 
-    /* ─── Image: height-locked, centered ────────────────────
-       Renders at natural aspect ratio (height = card height).
-       Card clips it when narrow; expanded card = full image. */
+    /* ─── Image ──────────────────────────────────────────── */
     .card__img {
       position: absolute;
       top: 0;
@@ -169,14 +170,14 @@
     /* Fade out text on compressed cards */
     .cards-track.has-hover .card:not(.is-hovered) .card__body {
       opacity: 0;
+      visibility: hidden; /* fix: hides from AT when visually hidden */
     }
 
-    /* More padding on the active card */
     .card.is-hovered .card__body {
       padding: 0 44px 48px;
     }
 
-    /* ─── Title (same style in both states) ─────────────── */
+    /* ─── Title ──────────────────────────────────────────── */
     .card__title-sm {
       font-family: var(--canela);
       font-size: 20px;
@@ -195,7 +196,7 @@
       gap: 7px;
       margin-top: 5px;
       font-family: var(--engravers);
-      font-size: 8.5px;
+      font-size: 11px;         /* fix: was 8.5px, too small */
       font-weight: 400;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -216,14 +217,22 @@
       display: grid;
       grid-template-rows: 0fr;
       opacity: 0;
+      /* fix: visibility hidden removes from AT when collapsed */
+      visibility: hidden;
       transition:
         grid-template-rows 0.5s var(--ease) 0.18s,
-        opacity            0.3s ease        0.25s;
+        opacity            0.3s ease        0.25s,
+        visibility         0s   linear      0.55s; /* delays until anim finishes */
     }
 
     .card.is-hovered .card__reveal {
       grid-template-rows: 1fr;
       opacity: 1;
+      visibility: visible;
+      transition:
+        grid-template-rows 0.5s var(--ease) 0.18s,
+        opacity            0.3s ease        0.25s,
+        visibility         0s   linear      0s;
     }
 
     .card__reveal-inner { overflow: hidden; }
@@ -244,95 +253,124 @@
       gap: 8px;
       margin-top: 20px;
       font-family: var(--engravers);
-      font-size: 8.5px;
+      font-size: 11px;         /* fix: was 8.5px, too small */
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: #fff;
       border-bottom: 1px solid rgba(255,255,255,0.4);
       padding-bottom: 3px;
       transition: gap 0.25s ease, border-color 0.25s ease;
+      text-decoration: none;
     }
 
     .card__cta:hover {
       gap: 14px;
       border-color: rgba(255,255,255,0.9);
     }
+
+    /* fix: visible focus style for keyboard users on the CTA link */
+    .card__cta:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 4px;
+      border-radius: 1px;
+    }
+
+    /* ─── Reduced motion ─────────────────────────────────── */
+    /* fix: respect user preference for reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .card,
+      .card__overlay,
+      .card__body,
+      .card__reveal,
+      .card__cta {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
 
-<section class="section">
+<!-- fix: section labeled via aria-labelledby -->
+<section class="section" aria-labelledby="destinations-heading">
 
   <div class="section-header">
-    <h2>The world, hand-selected</h2>
+    <!-- fix: id for aria-labelledby reference -->
+    <h2 id="destinations-heading">The world, hand-selected</h2>
     <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
   </div>
 
-  <div class="cards-track" id="track">
+  <!-- fix: role="list" since these are a related set of items -->
+  <div class="cards-track" id="track" role="list">
 
-    <div class="card">
-      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Cannes">
-      <div class="card__overlay"></div>
+    <!-- fix: role="listitem", tabindex="0" for keyboard access -->
+    <div class="card" role="listitem" tabindex="0" aria-label="Cannes, French Riviera">
+      <!-- fix: descriptive alt text -->
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Sun-drenched waterfront promenade and marina in Cannes, French Riviera">
+      <!-- fix: aria-hidden on decorative overlay -->
+      <div class="card__overlay" aria-hidden="true"></div>
       <div class="card__body">
-        <div class="card__title-sm">Cannes, French Riviera</div>
-        <div class="card__details">
-          <span>France</span><span class="dot"></span><span>Europe</span>
+        <!-- fix: h3 for proper heading hierarchy -->
+        <h3 class="card__title-sm">Cannes, French Riviera</h3>
+        <!-- fix: aria-hidden on decorative detail text (redundant with card label) -->
+        <div class="card__details" aria-hidden="true">
+          <span>France</span><span class="dot" aria-hidden="true"></span><span>Europe</span>
         </div>
         <div class="card__reveal">
           <div class="card__reveal-inner">
             <p class="card__desc">Sunlit promenades, private beaches, and the enduring glamour of the Côte d'Azur — rediscovered at your own pace.</p>
-            <a href="#" class="card__cta">Explore</a>
+            <!-- fix: descriptive aria-label instead of bare "Explore" -->
+            <a href="#" class="card__cta" aria-label="Explore Cannes, French Riviera">Explore</a>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali">
-      <div class="card__overlay"></div>
+    <div class="card" role="listitem" tabindex="0" aria-label="Bali, Indonesia">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Lush tropical landscape with rice terraces and ancient temple in Bali, Indonesia">
+      <div class="card__overlay" aria-hidden="true"></div>
       <div class="card__body">
-        <div class="card__title-sm">Bali, Indonesia</div>
-        <div class="card__details">
-          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        <h3 class="card__title-sm">Bali, Indonesia</h3>
+        <div class="card__details" aria-hidden="true">
+          <span>Indonesia</span><span class="dot" aria-hidden="true"></span><span>Asia Pacific</span>
         </div>
         <div class="card__reveal">
           <div class="card__reveal-inner">
             <p class="card__desc">Ancient temples, terraced rice fields, and an ocean that invites you to stay forever.</p>
-            <a href="#" class="card__cta">Explore</a>
+            <a href="#" class="card__cta" aria-label="Explore Bali, Indonesia">Explore</a>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Bali Highlands">
-      <div class="card__overlay"></div>
+    <div class="card" role="listitem" tabindex="0" aria-label="Bali Highlands, Indonesia">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Misty highland valley with emerald pools surrounded by jungle in Bali, Indonesia">
+      <div class="card__overlay" aria-hidden="true"></div>
       <div class="card__body">
-        <div class="card__title-sm">Bali Highlands</div>
-        <div class="card__details">
-          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        <h3 class="card__title-sm">Bali Highlands</h3>
+        <div class="card__details" aria-hidden="true">
+          <span>Indonesia</span><span class="dot" aria-hidden="true"></span><span>Asia Pacific</span>
         </div>
         <div class="card__reveal">
           <div class="card__reveal-inner">
             <p class="card__desc">Mist-wrapped valleys and emerald pools — where the mountain meets ceremony.</p>
-            <a href="#" class="card__cta">Explore</a>
+            <a href="#" class="card__cta" aria-label="Explore Bali Highlands, Indonesia">Explore</a>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Bali Coast">
-      <div class="card__overlay"></div>
+    <div class="card" role="listitem" tabindex="0" aria-label="Bali Coastline, Indonesia">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Dramatic cliffside villa overlooking the Indian Ocean on the Bali coastline, Indonesia">
+      <div class="card__overlay" aria-hidden="true"></div>
       <div class="card__body">
-        <div class="card__title-sm">Bali Coastline</div>
-        <div class="card__details">
-          <span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span>
+        <h3 class="card__title-sm">Bali Coastline</h3>
+        <div class="card__details" aria-hidden="true">
+          <span>Indonesia</span><span class="dot" aria-hidden="true"></span><span>Asia Pacific</span>
         </div>
         <div class="card__reveal">
           <div class="card__reveal-inner">
             <p class="card__desc">Cliffside villas suspended above the Indian Ocean — privacy at its most dramatic.</p>
-            <a href="#" class="card__cta">Explore</a>
+            <a href="#" class="card__cta" aria-label="Explore Bali Coastline, Indonesia">Explore</a>
           </div>
         </div>
       </div>
@@ -345,14 +383,35 @@
   const track = document.getElementById('track');
   const cards = track.querySelectorAll('.card');
 
+  function expand(card) {
+    track.classList.add('has-hover');
+    cards.forEach(c => c.classList.remove('is-hovered'));
+    card.classList.add('is-hovered');
+  }
+
+  function collapse(card) {
+    track.classList.remove('has-hover');
+    card.classList.remove('is-hovered');
+  }
+
   cards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      track.classList.add('has-hover');
-      card.classList.add('is-hovered');
+    // Mouse
+    card.addEventListener('mouseenter', () => expand(card));
+    card.addEventListener('mouseleave', () => collapse(card));
+
+    // fix: keyboard — expand on focus-in, collapse when focus leaves the card entirely
+    card.addEventListener('focusin', () => expand(card));
+    card.addEventListener('focusout', (e) => {
+      if (!card.contains(e.relatedTarget)) collapse(card);
     });
-    card.addEventListener('mouseleave', () => {
-      track.classList.remove('has-hover');
-      card.classList.remove('is-hovered');
+
+    // fix: allow Enter/Space to activate the Explore link for keyboard users
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const link = card.querySelector('.card__cta');
+        if (link) link.click();
+      }
     });
   });
 </script>
