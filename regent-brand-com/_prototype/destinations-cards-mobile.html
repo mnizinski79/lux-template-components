@@ -83,13 +83,15 @@
     .sticky-cta {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      z-index: 100;
+      z-index: 200;
       background: #ffffff;
       border-top: 1px solid #d6d6d6;
       padding: 12px 24px 12px;
       opacity: 0;
       transform: translateY(10px);
       pointer-events: none;
+      isolation: isolate;
+      will-change: transform;
       transition: opacity 0.55s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
