@@ -605,10 +605,7 @@
 
   const navObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      const overWhite = entry.isIntersecting;
-      pastIntro = !overWhite;
-      header.classList.toggle('is-solid',       overWhite);
-      header.classList.toggle('is-transparent', !overWhite);
+      pastIntro = !entry.isIntersecting;
     });
   }, { root: scrollRoot, threshold: 0.1 });
 
