@@ -136,7 +136,7 @@
       text-transform: uppercase;
       color: #8a8277;
       opacity: 0;
-      transform: translateY(4px);    /* subtler lift */
+      transform: translateY(4px);
       transition:
         opacity   0.9s ease 0.1s,
         transform 0.9s var(--ease-out) 0.1s;
@@ -185,13 +185,15 @@
       text-align: left;
     }
 
-    /* heading/3 — same size in all states, 52px hug height */
+    /* heading/3 token */
     .acc-title {
       font-family: var(--canela);
-      font-size: 40px;
+      font-size: var(--font-size-heading-3, 36px);
+      font-style: normal;
       font-weight: 300;
-      line-height: 1.3;
-      color: var(--brand);
+      line-height: var(--font-line-height-heading-3, 52px);
+      letter-spacing: var(--font-letter-spacing-heading-3, 0);
+      color: var(--color-text-brand, #211551);
       letter-spacing: -0.01em;
     }
 
@@ -253,11 +255,13 @@
     }
 
     .acc-desc {
-      font-family: var(--inter);
-      font-size: 14px;
-      font-weight: 300;
-      line-height: 1.75;
-      color: #5a5566;
+      font-family: var(--font-family-body-md, Inter);
+      font-size: var(--font-size-body-md, 16px);
+      font-style: normal;
+      font-weight: var(--font-weight-body-md, 300);
+      line-height: var(--font-line-height-body-md, 26px);
+      letter-spacing: var(--font-letter-spacing-body-md, 0.5px);
+      color: var(--color-text-secondary, #4A4A4A);
       max-width: 520px;
       margin-bottom: 24px;
     }
