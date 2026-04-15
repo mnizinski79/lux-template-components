@@ -108,14 +108,13 @@
       max-width: 1066px;
     }
 
-    /* ─── Image: height-locked, centered ────────────────────
-       Renders at natural aspect ratio (height = card height).
-       Card clips it when narrow; expanded card = full image. */
+    /* ─── Image: height-locked, left-anchored ───────────────
+       Anchored to left so every card expands rightward only —
+       consistent with the Cannes card interaction. */
     .card__img {
       position: absolute;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
       height: 100%;
       width: auto;
       max-width: none;
@@ -151,7 +150,7 @@
       right: 0;
       padding: 0 28px 32px;
       color: #fff;
-      transition: opacity 0.3s ease, padding var(--dur) var(--ease);
+      transition: opacity 0.3s ease, padding-bottom var(--dur) var(--ease);
     }
 
     /* Fade out text on compressed cards */
@@ -159,9 +158,9 @@
       opacity: 0;
     }
 
-    /* More padding on the active card */
+    /* Only increase bottom padding on hover — horizontal stays locked */
     .card.is-hovered .card__body {
-      padding: 0 44px 48px;
+      padding: 0 28px 48px;
     }
 
     /* ─── Title (same style in both states) ─────────────── */
