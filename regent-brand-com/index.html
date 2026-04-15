@@ -133,6 +133,18 @@
       opacity: 0.8;
     }
 
+    /* ─── Sandbox section (Explorations) ────────────────────── */
+    .section--sandbox {
+      background-color: #F5F2EE;
+      background-image: radial-gradient(circle, rgba(33,21,81,0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      padding: 48px 80px 80px;
+    }
+
+    .section--sandbox .section__label {
+      border-bottom-color: rgba(33, 21, 81, 0.14);
+    }
+
     /* ─── Subsection (within Explorations) ──────────────────── */
     .subsection {
       padding-top: 48px;
@@ -147,9 +159,9 @@
       font-weight: 400;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(33, 21, 81, 0.3);
+      color: rgba(33, 21, 81, 0.35);
       padding-bottom: 16px;
-      border-bottom: 1px solid rgba(33, 21, 81, 0.06);
+      border-bottom: 1px dashed rgba(33, 21, 81, 0.15);
       margin-bottom: 0;
     }
 
@@ -159,7 +171,7 @@
       width: 4px;
       height: 4px;
       border-radius: 50%;
-      background: rgba(33, 21, 81, 0.25);
+      background: rgba(33, 21, 81, 0.3);
       flex-shrink: 0;
     }
 
@@ -168,6 +180,10 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       border-left: 1px solid rgba(33, 21, 81, 0.1);
+    }
+
+    .section--sandbox .grid {
+      border-left: 1px dashed rgba(33, 21, 81, 0.15);
     }
 
     /* ─── Card ───────────────────────────────────────────────── */
@@ -186,6 +202,16 @@
 
     .card:hover {
       background: rgba(33, 21, 81, 0.03);
+    }
+
+    .section--sandbox .card {
+      border-right: 1px dashed rgba(33, 21, 81, 0.15);
+      border-bottom: 1px dashed rgba(33, 21, 81, 0.15);
+      background: transparent;
+    }
+
+    .section--sandbox .card:hover {
+      background: rgba(255, 255, 255, 0.55);
     }
 
     .card__tag {
@@ -412,11 +438,13 @@
   </section>
 
   <!-- Explorations -->
-  <section class="section">
+  <section class="section section--sandbox">
     <p class="section__label">
       <span class="section__icon">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 1L9.5 6.5H15L10.5 9.5L12 15L8 12L4 15L5.5 9.5L1 6.5H6.5L8 1Z" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+          <path d="M5 1h6M6 1v5L2 13a1 1 0 00.9 1.5h10.2A1 1 0 0014 13L10 6V1" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="6" cy="11" r="0.8" fill="currentColor" opacity="0.5"/>
+          <circle cx="9.5" cy="12.5" r="0.6" fill="currentColor" opacity="0.4"/>
         </svg>
       </span>
       Explorations
