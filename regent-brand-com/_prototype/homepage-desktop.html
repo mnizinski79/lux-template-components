@@ -146,20 +146,43 @@
 
     @keyframes fadeOut { to { opacity: 0; pointer-events: none; } }
 
-    /* NAV */
+    /* NAV — fixed, two states: transparent (hero) → solid white (scrolled) */
     .nav {
-      position: relative;
-      z-index: 3;
-      padding: 20px var(--gutter) 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: transparent;
+      transition: background 0.35s ease, box-shadow 0.35s ease;
       opacity: 0;
       animation: fadeUp 0.8s var(--ease-lux) 0.5s forwards;
     }
 
+    /* Scrolled state: white bg, dark text, single row */
+    .nav--scrolled {
+      background: var(--color-background-primary, #fff);
+      box-shadow: 0 2px 24px rgba(0,0,0,0.07);
+      opacity: 1 !important;
+      animation: none !important;
+    }
+
+    /* Utility top row */
     .nav__top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 16px;
+      padding: 20px var(--gutter) 0;
+      max-height: 80px;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    }
+
+    .nav--scrolled .nav__top {
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      pointer-events: none;
     }
 
     .nav__side {
@@ -223,13 +246,48 @@
       opacity: 0.7;
     }
 
+    /* Sub row — default: centered links over hero */
     .nav__sub {
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 40px;
-      padding-top: 8px;
+      padding: 8px var(--gutter) 16px;
       border-top: 1px solid rgba(255,255,255,0.15);
-      padding-bottom: 16px;
+      transition: border-color 0.3s ease, padding 0.3s ease, height 0.3s ease;
+    }
+
+    /* Sub row — scrolled: space-between, logo / links / cta */
+    .nav--scrolled .nav__sub {
+      justify-content: space-between;
+      gap: 0;
+      border-top: none;
+      padding: 0 var(--gutter);
+      height: 64px;
+    }
+
+    /* Compact logo in sub row — only visible when scrolled */
+    .nav__sub-logo {
+      display: none;
+      color: var(--color-text-brand, #211551);
+      font-family: var(--engravers);
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .nav--scrolled .nav__sub-logo { display: block; }
+
+    /* Links wrapper — centers the link group */
+    .nav__sub-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex: 1;
     }
 
     .nav__link {
@@ -242,10 +300,35 @@
       text-decoration: none;
       padding: 12px 0;
       border-bottom: 1px solid transparent;
-      transition: border-color 0.3s ease;
+      transition: border-color 0.3s ease, color 0.3s ease;
+      white-space: nowrap;
     }
 
+    .nav--scrolled .nav__link { color: var(--color-text-brand, #211551); }
+
     .nav__link:hover { border-bottom-color: rgba(255,255,255,0.7); }
+    .nav--scrolled .nav__link:hover { border-bottom-color: rgba(33,21,81,0.35); }
+
+    /* Book Now CTA — only visible when scrolled */
+    .nav__book-now {
+      display: none;
+      align-items: center;
+      padding: 13px 24px;
+      background: #002d38;
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: background 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .nav--scrolled .nav__book-now { display: flex; }
+    .nav__book-now:hover { background: #003d4d; }
 
     /* HERO CONTENT — h1 bottom sits 82px above the booking bar visual top */
     .hero__content {
@@ -591,21 +674,38 @@
       padding-right: 60px;
     }
 
-    .dest-header p {
-      font-family: var(--inter);
-      /* font/size/body-md */
-      font-size: 16px;
-      font-weight: 300;
-      /* font/line-height/body-md */
-      line-height: 26px;
-      /* font/letter-spacing/body-md */
-      letter-spacing: 0.5px;
-      color: var(--text-2);
-      padding-top: 8px;
-      text-align: left;
+    .dest-header__body {
       width: 477px;
       flex-shrink: 0;
+      padding-top: 8px;
     }
+
+    .dest-header p {
+      font-family: var(--inter);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 26px;
+      letter-spacing: 0.5px;
+      color: var(--text-2);
+      text-align: left;
+    }
+
+    .dest-header__link {
+      display: inline-block;
+      margin-top: 20px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-text-brand, #211551);
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-text-brand, #211551);
+      padding-bottom: 3px;
+      transition: opacity 0.25s ease;
+    }
+
+    .dest-header__link:hover { opacity: 0.6; }
 
     .dest-track {
       display: flex;
@@ -1283,6 +1383,50 @@
 <body>
 
 <!-- ═══════════════════════════════════════════════
+  NAV — fixed; transparent over hero, white when scrolled
+═══════════════════════════════════════════════ -->
+<nav class="nav" id="mainNav">
+  <div class="nav__top">
+    <div class="nav__side">
+      <a class="nav__btn" href="#">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        EN
+      </a>
+      <a class="nav__btn" href="#">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.45 2 2 0 0 1 3.59 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        1-800-REGENT-1
+      </a>
+    </div>
+
+    <div class="nav__logo">
+      <span class="nav__logo-word">Regent</span>
+      <span class="nav__logo-sub">Hotels &amp; Resorts</span>
+    </div>
+
+    <div class="nav__side nav__side--right">
+      <a class="nav__btn" href="#">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Sign In
+      </a>
+    </div>
+  </div>
+
+  <div class="nav__sub">
+    <a class="nav__sub-logo" href="#">Regent</a>
+    <div class="nav__sub-links">
+      <a class="nav__link" href="#">Hotels &amp; Resorts</a>
+      <a class="nav__link" href="#">Residences</a>
+      <a class="nav__link" href="#">Regent Presents</a>
+      <a class="nav__link" href="#">Destinations</a>
+      <a class="nav__link" href="#">Events</a>
+      <a class="nav__link" href="#">Offers</a>
+      <a class="nav__link" href="#">About</a>
+    </div>
+    <a class="nav__book-now" href="#">Book Now</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
   1. HERO
 ═══════════════════════════════════════════════ -->
 <section class="s-hero">
@@ -1293,43 +1437,6 @@
   </div>
   <div class="hero__gradient"></div>
   <div class="hero__overlay"></div>
-
-  <nav class="nav">
-    <div class="nav__top">
-      <div class="nav__side">
-        <a class="nav__btn" href="#">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          EN
-        </a>
-        <a class="nav__btn" href="#">
-          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.45 2 2 0 0 1 3.59 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          1-800-REGENT-1
-        </a>
-      </div>
-
-      <div class="nav__logo">
-        <span class="nav__logo-word">Regent</span>
-        <span class="nav__logo-sub">Hotels &amp; Resorts</span>
-      </div>
-
-      <div class="nav__side nav__side--right">
-        <a class="nav__btn" href="#">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Sign In
-        </a>
-      </div>
-    </div>
-
-    <div class="nav__sub">
-      <a class="nav__link" href="#">Hotels &amp; Resorts</a>
-      <a class="nav__link" href="#">Residences</a>
-      <a class="nav__link" href="#">Regent Presents</a>
-      <a class="nav__link" href="#">Destinations</a>
-      <a class="nav__link" href="#">Events</a>
-      <a class="nav__link" href="#">Offers</a>
-      <a class="nav__link" href="#">About</a>
-    </div>
-  </nav>
 
   <div class="hero__content">
     <h1 class="hero__h1">Regent Hotels &amp; Resorts</h1>
@@ -1438,7 +1545,10 @@
 <section class="s-destinations">
   <div class="dest-header">
     <h2>Awakened senses, fresh perspectives</h2>
-    <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+    <div class="dest-header__body">
+      <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+      <a class="dest-header__link" href="#">Destinations</a>
+    </div>
   </div>
 
   <div class="dest-track" id="destTrack">
@@ -1746,6 +1856,12 @@
 </footer>
 
 <script>
+  // ── Sticky nav: toggle scrolled state ────────────────────
+  const mainNav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    mainNav.classList.toggle('nav--scrolled', window.scrollY > 80);
+  }, { passive: true });
+
   // ── Hero video pause/play ──────────────────────────────────
   const heroVideo    = document.querySelector('.hero__bg video');
   const pauseBtn     = document.getElementById('videoPauseBtn');
