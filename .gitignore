@@ -6,6 +6,9 @@
 *.mp4
 *.avi
 
+# Hero video exception
+!regent-brand-com/_assets/_imgs/regent-hero-video-final.mov
+
 # Excluded files
 regent-brand-com/CLAUDE.md
 CLAUDE.md
