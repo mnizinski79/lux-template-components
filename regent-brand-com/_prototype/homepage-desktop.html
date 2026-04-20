@@ -312,20 +312,81 @@
       z-index: 100;
       margin-top: -50px;
       pointer-events: none;
-      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Stuck state: expand to full-width white bar */
+    /* Stuck state: full-width sticky nav header */
     .booking-sticky-outer.is-stuck {
       background: var(--color-background-primary, #fff);
-      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.07);
       pointer-events: all;
     }
 
-    .booking-sticky-outer.is-stuck .s-booking {
-      box-shadow: none;
-      width: 1200px;
+    .booking-sticky-outer.is-stuck .s-booking { display: none; }
+    .booking-sticky-outer.is-stuck .sticky-nav { display: flex; }
+
+    /* ── Sticky nav header (hidden until stuck) ── */
+    .sticky-nav {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 64px;
+      padding: 0 var(--gutter);
     }
+
+    .sticky-nav__logo {
+      font-family: var(--engravers);
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: var(--color-text-brand, #211551);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .sticky-nav__links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .sticky-nav__link {
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-text-brand, #211551);
+      text-decoration: none;
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .sticky-nav__link:hover { border-bottom-color: rgba(33,21,81,0.35); }
+
+    .sticky-nav__cta {
+      display: flex;
+      align-items: center;
+      padding: 13px 24px;
+      background: #002d38;
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: background 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .sticky-nav__cta:hover { background: #003d4d; }
 
     .s-booking {
       position: relative;
@@ -1386,6 +1447,22 @@
   BOOKING BAR — straddles hero / editorial boundary, sticks on scroll
 ═══════════════════════════════════════════════ -->
 <div class="booking-sticky-outer">
+
+  <!-- Stuck state: full nav header matching Figma 18376:33503 -->
+  <div class="sticky-nav">
+    <a class="sticky-nav__logo" href="#">Regent</a>
+    <nav class="sticky-nav__links">
+      <a class="sticky-nav__link" href="#">Hotel &amp; Resorts</a>
+      <a class="sticky-nav__link" href="#">Residences</a>
+      <a class="sticky-nav__link" href="#">Regent Spa &amp; Wellness</a>
+      <a class="sticky-nav__link" href="#">Dining</a>
+      <a class="sticky-nav__link" href="#">Meetings &amp; Events</a>
+      <a class="sticky-nav__link" href="#">Experience</a>
+      <a class="sticky-nav__link" href="#">Offers</a>
+    </nav>
+    <a class="sticky-nav__cta" href="#">Book Now</a>
+  </div>
+
 <div class="s-booking">
   <div class="booking__inner">
     <div class="booking__field">
