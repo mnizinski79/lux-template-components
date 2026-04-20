@@ -312,6 +312,19 @@
       z-index: 100;
       margin-top: -50px;
       pointer-events: none;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Stuck state: expand to full-width white bar */
+    .booking-sticky-outer.is-stuck {
+      background: var(--color-background-primary, #fff);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+      pointer-events: all;
+    }
+
+    .booking-sticky-outer.is-stuck .s-booking {
+      box-shadow: none;
+      width: 1200px;
     }
 
     .s-booking {
@@ -336,6 +349,7 @@
       opacity: 0;
       transform: translateY(20px);
       animation: slideUp 0.8s var(--ease-lux) 1.7s forwards;
+      transition: box-shadow 0.3s ease;
     }
 
     @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
@@ -1766,6 +1780,12 @@
 </footer>
 
 <script>
+
+  // ── Booking bar: detect sticky stuck state ───────────────
+  const bookingOuter = document.querySelector('.booking-sticky-outer');
+  window.addEventListener('scroll', () => {
+    bookingOuter.classList.toggle('is-stuck', bookingOuter.getBoundingClientRect().top <= 0);
+  }, { passive: true });
 
   // ── Hero video pause/play ──────────────────────────────────
   const heroVideo    = document.querySelector('.hero__bg video');
