@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent Hotels & Resorts</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 700;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      /* ── Wilson design tokens: Regent (Desktop) ──────────────
+         Source: tokens/Regent.json + tokens/base-tokens.json   */
+
+      /* color/bg/primary → #fff */
+      --color-background-primary:       #fff;
+      /* color/bg/secondary → #f5f5f5 */
+      --color-background-secondary:     #f5f5f5;
+      /* color/text/primary → #121212 */
+      --color-text-primary:             #121212;
+      /* color/text/secondary → #4a4a4a */
+      --color-text-secondary:           #4A4A4A;
+      /* color/text/brand → Regent blue-purple */
+      --color-text-brand:               #211551;
+      /* border/radius/none → 0  (Regent = sharp corners) */
+      --theme-light-border-radius:      0;
+      /* space/0 */
+      --space-none:                     0;
+      /* space/16 */
+      --spacing-desktop-small:          16px;
+      /* space/12 */
+      --spacing-gap-sm:                 12px;
+      /* space/28 */
+      --space-md:                       28px;
+      /* space/40 */
+      --space-lg:                       40px;
+
+      /* title/small */
+      --font-family-title-small:        'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --font-size-title-small:          14px;
+      --font-line-height-title-small:   24px;
+      --font-letter-spacing-title-small: 1px;
+
+      /* body/default/medium */
+      --font-family-body-medium:        Inter, system-ui, sans-serif;
+      --font-size-body-medium:          16px;
+      --font-line-height-body-medium:   26px;
+      --font-letter-spacing-body-medium: 0.5px;
+
+      /* ── Regent brand palette ─────────────────────────────── */
+      --brand:      #211551;
+      --teal:       #1F4456;
+      --coral:      #C7370F;
+      --bg:         #FAF8F5;
+      --bg-bali:    #C4CDD4;
+      --bg-footer:  #0F3B4A;
+      --text-1:     #211551;
+      --text-2:     #4A4A4A;
+      --text-3:     #8a8277;
+      --border:     rgba(33,21,81,0.14);
+      --canela:     'Canela', Georgia, serif;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease-lux:   cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out:   cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-in:    cubic-bezier(0.55, 0, 1, 0.45);
+      --gutter:     120px;
+      --card-gap:   4px;
+      --dur:        0.55s;
+    }
+
+    body {
+      font-family: var(--inter);
+      background: var(--bg);
+      color: var(--text-1);
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────── */
+    .s-hero {
+      position: relative;
+      width: 100%;
+      height: 810px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      background-color: #1a2a35;
+      overflow: hidden;
+    }
+
+    .hero__bg video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      pointer-events: none;
+    }
+
+    .hero__bg video::-webkit-media-controls,
+    .hero__bg video::-webkit-media-controls-overlay-play-button,
+    .hero__bg video::-webkit-media-controls-panel,
+    .hero__bg video::-webkit-media-controls-start-playback-button { display: none !important; }
+
+    .hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(18,18,18,0) 40%,
+        rgba(18,18,18,0.45) 75%,
+        rgba(18,18,18,0.72) 100%
+      );
+      z-index: 1;
+    }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: #121212;
+      opacity: 0.88;
+      z-index: 2;
+      animation: fadeOut 1.6s var(--ease-lux) 0.1s forwards;
+    }
+
+    @keyframes fadeOut { to { opacity: 0; pointer-events: none; } }
+
+    /* NAV */
+    .nav {
+      position: relative;
+      z-index: 3;
+      padding: 20px var(--gutter) 0;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-lux) 0.5s forwards;
+    }
+
+    .nav__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+    }
+
+    .nav__side {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .nav__side--right { justify-content: flex-end; }
+
+    .nav__btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      background: none;
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 4px 0;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    .nav__btn:hover { border-bottom-color: rgba(255,255,255,0.5); }
+
+    .nav__btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: white;
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .nav__logo { text-align: center; flex-shrink: 0; }
+
+    .nav__logo-word {
+      display: block;
+      color: white;
+      font-family: var(--engravers);
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+    }
+
+    .nav__logo-sub {
+      display: block;
+      color: white;
+      font-family: var(--engravers);
+      font-size: 7px;
+      font-weight: 400;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      margin-top: 3px;
+      opacity: 0.7;
+    }
+
+    .nav__sub {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 16px;
+    }
+
+    .nav__link {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 12px 0;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+
+    .nav__link:hover { border-bottom-color: rgba(255,255,255,0.7); }
+
+    /* HERO CONTENT — h1 bottom sits 82px above the booking bar visual top */
+    .hero__content {
+      position: relative;
+      z-index: 3;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 var(--gutter);
+      padding-bottom: 132px; /* 82px gap + 50px bar overlap */
+      gap: 12px;
+    }
+
+    /* HERO CONTROLS — pause button lower-left */
+    .hero__controls {
+      position: absolute;
+      bottom: 35px;
+      left: 35px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg, 40px);
+      pointer-events: none;
+    }
+
+    .hero__pause-btn {
+      pointer-events: all;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-lux) 1.5s forwards;
+      transition: opacity 0.2s ease;
+      line-height: 0;
+    }
+
+    .hero__pause-btn:hover { opacity: 0.7; }
+
+    .hero__h1 {
+      color: #fff;
+      font-family: var(--canela);
+      font-size: clamp(44px, 5vw, 68px);
+      font-weight: 300;
+      line-height: 1.1;
+      text-align: center;
+      max-width: 860px;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      animation: fadeUp 1s var(--ease-lux) 1.1s forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* BOOKING BAR — token refs: Regent.json + base-tokens.json */
+    .s-booking {
+      position: relative;
+      z-index: 10;
+      width: 1200px;
+      margin: -50px auto 0;
+      display: flex;
+      align-items: center;
+      border-radius: var(--theme-light-border-radius, 0);
+      background: var(--color-background-primary, #fff);
+      box-shadow:
+        0 191px 53px 0 rgba(194,194,194,0.00),
+        0 122px 49px 0 rgba(194,194,194,0.01),
+        0  69px 41px 0 rgba(194,194,194,0.05),
+        0  31px 31px 0 rgba(194,194,194,0.09),
+        0   8px 17px 0 rgba(194,194,194,0.10);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      height: 102px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp 0.8s var(--ease-lux) 1.7s forwards;
+    }
+
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    .booking__inner {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-gap-sm, 12px);
+      width: 100%;
+      padding: 0 var(--spacing-desktop-small, 16px);
+    }
+
+    .booking__field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+      padding: 20px 0 12px 16px;
+    }
+
+    .booking__label {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-title-small, 'Engravers Gothic', 'Arial Narrow', sans-serif);
+      font-size: var(--font-size-title-small, 14px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--font-line-height-title-small, 24px);
+      letter-spacing: var(--font-letter-spacing-title-small, 1px);
+      text-transform: uppercase;
+    }
+
+    .booking__value {
+      overflow: hidden;
+      color: var(--color-text-secondary, #4A4A4A);
+      text-overflow: ellipsis;
+      font-family: var(--font-family-body-medium, Inter, system-ui, sans-serif);
+      font-size: var(--font-size-body-medium, 16px);
+      font-style: normal;
+      font-weight: 300;
+      line-height: var(--font-line-height-body-medium, 26px);
+      letter-spacing: var(--font-letter-spacing-body-medium, 0.5px);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .booking__value svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--color-text-secondary, #4a4a4a);
+      fill: none;
+      stroke-width: 1.5;
+      flex-shrink: 0;
+    }
+
+    .booking__divider {
+      width: 1px;
+      height: 50px;
+      background: #d6e3dc;
+      flex-shrink: 0;
+    }
+
+    .booking__chevron {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-2);
+      fill: none;
+      stroke-width: 1.5;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .booking__cta {
+      background: #003b49;
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 1.75px;
+      text-transform: uppercase;
+      border: none;
+      padding: 16px 40px;
+      min-width: 200px;
+      height: 56px;
+      line-height: 22px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+      margin-left: 32px;
+    }
+
+    .booking__cta:hover { background: #002d38; }
+
+    /* ─── EDITORIAL ─────────────────────────────────────────── */
+    .s-editorial {
+      padding: 120px var(--gutter);
+      background: var(--bg);
+    }
+
+    .editorial__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .editorial__h2 {
+      font-family: var(--canela);
+      font-size: clamp(36px, 3.6vw, 52px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+    }
+
+    .editorial__body {
+      padding-top: 8px;
+      font-family: var(--inter);
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-2);
+      max-width: 440px;
+    }
+
+    .editorial__link {
+      display: inline-block;
+      margin-top: 24px;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33,21,81,0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .editorial__link:hover { border-color: var(--brand); }
+
+    /* ─── TWO-COLUMN ────────────────────────────────────────── */
+    .s-two-col {
+      padding: 0 var(--gutter);
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .two-col {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+    }
+
+    .two-col__left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .two-col__right {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .two-col__text {
+      padding: 80px 0 60px;
+    }
+
+    .two-col__h2 {
+      font-family: var(--canela);
+      font-size: clamp(36px, 3.2vw, 48px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+
+    .two-col__body {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-2);
+      max-width: 400px;
+      margin-bottom: 24px;
+    }
+
+    .two-col__link {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33,21,81,0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .two-col__link:hover { border-color: var(--brand); }
+
+    .two-col__img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .two-col__right .two-col__img {
+      margin-top: 0;
+    }
+
+    .two-col__right .two-col__text {
+      padding-top: 48px;
+    }
+
+    /* ─── DESTINATIONS CAROUSEL ─────────────────────────────── */
+    .s-destinations {
+      padding: 80px 0;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .dest-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 var(--gutter) 48px;
+    }
+
+    .dest-header h2 {
+      font-family: var(--canela);
+      font-size: 52px;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--brand);
+      flex: 0 0 auto;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .dest-header p {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--text-2);
+      max-width: 360px;
+      padding-top: 8px;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .carousel-outer {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 var(--gutter);
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: var(--card-gap);
+      transition: transform var(--dur) var(--ease-out);
+    }
+
+    .card {
+      position: relative;
+      flex: 0 0 357px;
+      height: 750px;
+      overflow: hidden;
+    }
+
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s var(--ease-out);
+    }
+
+    .card:hover .card__img { transform: scale(1.03); }
+
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(6,5,15,0.35) 65%, rgba(6,5,15,0.78) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 16px 32px 28px;
+      color: #fff;
+      z-index: 2;
+    }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.1;
+    }
+
+    .card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .card__meta .sep { color: rgba(255,255,255,0.4); }
+
+    .card__cta-link {
+      display: inline-block;
+      margin-top: 14px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      padding-bottom: 2px;
+      transition: border-color 0.2s ease, letter-spacing 0.2s ease;
+    }
+
+    .card__cta-link:hover { border-color: rgba(255,255,255,0.95); letter-spacing: 0.22em; }
+
+    .card__plus-btn {
+      position: absolute;
+      bottom: 32px;
+      right: 16px;
+      z-index: 3;
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 300;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .card__plus-btn:hover { background: rgba(255,255,255,0.15); }
+
+    .card__expanded {
+      position: absolute;
+      inset: 0;
+      background: var(--teal);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      padding: 40px 16px 32px 28px;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+    }
+
+    .card.is-expanded .card__expanded {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .card.is-expanded .card__img,
+    .card.is-expanded .card__overlay,
+    .card.is-expanded .card__body,
+    .card.is-expanded .card__plus-btn {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .card__expanded-content { margin-top: auto; display: flex; flex-direction: column; gap: 16px; }
+
+    .card__expanded-footer { display: flex; align-items: center; justify-content: space-between; }
+
+    .card__expanded-close {
+      background: none; border: none; outline: none;
+      color: #D6D6D6; width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; padding: 0;
+      transition: color 0.2s ease;
+    }
+
+    .card__expanded-close:hover { color: #fff; }
+    .card__expanded-close svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+
+    .card__expanded-title { font-family: var(--canela); font-size: 28px; font-weight: 300; line-height: 1.1; color: #fff; }
+    .card__expanded-meta { display: flex; align-items: center; gap: 8px; font-family: var(--engravers); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+    .card__expanded-meta .sep { color: rgba(255,255,255,0.4); }
+    .card__expanded-desc { font-family: var(--inter); font-size: 13px; font-weight: 300; line-height: 1.65; color: rgba(255,255,255,0.7); }
+    .card__expanded-cta { display: inline; font-family: var(--engravers); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.5); padding-bottom: 2px; transition: border-color 0.2s ease; }
+    .card__expanded-cta:hover { border-color: rgba(255,255,255,0.95); }
+
+    .carousel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 28px var(--gutter) 0;
+    }
+
+    .nav-btn { background: none; border: none; cursor: pointer; color: var(--brand); opacity: 0.45; transition: opacity 0.2s ease; padding: 4px 8px; }
+    .nav-btn:hover { opacity: 1; }
+    .nav-btn:disabled { opacity: 0.18; cursor: default; }
+    .nav-btn svg { display: block; width: 20px; height: 14px; }
+
+    .progress-track { flex: 1; max-width: 860px; height: 1px; background: rgba(33,21,81,0.18); position: relative; }
+    .progress-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--brand); transition: width var(--dur) var(--ease-out); }
+
+    /* ─── NEWEST DESTINATION ────────────────────────────────── */
+    .s-newest {
+      background: var(--bg-bali);
+      padding: 80px var(--gutter);
+    }
+
+    .newest__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .newest__img-wrap {
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+    }
+
+    .newest__img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .newest__label {
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .newest__label::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--brand);
+      opacity: 0.5;
+    }
+
+    .newest__h1 {
+      font-family: var(--canela);
+      font-size: clamp(40px, 4vw, 58px);
+      font-weight: 300;
+      line-height: 1.08;
+      color: var(--coral);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+
+    .newest__location {
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      opacity: 0.65;
+      margin-bottom: 28px;
+    }
+
+    .newest__body {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--brand);
+      opacity: 0.8;
+      margin-bottom: 32px;
+    }
+
+    .newest__link {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33,21,81,0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .newest__link:hover { border-color: var(--brand); }
+
+    /* ─── EVENTS ────────────────────────────────────────────── */
+    .s-events {
+      background: #fff;
+    }
+
+    .events-layout {
+      display: grid;
+      grid-template-columns: 720px 1fr;
+    }
+
+    .events-image-panel {
+      position: relative;
+      height: 650px;
+      overflow: hidden;
+      background: #d6cfc6;
+    }
+
+    .event-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 1.4s ease, transform 2.8s var(--ease-out);
+    }
+
+    .event-img.is-active { opacity: 1; transform: scale(1); }
+    .event-img.is-leaving { opacity: 0; transform: scale(1); transition: opacity 1s ease; }
+
+    .events-content {
+      display: flex;
+      flex-direction: column;
+      padding: 48px 120px 48px 64px;
+      height: 650px;
+      overflow: hidden;
+    }
+
+    .events-section-h2 {
+      font-family: var(--canela);
+      font-size: 44px;
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .events-spacer { flex: 1; }
+
+    .accordion { display: flex; flex-direction: column; }
+
+    .acc-item { border-top: 1px solid var(--border); }
+    .acc-item:first-child { border-top: none; }
+
+    .acc-trigger {
+      width: 100%;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .acc-title-group { display: flex; flex-direction: column; gap: 4px; }
+
+    .acc-title {
+      font-family: var(--canela);
+      font-size: 34px;
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+    }
+
+    .acc-subtitle {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .acc-plus {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      color: var(--brand);
+      transition: opacity 0.5s ease;
+    }
+
+    .acc-item.is-active .acc-plus { opacity: 0; pointer-events: none; }
+
+    .acc-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 1.1s var(--ease-out); }
+    .acc-item.is-active .acc-body { grid-template-rows: 1fr; }
+    .acc-body-inner { overflow: hidden; }
+
+    .acc-content {
+      padding-bottom: 28px;
+      opacity: 0;
+      transition: opacity 0.72s ease 0.34s;
+    }
+
+    .acc-item.is-active .acc-content { opacity: 1; }
+    .acc-item.is-closing .acc-content { opacity: 0; transition: opacity 0.3s ease 0s; }
+
+    .acc-desc {
+      font-family: var(--inter);
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--text-2);
+      max-width: 460px;
+      margin-bottom: 20px;
+    }
+
+    .acc-cta {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33,21,81,0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .acc-cta:hover { border-color: var(--brand); }
+
+    /* ─── STAY UNIQUE ────────────────────────────────────────── */
+    .s-unique {
+      padding: 100px var(--gutter);
+      background: var(--bg);
+    }
+
+    .unique__h2 {
+      font-family: var(--canela);
+      font-size: clamp(36px, 3.6vw, 52px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+      max-width: 600px;
+      margin-bottom: 56px;
+    }
+
+    .unique__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px 64px;
+      max-width: 1200px;
+    }
+
+    .unique__card {}
+
+    .unique__card-img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .unique__card-title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--brand);
+      margin-bottom: 12px;
+    }
+
+    .unique__card-body {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-2);
+      margin-bottom: 16px;
+      max-width: 440px;
+    }
+
+    .unique__card-link {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33,21,81,0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .unique__card-link:hover { border-color: var(--brand); }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    .s-footer {
+      background: var(--bg-footer);
+    }
+
+    .footer-breadcrumb {
+      background: #F0EEE8;
+      padding: 8px 32px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-breadcrumb a {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: #666;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-breadcrumb svg { width: 14px; height: 14px; stroke: #666; fill: none; stroke-width: 1.5; }
+
+    .footer-main {
+      padding: 48px var(--gutter) 40px;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 40px;
+    }
+
+    .footer-logo {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .footer-logo-word {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 4px;
+    }
+
+    .footer-logo-sub {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--engravers);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .footer-social {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .footer-social-label {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .footer-social-icons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-social-icons a {
+      color: #fff;
+      text-decoration: none;
+      font-family: var(--inter);
+      font-size: 18px;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+
+    .footer-social-icons a:hover { opacity: 1; }
+
+    .footer-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 40px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 32px;
+    }
+
+    .footer-col-title {
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .footer-col ul a {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-col ul a:hover { color: #fff; }
+
+    .footer-col-icon-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .footer-col-icon-item svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.5); fill: none; stroke-width: 1.5; }
+
+    .footer-apps { display: flex; flex-direction: column; gap: 10px; }
+
+    .footer-app-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      padding: 8px 14px;
+      text-decoration: none;
+      width: 148px;
+    }
+
+    .footer-app-badge svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+
+    .footer-app-badge-text { display: flex; flex-direction: column; }
+    .footer-app-badge-sub { font-family: var(--inter); font-size: 9px; font-weight: 300; color: rgba(255,255,255,0.7); letter-spacing: 0.3px; }
+    .footer-app-badge-name { font-family: var(--inter); font-size: 13px; font-weight: 400; color: #fff; }
+
+    .footer-app-note {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.45);
+      margin-top: 4px;
+    }
+
+    .footer-bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 24px;
+    }
+
+    .footer-rewards {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-rewards-logo {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 12px;
+    }
+
+    .footer-best-price {
+      color: rgba(255,255,255,0.7);
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .footer-legal-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .footer-legal-links a {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-legal-links a:hover { color: rgba(255,255,255,0.85); }
+
+    .footer-legal-note {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      max-width: 800px;
+    }
+
+    .footer-copyright {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+  1. HERO
+═══════════════════════════════════════════════ -->
+<section class="s-hero">
+  <div class="hero__bg">
+    <video autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback>
+      <source src="../_assets/_imgs/regent-hero-video-final.mov" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero__gradient"></div>
+  <div class="hero__overlay"></div>
+
+  <nav class="nav">
+    <div class="nav__top">
+      <div class="nav__side">
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          EN
+        </a>
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.45 2 2 0 0 1 3.59 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          1-800-REGENT-1
+        </a>
+      </div>
+
+      <div class="nav__logo">
+        <span class="nav__logo-word">Regent</span>
+        <span class="nav__logo-sub">Hotels &amp; Resorts</span>
+      </div>
+
+      <div class="nav__side nav__side--right">
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Sign In
+        </a>
+      </div>
+    </div>
+
+    <div class="nav__sub">
+      <a class="nav__link" href="#">Hotels &amp; Resorts</a>
+      <a class="nav__link" href="#">Residences</a>
+      <a class="nav__link" href="#">Regent Presents</a>
+      <a class="nav__link" href="#">Destinations</a>
+      <a class="nav__link" href="#">Events</a>
+      <a class="nav__link" href="#">Offers</a>
+      <a class="nav__link" href="#">About</a>
+    </div>
+  </nav>
+
+  <div class="hero__content">
+    <h1 class="hero__h1">Regent Hotels &amp; Resorts</h1>
+  </div>
+
+  <!-- Pause / play control — lower left -->
+  <div class="hero__controls">
+    <button class="hero__pause-btn" id="videoPauseBtn" aria-label="Pause video">
+      <!-- pause icon (default state) -->
+      <svg id="iconPause" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <path d="M16.6667 25V15M23.3333 25V15M36.6667 20C36.6667 29.2047 29.2047 36.6666 20 36.6666C10.7953 36.6666 3.33334 29.2047 3.33334 20C3.33334 10.7952 10.7953 3.33331 20 3.33331C29.2047 3.33331 36.6667 10.7952 36.6667 20Z" stroke="#F7F7F7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <!-- play icon (paused state) -->
+      <svg id="iconPlay" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none" style="display:none">
+        <path d="M15 12.5L28.3333 20L15 27.5V12.5Z M36.6667 20C36.6667 29.2047 29.2047 36.6666 20 36.6666C10.7953 36.6666 3.33334 29.2047 3.33334 20C3.33334 10.7952 10.7953 3.33331 20 3.33331C29.2047 3.33331 36.6667 10.7952 36.6667 20Z" stroke="#F7F7F7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  BOOKING BAR — straddles hero / editorial boundary
+═══════════════════════════════════════════════ -->
+<div class="s-booking">
+  <div class="booking__inner">
+    <div class="booking__field">
+      <span class="booking__label">1 Night</span>
+      <div class="booking__value">
+        <span>08/12/25 – 08/13/25</span>
+        <!-- lucide/calendar — trailing icon -->
+        <svg class="booking__chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+    </div>
+
+    <div class="booking__divider"></div>
+
+    <div class="booking__field">
+      <span class="booking__label">Rooms &amp; Guests</span>
+      <div class="booking__value">
+        1 room, 1 guest
+        <!-- lucide/chevron-down -->
+        <svg class="booking__chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+
+    <div class="booking__divider"></div>
+
+    <div class="booking__field">
+      <span class="booking__label">Special Rates</span>
+      <div class="booking__value">
+        Best Available
+        <!-- lucide/chevron-down -->
+        <svg class="booking__chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+
+    <button class="booking__cta">Reserve</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  2. EDITORIAL
+═══════════════════════════════════════════════ -->
+<section class="s-editorial">
+  <div class="editorial__inner">
+    <h2 class="editorial__h2">Hand-selected hotels &amp; resorts in the world's best locales</h2>
+    <div>
+      <p class="editorial__body">Time slows, a sense of wonder unfolds, and each stay reveals a whole new view. Our hotels and resorts lead you seamlessly from serene spaces to dynamic moments, tailored to your every wish.</p>
+      <a href="#" class="editorial__link">Explore all destinations</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  3. TWO-COLUMN — Our Destinations / Regent Presents
+═══════════════════════════════════════════════ -->
+<section class="s-two-col">
+  <div class="two-col">
+    <!-- Left column: text top → image bottom -->
+    <div class="two-col__left">
+      <div class="two-col__text">
+        <h2 class="two-col__h2">Our Destinations</h2>
+        <p class="two-col__body">Time slows, a sense of wonder unfolds, and each stay reveals a whole new view. Our hotels and resorts lead you seamlessly from serene spaces to dynamic moments, tailored to your every wish.</p>
+        <a href="#" class="two-col__link">Explore Hotels &amp; Resorts</a>
+      </div>
+      <img class="two-col__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Regent Cannes hotel room balcony">
+    </div>
+
+    <!-- Right column: image top → text bottom -->
+    <div class="two-col__right">
+      <img class="two-col__img" src="../_assets/_imgs/rg-brand-refresh-offers-lp-offer-2col-tile-phu-quoc-1180x664.jpeg" alt="Regent Phu Quoc pool">
+      <div class="two-col__text">
+        <h2 class="two-col__h2">Regent Presents</h2>
+        <p class="two-col__body">Revel in a world where design inspires and culinary journeys excite. Our intuitive hospitality takes care of every detail, allowing you the freedom to uncover unexpected moments and uplifting experiences.</p>
+        <a href="#" class="two-col__link">Discover More</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  4. DESTINATION CAROUSEL
+═══════════════════════════════════════════════ -->
+<section class="s-destinations">
+  <div class="dest-header">
+    <h2>Awakened scenes,<br>fresh perspectives</h2>
+    <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+  </div>
+
+  <div class="carousel-outer" id="viewport">
+    <div class="carousel-track" id="track">
+
+      <div class="card">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Carlton Cannes">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Carlton Cannes</div>
+          <div class="card__meta"><span>Cannes</span><span class="sep">·</span><span>France</span></div>
+          <a href="#" class="card__cta-link">Explore</a>
+        </div>
+      </div>
+
+      <div class="card card--teaser" data-index="0">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali, Indonesia">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Bali, Indonesia</div>
+          <div class="card__meta"><span>Canggu</span><span class="sep">·</span><span>Asia Pacific</span></div>
+        </div>
+        <button class="card__plus-btn" aria-label="Learn more">+</button>
+        <div class="card__expanded">
+          <div class="card__expanded-content">
+            <div class="card__expanded-title">Bali, Indonesia</div>
+            <div class="card__expanded-meta"><span>Canggu</span><span class="sep">·</span><span>Asia Pacific</span></div>
+            <p class="card__expanded-desc">Step through the doorway into Bali's timeless soul where heritage and nature entwine — surf, ceremony, and the Indian Ocean at your door.</p>
+            <div class="card__expanded-footer">
+              <a href="#" class="card__expanded-cta">Explore</a>
+              <button class="card__expanded-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-hong-kong-1180x664.jpeg" alt="Regent Hong Kong">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Hong Kong</div>
+          <div class="card__meta"><span>Victoria Harbour</span><span class="sep">·</span><span>Asia Pacific</span></div>
+          <a href="#" class="card__cta-link">Explore</a>
+        </div>
+      </div>
+
+      <div class="card card--teaser" data-index="1">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Phu Quoc, Vietnam">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Phu Quoc, Vietnam</div>
+          <div class="card__meta"><span>Phu Quoc Island</span><span class="sep">·</span><span>Asia Pacific</span></div>
+        </div>
+        <button class="card__plus-btn" aria-label="Learn more">+</button>
+        <div class="card__expanded">
+          <div class="card__expanded-content">
+            <div class="card__expanded-title">Phu Quoc, Vietnam</div>
+            <div class="card__expanded-meta"><span>Phu Quoc Island</span><span class="sep">·</span><span>Asia Pacific</span></div>
+            <p class="card__expanded-desc">A pristine island paradise where emerald waters meet white sands, and every detail of the Regent experience awaits.</p>
+            <div class="card__expanded-footer">
+              <a href="#" class="card__expanded-cta">Explore</a>
+              <button class="card__expanded-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Regent Santa Monica">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Santa Monica Beach</div>
+          <div class="card__meta"><span>Los Angeles</span><span class="sep">·</span><span>USA</span></div>
+          <a href="#" class="card__cta-link">Explore</a>
+        </div>
+      </div>
+
+      <div class="card card--teaser" data-index="2">
+        <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-b-1180x664-1.jpeg" alt="Singapore">
+        <div class="card__overlay"></div>
+        <div class="card__body">
+          <div class="card__title">Singapore</div>
+          <div class="card__meta"><span>Marina Bay</span><span class="sep">·</span><span>Asia Pacific</span></div>
+        </div>
+        <button class="card__plus-btn" aria-label="Learn more">+</button>
+        <div class="card__expanded">
+          <div class="card__expanded-content">
+            <div class="card__expanded-title">Singapore</div>
+            <div class="card__expanded-meta"><span>Marina Bay</span><span class="sep">·</span><span>Asia Pacific</span></div>
+            <p class="card__expanded-desc">At the intersection of culture, cuisine and design — Regent Singapore redefines the art of the city stay.</p>
+            <div class="card__expanded-footer">
+              <a href="#" class="card__expanded-cta">Explore</a>
+              <button class="card__expanded-close" aria-label="Close"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="carousel-nav">
+    <button class="nav-btn" id="prevBtn" disabled>
+      <svg viewBox="0 0 20 14" fill="none"><path d="M19 7H1M1 7L7 1M1 7L7 13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <button class="nav-btn" id="nextBtn">
+      <svg viewBox="0 0 20 14" fill="none"><path d="M1 7H19M19 7L13 1M19 7L13 13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  5. OUR NEWEST DESTINATION
+═══════════════════════════════════════════════ -->
+<section class="s-newest">
+  <div class="newest__inner">
+    <div class="newest__img-wrap">
+      <img class="newest__img" src="../_assets/_imgs/regent-bali-canggu-main-pool-golden-hour.avif" alt="Regent Bali Canggu">
+    </div>
+    <div>
+      <p class="newest__label">Now Open</p>
+      <h2 class="newest__h1">Our Newest Destination</h2>
+      <p class="newest__location">Bali Canggu, Indonesia &nbsp;•&nbsp; Now Open</p>
+      <p class="newest__body">Step through the doorway into Bali's timeless soul where heritage and nature entwine. Here, a symphony of the ocean's rhythmic dance transports you into a tranquil revelry. Refined indulgences beckon you to unwind in one of our oceanside or garden havens.</p>
+      <a href="#" class="newest__link">Discover More</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  6. EVENTS ACCORDION
+═══════════════════════════════════════════════ -->
+<section class="s-events">
+  <div class="events-layout">
+    <div class="events-image-panel" id="imagePanel">
+      <img class="event-img" data-idx="0" src="../_assets/_imgs/rg-cannes-film-fest-lp-img-teaser-post-event-beach-club-lunch-1600x900.jpeg" alt="Carlton Cannes">
+      <img class="event-img" data-idx="1" src="../_assets/_imgs/rg-brand-refresh-homepg-teaser-card-2x1-taste-studio-1340x670.jpeg" alt="Taste Studio Phu Quoc">
+    </div>
+
+    <div class="events-content">
+      <h2 class="events-section-h2">Events</h2>
+      <div class="events-spacer"></div>
+
+      <div class="accordion" id="accordion">
+
+        <div class="acc-item" data-idx="0">
+          <button class="acc-trigger">
+            <div class="acc-title-group">
+              <span class="acc-title">Carlton Cannes Hotel</span>
+              <span class="acc-subtitle">Cannes, France</span>
+            </div>
+            <span class="acc-plus">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/><line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/></svg>
+            </span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <div class="acc-content">
+                <p class="acc-desc">Carlton Cannes, a Regent Hotel, invites you to experience the Côte D'Azur and the opulence of this annual spectacle of cinema as we celebrate the talent across the world of film.</p>
+                <a href="#" class="acc-cta">Discover More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item" data-idx="1">
+          <button class="acc-trigger">
+            <div class="acc-title-group">
+              <span class="acc-title">Taste Studio Phu Quoc</span>
+              <span class="acc-subtitle">Phu Quoc, Vietnam</span>
+            </div>
+            <span class="acc-plus">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><line x1="8" y1="0" x2="8" y2="16" stroke="currentColor" stroke-width="1"/><line x1="0" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1"/></svg>
+            </span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <div class="acc-content">
+                <p class="acc-desc">Take your seat at A Spectrum of Contrasts — an exclusive celebration of Vietnamese culinary artistry. Immerse in light and shadow, flavor and sensation, where every instant transforms into an unforgettable experience.</p>
+                <a href="#" class="acc-cta">Discover More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  7. WHAT MAKES EACH STAY UNIQUE
+═══════════════════════════════════════════════ -->
+<section class="s-unique">
+  <h2 class="unique__h2">What makes each stay truly unique</h2>
+  <div class="unique__grid">
+
+    <div class="unique__card">
+      <img class="unique__card-img" src="../_assets/_imgs/rg-brand-refresh-homepg-offer-2col-tile-taste-studio-svp-1340x754.jpeg" alt="Taste Studio">
+      <h3 class="unique__card-title">Taste Studio</h3>
+      <p class="unique__card-body">Indulge in immersive pop-up dining experiences, where the finest culinary talent meets visionary local artists in a bespoke series of events.</p>
+      <a href="#" class="unique__card-link">Discover More</a>
+    </div>
+
+    <div class="unique__card">
+      <img class="unique__card-img" src="../_assets/_imgs/rg-brand-refresh-homepg-offer-2col-tile-personal-havens-svp-1340x754.jpeg" alt="Personal Havens">
+      <h3 class="unique__card-title">Personal Havens</h3>
+      <p class="unique__card-body">Whether you seek serenity or stimulation, our curated spaces turn suites, poolside cabanas, and breathtaking views into unforgettable experiences.</p>
+    </div>
+
+    <div class="unique__card">
+      <img class="unique__card-img" src="../_assets/_imgs/rg-brand-refresh-homepg-offer-2col-tile-experience-agent-svp-1340x754.jpeg" alt="Regent Experience Agent">
+      <h3 class="unique__card-title">Regent Experience Agent</h3>
+      <p class="unique__card-body">From arrival to departure, your personal agent orchestrates every aspect of your stay with effortless precision.</p>
+    </div>
+
+    <div class="unique__card">
+      <img class="unique__card-img" src="../_assets/_imgs/rg-brand-refresh-homepg-offer-2col-tile-drink-1180x664.jpeg" alt="With Compliments">
+      <h3 class="unique__card-title">With Compliments</h3>
+      <p class="unique__card-body">It's all in the details. From laundry to garment pressing, and a mini-bar stocked with your favorites, we ensure you want for nothing.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  8. FOOTER
+═══════════════════════════════════════════════ -->
+<footer class="s-footer">
+  <div class="footer-breadcrumb">
+    <a href="#">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      IHG
+    </a>
+  </div>
+
+  <div class="footer-main">
+    <div class="footer-top">
+      <div class="footer-logo">
+        <span class="footer-logo-word">IHG</span>
+        <span class="footer-logo-sub">Hotels &amp; Resorts</span>
+      </div>
+      <div class="footer-social">
+        <span class="footer-social-label">Follow us on</span>
+        <div class="footer-social-icons">
+          <a href="#" aria-label="Facebook">&#xFB;</a>
+          <a href="#" aria-label="TikTok">&#x54;&#x54;</a>
+          <a href="#" aria-label="YouTube">&#x25B6;</a>
+          <a href="#" aria-label="Instagram">&#x25A1;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-cols">
+      <div class="footer-col">
+        <p class="footer-col-title">Help &amp; Support</p>
+        <ul>
+          <li><a href="#">
+            <span class="footer-col-icon-item">
+              <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+              1 888 123 4567
+            </span>
+          </a></li>
+          <li><a href="#">
+            <span class="footer-col-icon-item">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Chat with us
+            </span>
+          </a></li>
+          <li><a href="#">
+            <span class="footer-col-icon-item">
+              <svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+              Customer care
+            </span>
+          </a></li>
+        </ul>
+        <p class="footer-col-title" style="margin-top:28px;">Resources</p>
+        <ul>
+          <li><a href="#">Feedback</a></li>
+          <li><a href="#">Travel Advisories</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">IHG</p>
+        <ul>
+          <li><a href="#">About IHG Hotels &amp; Resorts</a></li>
+          <li><a href="#">Explore Hotels</a></li>
+          <li><a href="#">About Our Brands</a></li>
+          <li><a href="#">IHG Careers</a></li>
+          <li><a href="#">Hotel Development</a></li>
+          <li><a href="#">IHG One Rewards</a></li>
+          <li><a href="#">IHG Corporate</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">&nbsp;</p>
+        <ul>
+          <li><a href="#">IHG Agent Portal</a></li>
+          <li><a href="#">Travel Professionals</a></li>
+          <li><a href="#">Affiliate Program</a></li>
+          <li><a href="#">IHG Business Rewards</a></li>
+          <li><a href="#">IHG Army Hotels</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Commitment to Clean</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">&nbsp;</p>
+        <div class="footer-apps">
+          <a href="#" class="footer-app-badge">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="footer-app-badge-text">
+              <span class="footer-app-badge-sub">Download on the</span>
+              <span class="footer-app-badge-name">App Store</span>
+            </div>
+          </a>
+          <a href="#" class="footer-app-badge">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.18 23.76c.3.17.64.22.99.12l12.12-6.98-2.54-2.54-10.57 9.4zM.49 2.28A1.5 1.5 0 0 0 0 3.46v17.08c0 .48.18.9.49 1.18l.07.06 9.57-9.57v-.22L.56 2.22l-.07.06zM20.49 10.34l-2.6-1.5-2.85 2.85 2.85 2.85 2.62-1.51c.75-.43.75-1.13-.02-1.69zm-19.31 13.42l10.57-9.4-2.54-2.54-10.57 9.4z" fill="#fff"/></svg>
+            <div class="footer-app-badge-text">
+              <span class="footer-app-badge-sub">Get it on</span>
+              <span class="footer-app-badge-name">Google Play</span>
+            </div>
+          </a>
+          <p class="footer-app-note">Get the IHG® App Today</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="footer-rewards">
+        <span class="footer-rewards-logo">IHG &nbsp;|&nbsp; ONE REWARDS</span>
+      </div>
+      <span class="footer-best-price">Best Price Guarantee</span>
+    </div>
+
+    <div class="footer-legal-links">
+      <a href="#">Terms of Use</a>
+      <a href="#">Privacy &amp; Cookie Center</a>
+      <a href="#">Do Not Sell or Share My Personal Information</a>
+      <a href="#">AdChoices</a>
+      <a href="#">Member Terms &amp; Conditions</a>
+    </div>
+    <p class="footer-legal-note">To ensure that we give you the best experience on our website, we use machine translation for portions of the content featured on this page.</p>
+    <p class="footer-copyright">©2025 IHG. All Rights Reserved. Most hotels are independently owned and operated.</p>
+  </div>
+</footer>
+
+<script>
+  // ── Hero video pause/play ──────────────────────────────────
+  const heroVideo    = document.querySelector('.hero__bg video');
+  const pauseBtn     = document.getElementById('videoPauseBtn');
+  const iconPause    = document.getElementById('iconPause');
+  const iconPlay     = document.getElementById('iconPlay');
+
+  pauseBtn.addEventListener('click', () => {
+    if (heroVideo.paused) {
+      heroVideo.play();
+      iconPause.style.display = '';
+      iconPlay.style.display  = 'none';
+      pauseBtn.setAttribute('aria-label', 'Pause video');
+    } else {
+      heroVideo.pause();
+      iconPause.style.display = 'none';
+      iconPlay.style.display  = '';
+      pauseBtn.setAttribute('aria-label', 'Play video');
+    }
+  });
+
+  // ── Carousel ──────────────────────────────────────────────
+  const track        = document.getElementById('track');
+  const prevBtn      = document.getElementById('prevBtn');
+  const nextBtn      = document.getElementById('nextBtn');
+  const progressFill = document.getElementById('progressFill');
+  const cards        = Array.from(track.querySelectorAll('.card'));
+  const VISIBLE      = 4;
+  const maxIndex     = cards.length - VISIBLE;
+  let current        = 0;
+
+  function goTo(idx) {
+    current = Math.max(0, Math.min(idx, maxIndex));
+    const w = cards[0].getBoundingClientRect().width;
+    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-gap')) || 4;
+    track.style.transform = `translateX(-${current * (w + gap)}px)`;
+    progressFill.style.width = `${((current + VISIBLE) / cards.length) * 100}%`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === maxIndex;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+  goTo(0);
+
+  track.addEventListener('click', e => {
+    const plusBtn = e.target.closest('.card__plus-btn');
+    if (plusBtn) {
+      const card = plusBtn.closest('.card');
+      track.querySelectorAll('.card.is-expanded').forEach(c => { if (c !== card) c.classList.remove('is-expanded'); });
+      card.classList.add('is-expanded');
+      return;
+    }
+    const closeBtn = e.target.closest('.card__expanded-close');
+    if (closeBtn) closeBtn.closest('.card').classList.remove('is-expanded');
+  });
+
+  // ── Events Accordion ─────────────────────────────────────
+  const accItems  = Array.from(document.querySelectorAll('.acc-item'));
+  const evtImages = Array.from(document.querySelectorAll('.event-img'));
+  let activeIdx   = 0;
+  let switching   = false;
+
+  function switchTo(idx) {
+    if (idx === activeIdx || switching) return;
+    switching = true;
+    const prev = activeIdx;
+    activeIdx  = idx;
+
+    accItems[prev].classList.add('is-closing');
+    requestAnimationFrame(() => {
+      accItems[prev].classList.remove('is-active');
+      accItems[idx].classList.add('is-active');
+      setTimeout(() => accItems[prev].classList.remove('is-closing'), 400);
+    });
+
+    evtImages[prev].classList.remove('is-active');
+    evtImages[prev].classList.add('is-leaving');
+    setTimeout(() => evtImages[prev].classList.remove('is-leaving'), 600);
+    evtImages[idx].classList.add('is-active');
+
+    setTimeout(() => { switching = false; }, 800);
+  }
+
+  accItems.forEach((item, i) => {
+    item.querySelector('.acc-trigger').addEventListener('click', () => switchTo(i));
+  });
+
+  accItems[0].classList.add('is-active');
+  evtImages[0].classList.add('is-active');
+</script>
+
+</body>
+</html>

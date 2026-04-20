@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Viewer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #111;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    .layout {
+      display: flex;
+      flex-direction: column;
+      width: 100%; height: 100%;
+    }
+
+    .layout__body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ─── Toolbar ──────────────────────────────────────────────── */
+    .toolbar {
+      height: 48px;
+      background: rgba(20,20,20,0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .toolbar__logo {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      flex-shrink: 0;
+      padding-right: 6px;
+    }
+
+    .tb-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255,255,255,0.08);
+      flex-shrink: 0;
+      margin: 0 2px;
+    }
+
+    .device-group {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .device-group__os {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      padding: 0 4px;
+    }
+
+    .device-btn {
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 5px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.4);
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      line-height: 1;
+      transition: background 0.1s, color 0.1s, border-color 0.1s;
+    }
+    .device-btn:hover  { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.16); }
+    .device-btn.active { background: rgba(255,255,255,0.11); color: #fff; border-color: rgba(255,255,255,0.24); }
+
+    .toolbar__right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-group {
+      display: flex;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .toggle-btn {
+      height: 26px;
+      padding: 0 10px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+    }
+    .toggle-btn:hover  { color: rgba(255,255,255,0.75); }
+    .toggle-btn.active { background: rgba(255,255,255,0.12); color: #fff; }
+
+    .size-badge {
+      font-size: 11px;
+      color: rgba(255,255,255,0.22);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .scale-badge {
+      font-size: 11px;
+      color: rgba(255,255,255,0.22);
+      font-variant-numeric: tabular-nums;
+      min-width: 34px;
+      text-align: right;
+    }
+
+    /* ─── Sidebar ──────────────────────────────────────────────── */
+    .sidebar {
+      width: 216px;
+      flex-shrink: 0;
+      background: #161616;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar__header {
+      padding: 12px 14px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      flex-shrink: 0;
+    }
+
+    .sidebar__scroll {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0 8px 12px;
+    }
+    .sidebar__scroll::-webkit-scrollbar { width: 3px; }
+    .sidebar__scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+    .sidebar__section {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      padding: 10px 6px 4px;
+    }
+
+    .proto-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 6px 8px;
+      border-radius: 5px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.45);
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .proto-btn:hover  { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+    .proto-btn.active { background: rgba(255,255,255,0.09); color: #fff; font-weight: 500; }
+
+    /* ─── Stage ────────────────────────────────────────────────── */
+    .stage {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /*
+     * Two-layer scale fix:
+     *
+     * .frame-outer  holds the SCALED dimensions — flex uses this to
+     *               centre the device correctly in the stage.
+     *
+     * .frame-inner  holds the FULL device dimensions and applies
+     *               transform: scale() visually. Because transform
+     *               doesn't affect layout, without the outer wrapper
+     *               the flex container would still try to centre a
+     *               full-size element, causing apparent cropping.
+     */
+    .frame-outer {
+      position: relative;
+      flex-shrink: 0;
+      transition: width  0.25s cubic-bezier(0.4,0,0.2,1),
+                  height 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .frame-inner {
+      position: absolute;
+      top: 0; left: 0;
+      transform-origin: top left;
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* The shell iframe fills the full device dimensions */
+    .frame-inner iframe {
+      display: block;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── Empty state ──────────────────────────────────────────── */
+    .frame-empty {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .frame-empty__text {
+      font-size: 12px;
+      color: rgba(255,255,255,0.18);
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <span class="toolbar__logo">Viewer</span>
+
+    <div class="tb-divider"></div>
+
+    <div class="device-group">
+      <span class="device-group__os">iOS</span>
+      <button class="device-btn" data-id="iphone-15-pro">15 Pro</button>
+      <button class="device-btn" data-id="iphone-15-pro-max">15 Pro Max</button>
+      <button class="device-btn" data-id="iphone-se">SE</button>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <div class="device-group">
+      <span class="device-group__os">Android</span>
+      <button class="device-btn" data-id="pixel-9-pro">Pixel 9 Pro</button>
+      <button class="device-btn" data-id="galaxy-s24">Galaxy S24</button>
+    </div>
+
+    <div class="toolbar__right">
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="btnLight" onclick="setMode('light')">Light</button>
+        <button class="toggle-btn"        id="btnDark"  onclick="setMode('dark')">Dark</button>
+      </div>
+      <span class="size-badge"  id="sizeBadge">—</span>
+      <span class="scale-badge" id="scaleBadge">—</span>
+    </div>
+  </div>
+
+  <div class="layout__body">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar__header">Prototypes</div>
+      <div class="sidebar__scroll" id="sidebarScroll"></div>
+    </div>
+
+    <!-- Stage: shell scaled to fit -->
+    <div class="stage" id="stage">
+      <div class="frame-outer" id="frameOuter">
+        <div class="frame-inner" id="frameInner">
+          <div class="frame-empty" id="frameEmpty">
+            <span class="frame-empty__text">Select a prototype →</span>
+          </div>
+          <iframe id="shellFrame" src="about:blank" allow="autoplay" style="display:none;position:absolute;top:0;left:0;"></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── Device presets ─────────────────────────────────────────── */
+  const DEVICES = {
+    'iphone-15-pro':     { shell: 'ios-safari.html',     w: 393, h: 852 },
+    'iphone-15-pro-max': { shell: 'ios-safari.html',     w: 430, h: 932 },
+    'iphone-se':         { shell: 'ios-safari.html',     w: 375, h: 667 },
+    'pixel-9-pro':       { shell: 'android-chrome.html', w: 412, h: 892 },
+    'galaxy-s24':        { shell: 'android-chrome.html', w: 360, h: 780 },
+  };
+
+  /* ── Prototype list ─────────────────────────────────────────── */
+  const PROTOS = {
+    'Pages': [
+      { label: 'Homepage',                       path: '../index.html' },
+      { label: 'Login',                          path: '../login.html' },
+    ],
+    'Components': [
+      { label: 'Destinations Cards',             path: '../_prototype/destinations-cards.html' },
+      { label: 'Destinations Cards — Mobile',    path: '../_prototype/destinations-cards-mobile.html' },
+      { label: 'Destinations Cards — Device',    path: '../_prototype/destinations-cards-mobile-device.html' },
+      { label: 'Destinations Cards — Push/Pull', path: '../_prototype/destinations-cards-mobile-pushpull.html' },
+      { label: 'Destinations Cards — Overlap',   path: '../_prototype/destinations-cards-overlap.html' },
+      { label: 'Destinations Cards — Teaser',    path: '../_prototype/destinations-cards-teaser.html' },
+      { label: 'Destinations Cards — A11y',      path: '../_prototype/destinations-cards-a11y.html' },
+      { label: 'Events Accordion',               path: '../_prototype/events-accordion.html' },
+      { label: 'Events Accordion — Mobile',      path: '../_prototype/events-accordion-mobile.html' },
+      { label: 'Content Block Carousel',         path: '../_prototype/content-block-carousel.html' },
+      { label: 'Sticky CTA Bar',                 path: '../_prototype/sticky-cta-bar.html' },
+    ],
+  };
+
+  /* ── State ──────────────────────────────────────────────────── */
+  let currentDevice = 'iphone-15-pro';
+  let currentMode   = 'light';
+  let currentProto  = '';
+
+  const stage      = document.getElementById('stage');
+  const frameOuter = document.getElementById('frameOuter');
+  const frameInner = document.getElementById('frameInner');
+  const shellFrame = document.getElementById('shellFrame');
+  const frameEmpty = document.getElementById('frameEmpty');
+  const sizeBadge  = document.getElementById('sizeBadge');
+  const scaleBadge = document.getElementById('scaleBadge');
+
+  /* ── Build sidebar ──────────────────────────────────────────── */
+  const sidebarScroll = document.getElementById('sidebarScroll');
+  for (const [section, files] of Object.entries(PROTOS)) {
+    const sec = document.createElement('div');
+    sec.className = 'sidebar__section';
+    sec.textContent = section;
+    sidebarScroll.appendChild(sec);
+
+    for (const f of files) {
+      const btn = document.createElement('button');
+      btn.className = 'proto-btn';
+      btn.textContent = f.label;
+      btn.dataset.path = f.path;
+      btn.addEventListener('click', () => selectProto(f.path));
+      sidebarScroll.appendChild(btn);
+    }
+  }
+
+  /* ── Compute scale ──────────────────────────────────────────── */
+  function computeScale(deviceId) {
+    const d   = DEVICES[deviceId];
+    const pad = 48;
+    const sw  = stage.clientWidth  - pad * 2;
+    const sh  = stage.clientHeight - pad * 2;
+    return Math.min(sw / d.w, sh / d.h, 1);
+  }
+
+  /* ── Apply dimensions + scale ───────────────────────────────── */
+  function applyScale(deviceId) {
+    const d     = DEVICES[deviceId];
+    const scale = computeScale(deviceId);
+
+    /* Outer: scaled footprint — correct centering in flex */
+    frameOuter.style.width  = Math.round(d.w * scale) + 'px';
+    frameOuter.style.height = Math.round(d.h * scale) + 'px';
+
+    /* Inner: full device px, visually scaled */
+    frameInner.style.width     = d.w + 'px';
+    frameInner.style.height    = d.h + 'px';
+    frameInner.style.transform = `scale(${scale})`;
+
+    sizeBadge.textContent  = `${d.w} × ${d.h}`;
+    scaleBadge.textContent = Math.round(scale * 100) + '%';
+  }
+
+  /* ── Build shell URL ────────────────────────────────────────── */
+  function buildShellSrc(deviceId, mode, protoPath) {
+    const d = DEVICES[deviceId];
+    const p = new URLSearchParams({ mode });
+    if (protoPath) p.set('url', protoPath);
+    return `${d.shell}?${p}`;
+  }
+
+  /* ── Select device ──────────────────────────────────────────── */
+  function selectDevice(deviceId) {
+    currentDevice = deviceId;
+    applyScale(deviceId);
+
+    /* Reload shell only if a prototype is already selected */
+    if (currentProto) {
+      shellFrame.src = buildShellSrc(deviceId, currentMode, currentProto);
+    }
+
+    document.querySelectorAll('.device-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.id === deviceId);
+    });
+  }
+
+  /* ── Select prototype ───────────────────────────────────────── */
+  function selectProto(path) {
+    currentProto = path;
+    shellFrame.src = buildShellSrc(currentDevice, currentMode, path);
+    shellFrame.style.display = 'block';
+    frameEmpty.style.display = 'none';
+
+    document.querySelectorAll('.proto-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.path === path);
+    });
+  }
+
+  /* ── Mode toggle ────────────────────────────────────────────── */
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('btnLight').classList.toggle('active', mode === 'light');
+    document.getElementById('btnDark').classList.toggle('active',  mode === 'dark');
+    if (currentProto) {
+      shellFrame.src = buildShellSrc(currentDevice, mode, currentProto);
+    }
+  }
+
+  /* ── Device button clicks ───────────────────────────────────── */
+  document.querySelectorAll('.device-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectDevice(btn.dataset.id));
+  });
+
+  /* ── Resize observer ────────────────────────────────────────── */
+  new ResizeObserver(() => applyScale(currentDevice)).observe(stage);
+
+  /* ── Keyboard shortcuts ─────────────────────────────────────── */
+  const deviceKeys = Object.keys(DEVICES);
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    const idx = parseInt(e.key) - 1;
+    if (idx >= 0 && idx < deviceKeys.length) selectDevice(deviceKeys[idx]);
+    if (e.key === 'l' || e.key === 'L') setMode('light');
+    if (e.key === 'd' || e.key === 'D') setMode('dark');
+  });
+
+  /* ── Init ───────────────────────────────────────────────────── */
+  selectDevice(currentDevice);
+</script>
+
+</body>
+</html>
