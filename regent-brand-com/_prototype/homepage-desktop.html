@@ -338,9 +338,8 @@
       transition: opacity 0.35s var(--ease-lux), transform 0.35s var(--ease-lux);
     }
     .booking-sticky-outer.is-stuck .s-booking {
-      animation: none; /* clear forwards fill so opacity/transform take effect */
-      opacity: 0;
-      transform: translateY(-6px);
+      opacity: 0 !important;
+      transform: translateY(-6px) !important;
       pointer-events: none;
     }
 
@@ -1892,6 +1891,14 @@
 </footer>
 
 <script>
+
+  // ── Lock s-booking end-state so animation never restarts ─
+  const sBooking = document.querySelector('.s-booking');
+  sBooking.addEventListener('animationend', () => {
+    sBooking.style.opacity   = '1';
+    sBooking.style.transform = 'translateY(0)';
+    sBooking.style.animation = 'none';
+  }, { once: true });
 
   // ── Booking bar: detect sticky stuck state ───────────────
   const bookingOuter = document.querySelector('.booking-sticky-outer');
