@@ -312,26 +312,53 @@
       z-index: 100;
       margin-top: -50px;
       pointer-events: none;
+      /* grid stack: s-booking and sticky-nav occupy same cell */
+      display: grid;
+      background: transparent;
+      box-shadow: none;
+      transition:
+        background 0.55s var(--ease-lux),
+        box-shadow  0.55s var(--ease-lux);
     }
 
-    /* Stuck state: full-width sticky nav header */
     .booking-sticky-outer.is-stuck {
       background: var(--color-background-primary, #fff);
       box-shadow: 0 2px 20px rgba(0,0,0,0.07);
       pointer-events: all;
     }
 
-    .booking-sticky-outer.is-stuck .s-booking { display: none; }
-    .booking-sticky-outer.is-stuck .sticky-nav { display: flex; }
+    /* Both children stack in the same grid cell */
+    .s-booking,
+    .sticky-nav { grid-row: 1; grid-column: 1; }
 
-    /* ── Sticky nav header (hidden until stuck) ── */
+    /* Booking fields: fade + lift out when stuck */
+    .s-booking {
+      transition: opacity 0.35s var(--ease-lux), transform 0.35s var(--ease-lux);
+    }
+    .booking-sticky-outer.is-stuck .s-booking {
+      opacity: 0;
+      transform: translateY(-6px);
+      pointer-events: none;
+    }
+
+    /* Sticky nav: fades + drops in when stuck */
     .sticky-nav {
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
       height: 80px;
       padding: 0 var(--gutter);
+      opacity: 0;
+      transform: translateY(6px);
+      pointer-events: none;
+      transition: opacity 0.45s var(--ease-lux) 0.15s, transform 0.45s var(--ease-lux) 0.15s;
+    }
+
+    .booking-sticky-outer.is-stuck .sticky-nav {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
     }
 
     .sticky-nav__logo {
