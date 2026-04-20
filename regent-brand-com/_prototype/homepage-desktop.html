@@ -330,12 +330,15 @@
     /* Both children stack in the same grid cell */
     .s-booking,
     .sticky-nav { grid-row: 1; grid-column: 1; }
+    /* Prevent grid from stretching s-booking to full viewport width */
+    .s-booking { justify-self: center; width: 1200px; }
 
     /* Booking fields — transitions applied once .ready is set by JS */
     .booking-sticky-outer.ready .s-booking {
       transition: opacity 0.35s var(--ease-lux), transform 0.35s var(--ease-lux);
     }
     .booking-sticky-outer.is-stuck .s-booking {
+      animation: none; /* clear forwards fill so opacity/transform take effect */
       opacity: 0;
       transform: translateY(-6px);
       pointer-events: none;
