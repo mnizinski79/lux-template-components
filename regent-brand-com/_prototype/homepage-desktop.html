@@ -331,8 +331,8 @@
     .s-booking,
     .sticky-nav { grid-row: 1; grid-column: 1; }
 
-    /* Booking fields: fade + lift out when stuck */
-    .s-booking {
+    /* Booking fields — transitions applied once .ready is set by JS */
+    .booking-sticky-outer.ready .s-booking {
       transition: opacity 0.35s var(--ease-lux), transform 0.35s var(--ease-lux);
     }
     .booking-sticky-outer.is-stuck .s-booking {
@@ -341,7 +341,7 @@
       pointer-events: none;
     }
 
-    /* Sticky nav: fades + drops in when stuck */
+    /* Sticky nav — visibility:hidden prevents initial paint flash */
     .sticky-nav {
       display: flex;
       align-items: center;
@@ -350,15 +350,20 @@
       height: 80px;
       padding: 0 var(--gutter);
       opacity: 0;
+      visibility: hidden;
       transform: translateY(6px);
       pointer-events: none;
-      transition: opacity 0.45s var(--ease-lux) 0.15s, transform 0.45s var(--ease-lux) 0.15s;
+      /* visibility delays until after opacity fades out (exit) */
+      transition: opacity 0.3s var(--ease-lux), transform 0.3s var(--ease-lux), visibility 0s 0.3s;
     }
 
     .booking-sticky-outer.is-stuck .sticky-nav {
       opacity: 1;
+      visibility: visible;
       transform: translateY(0);
       pointer-events: all;
+      /* visibility snaps visible at start of enter, opacity/transform follow */
+      transition: opacity 0.45s var(--ease-lux) 0.15s, transform 0.45s var(--ease-lux) 0.15s, visibility 0s;
     }
 
     .sticky-nav__logo {
@@ -1887,8 +1892,13 @@
 
   // ── Booking bar: detect sticky stuck state ───────────────
   const bookingOuter = document.querySelector('.booking-sticky-outer');
+  let prevStuck = false;
   window.addEventListener('scroll', () => {
-    bookingOuter.classList.toggle('is-stuck', bookingOuter.getBoundingClientRect().top <= 0);
+    const stuck = bookingOuter.getBoundingClientRect().top <= 0;
+    if (stuck === prevStuck) return;
+    prevStuck = stuck;
+    bookingOuter.classList.add('ready');       // enable s-booking transition after first scroll
+    bookingOuter.classList.toggle('is-stuck', stuck);
   }, { passive: true });
 
   // ── Hero video pause/play ──────────────────────────────────
