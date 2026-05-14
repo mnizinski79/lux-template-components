@@ -2112,7 +2112,7 @@ function goHome() {
   S.protoId = null;
   document.querySelectorAll('.sb-item.is-active').forEach(el => el.classList.remove('is-active'));
   showEmpty();
-  syncURL();
+  history.replaceState(null, '', location.pathname);
   const cluster = document.getElementById('fabCluster');
   if (cluster) cluster.classList.remove('is-visible');
   const tbLog = document.getElementById('tbLog');
