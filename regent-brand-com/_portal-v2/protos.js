@@ -82,6 +82,18 @@ const PROTOS = [
     default: 'ios',
   },
 
+  {
+    id: 'r-wedding-amenities', section: 'review', subsection: null,
+    label: 'Wedding Amenities Teaser', tags: ['Desktop'],
+    status: 'review',
+    figma: null,
+    notes: [
+      { date: 'Jun 22', text: 'Teaser carousel with frost-reveal expand interaction ported from the mobile snap-scroll panel — title lifts via flow to make room for subcopy and CTA on open, fixed 16px gaps throughout.' },
+    ],
+    urls: { desktop: '../_prototype/wedding-amenities-teaser.html' },
+    default: 'desktop',
+  },
+
 
   // ── Explorations: Homepage ───────────────────────────────────────────────────
 

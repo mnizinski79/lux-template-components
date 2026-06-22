@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Destinations Teaser Carousel</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F3F7F5;
+      color: #211551;
+    }
+
+    :root {
+      --brand:      #211551;
+      --teal:       #1F4456; /* color/bg/primary-inverse */
+      --canela:     'Canela', Georgia, serif;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-panel: cubic-bezier(0.16, 1, 0.3, 1); /* matches destinations-cards-mobile.html panel/frost easing */
+      --dur:        0.55s;
+      --card-gap:   28px;
+    }
+
+    /* ─── Section ─────────────────────────────────────────── */
+    .section {
+      padding-bottom: 80px;
+      overflow: hidden;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 56px 120px 40px;
+    }
+
+    .section-header h3 {
+      font-family: var(--canela);
+      font-size: 36px;
+      font-weight: 300;
+      line-height: 52px;
+      color: var(--brand);
+      flex: 0 0 auto;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: #4a4a4a;
+      max-width: 420px;
+      padding-top: 8px;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    /* ─── Carousel wrapper ───────────────────────────────── */
+    .carousel-outer {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 120px;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: var(--card-gap);
+      transition: transform var(--dur) var(--ease);
+    }
+
+    /* ─── Card ───────────────────────────────────────────── */
+    .card {
+      position: relative;
+      flex: 0 0 400px;
+      height: 499px;
+      overflow: hidden;
+    }
+
+    /* ─── Image ──────────────────────────────────────────── */
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s var(--ease);
+    }
+
+    /* ─── Dark overlay ───────────────────────────────────── */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 38%,
+        rgba(6, 5, 15, 0.35) 62%,
+        rgba(6, 5, 15, 0.78) 100%
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Card body (bottom text) ────────────────────────── */
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 16px 28px 28px;
+      color: #fff;
+      z-index: 2;
+    }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+    }
+
+    .card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .card__meta .sep {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ─── Standard card CTA ──────────────────────────────── */
+    .card__cta-link {
+      display: inline-block;
+      margin-top: 14px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      padding-bottom: 2px;
+      transition: border-color 0.2s ease, letter-spacing 0.2s ease;
+    }
+
+    .card__cta-link:hover {
+      border-color: rgba(255, 255, 255, 0.95);
+      letter-spacing: 0.22em;
+    }
+
+    /* ─── Teaser card: frost panel (ported from destinations-cards-mobile.html) ─── */
+    /* Same easing (--ease-panel) and durations as the mobile panel-open/is-closing system */
+
+    .card--teaser .card__body {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .card--teaser .card__meta-wrap {
+      flex: 0 0 292px;
+      width: 292px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card__blur {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      background: rgba(6, 5, 15, 0.45);
+      opacity: 0;
+      z-index: 1;
+      /* open: blur comes in quickly */
+      transition: opacity 0.6s var(--ease-panel);
+    }
+
+    .card.panel-open .card__blur {
+      opacity: 1;
+    }
+
+    /* close: blur waits for desc to exit, then fades with the title */
+    .card.is-closing .card__blur {
+      opacity: 0;
+      transition: opacity 0.65s var(--ease-panel) 0.28s;
+    }
+
+    /* Title has no margin of its own — it sits at the top of .card__meta-wrap.
+       Desc/link reveal below it via max-height + margin-top, which grows the
+       wrap's height and (since .card__body is bottom-anchored) pushes the
+       title upward — this is what makes room for the subcopy. */
+
+    /* ─── Desc + link — reveal below the title with a fixed 28px gap ─── */
+    .card__desc {
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      font-family: var(--inter);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 26px;
+      color: #d6d6d6;
+      pointer-events: none;
+      transition: max-height 0.65s var(--ease-panel) 0s, margin-top 0.65s var(--ease-panel) 0s, opacity 0.3s ease 0s;
+    }
+
+    .card__link {
+      display: inline-block;
+      width: fit-content;
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      font-family: var(--engravers);
+      font-size: 16px;
+      line-height: 26px;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      padding-bottom: 3px;
+      text-decoration: none;
+      pointer-events: none;
+      transition: max-height 0.5s var(--ease-panel) 0s, margin-top 0.5s var(--ease-panel) 0s, opacity 0.3s ease 0s;
+    }
+
+    /* open: desc grows in first (carrying the title up with it), link follows */
+    .card.panel-open .card__desc {
+      margin-top: 16px;
+      max-height: 120px;
+      opacity: 1;
+      pointer-events: all;
+      transition: max-height 0.65s var(--ease-panel) 0s, margin-top 0.65s var(--ease-panel) 0s, opacity 0.5s ease 0.3s;
+    }
+
+    .card.panel-open .card__link {
+      margin-top: 16px;
+      max-height: 32px;
+      opacity: 1;
+      pointer-events: all;
+      transition: max-height 0.5s var(--ease-panel) 0.08s, margin-top 0.5s var(--ease-panel) 0.08s, opacity 0.5s ease 0.38s;
+    }
+
+    /* close: desc + link collapse first, title settles back down last */
+    .card.is-closing .card__desc {
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 0.45s var(--ease-panel) 0.1s, margin-top 0.45s var(--ease-panel) 0.1s, opacity 0.2s ease 0s;
+    }
+
+    .card.is-closing .card__link {
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 0.4s var(--ease-panel) 0s, margin-top 0.4s var(--ease-panel) 0s, opacity 0.2s ease 0s;
+    }
+
+    /* ─── Toggle button (replaces + button, identical to mobile) ─── */
+    .card__toggle {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 200;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 16px;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.3s;
+      align-self: flex-end;
+    }
+
+    .card__toggle .icon-plus,
+    .card__toggle .icon-close {
+      position: absolute;
+      transition: opacity 0.4s ease, transform 0.4s var(--ease-panel);
+    }
+
+    .card__toggle .icon-plus  { opacity: 1; transform: rotate(0deg); }
+    .card__toggle .icon-close { opacity: 0; transform: rotate(-45deg); }
+    .card.panel-open .card__toggle .icon-plus  { opacity: 0; transform: rotate(45deg); }
+    .card.panel-open .card__toggle .icon-close { opacity: 1; transform: rotate(0deg); }
+
+    /* ─── Carousel nav ───────────────────────────────────── */
+    .carousel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px 120px 0;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--brand);
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px 8px;
+      opacity: 0.45;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-btn:hover { opacity: 1; }
+    .nav-btn:disabled { opacity: 0.18; cursor: default; }
+
+    .nav-btn svg {
+      display: block;
+      width: 20px;
+      height: 14px;
+    }
+
+    .progress-track {
+      flex: 0 0 544px;
+      width: 544px;
+      height: 1px;
+      background: rgba(33, 21, 81, 0.18);
+      position: relative;
+    }
+
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: var(--brand);
+      transition: width var(--dur) var(--ease);
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+
+  <div class="section-header">
+    <h3>Wedding amenities at Regent Santa Monica Beach</h3>
+  </div>
+
+  <div class="carousel-outer" id="viewport">
+    <div class="carousel-track" id="track">
+
+      <!-- Card 1 — TEASER -->
+      <div class="card card--teaser" data-index="0">
+        <img class="card__img" src="../_assets/_imgs/teaser_prototype/1.png" alt="Bespoke Event Services">
+        <div class="card__overlay"></div>
+        <div class="card__blur"></div>
+        <div class="card__body">
+          <div class="card__meta-wrap">
+            <div class="card__title">Bespoke Event Services</div>
+            <p class="card__desc">A dedicated planner curates every detail of your celebration, from the first consultation to the final farewell.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+          <button class="card__toggle" aria-label="Toggle info for Bespoke Event Services">
+            <span class="icon-plus">+</span>
+            <span class="icon-close">×</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2 — TEASER -->
+      <div class="card card--teaser" data-index="1">
+        <img class="card__img" src="../_assets/_imgs/teaser_prototype/2.png" alt="Luxury Vendors">
+        <div class="card__overlay"></div>
+        <div class="card__blur"></div>
+        <div class="card__body">
+          <div class="card__meta-wrap">
+            <div class="card__title">Luxury Vendors</div>
+            <p class="card__desc">A curated roster of florists, bakers, and stylists — handpicked for their craft and devotion to detail.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+          <button class="card__toggle" aria-label="Toggle info for Luxury Vendors">
+            <span class="icon-plus">+</span>
+            <span class="icon-close">×</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 3 — TEASER -->
+      <div class="card card--teaser" data-index="2">
+        <img class="card__img" src="../_assets/_imgs/teaser_prototype/3.png" alt="Wellness & Leisure">
+        <div class="card__overlay"></div>
+        <div class="card__blur"></div>
+        <div class="card__body">
+          <div class="card__meta-wrap">
+            <div class="card__title">Wellness & Leisure</div>
+            <p class="card__desc">Spa rituals and quiet moments of restoration, reserved for the wedding party in the days before the celebration.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+          <button class="card__toggle" aria-label="Toggle info for Wellness & Leisure">
+            <span class="icon-plus">+</span>
+            <span class="icon-close">×</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 4 — TEASER -->
+      <div class="card card--teaser" data-index="3">
+        <img class="card__img" src="../_assets/_imgs/teaser_prototype/4.png" alt="The Atelier">
+        <div class="card__overlay"></div>
+        <div class="card__blur"></div>
+        <div class="card__body">
+          <div class="card__meta-wrap">
+            <div class="card__title">The Atelier</div>
+            <p class="card__desc">A private studio for gown fittings and final touches, set apart for the bride in the hours before the ceremony.</p>
+            <a href="#" class="card__link">Explore</a>
+          </div>
+          <button class="card__toggle" aria-label="Toggle info for The Atelier">
+            <span class="icon-plus">+</span>
+            <span class="icon-close">×</span>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /track -->
+  </div><!-- /viewport -->
+
+  <!-- Navigation -->
+  <div class="carousel-nav">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous" disabled>
+      <svg viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 7H1M1 7L7 1M1 7L7 13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <button class="nav-btn" id="nextBtn" aria-label="Next">
+      <svg viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 7H19M19 7L13 1M19 7L13 13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+</section>
+
+<script>
+  const track       = document.getElementById('track');
+  const prevBtn     = document.getElementById('prevBtn');
+  const nextBtn     = document.getElementById('nextBtn');
+  const progressFill = document.getElementById('progressFill');
+  const cards       = Array.from(track.querySelectorAll('.card'));
+  const CARDS_VISIBLE = 3;
+  const total       = cards.length;
+  const maxIndex    = total - CARDS_VISIBLE; // 3
+  let currentIndex  = 0;
+
+  // ── Carousel positioning ──────────────────────────────────
+  function cardWidth() {
+    return cards[0].getBoundingClientRect().width;
+  }
+
+  function goTo(index) {
+    currentIndex = Math.max(0, Math.min(index, maxIndex));
+    const gap    = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-gap')) || 3;
+    track.style.transform = `translateX(-${currentIndex * (cardWidth() + gap)}px)`;
+
+    // Progress bar — shows filled portion based on cards seen
+    progressFill.style.width = `${((currentIndex + CARDS_VISIBLE) / total) * 100}%`;
+
+    // Button states
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === maxIndex;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+  nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
+
+  // Init progress
+  goTo(0);
+
+  // ── Teaser frost panel toggle (ported from destinations-cards-mobile.html) ──
+  function closeTeaser(card) {
+    // is-closing fires the exit transitions, then both classes are dropped
+    // once the longest exit finishes (title: 0.36s delay + 1.2s = ~1.56s)
+    card.classList.add('is-closing');
+    card.classList.remove('panel-open');
+    setTimeout(() => card.classList.remove('is-closing'), 1800);
+  }
+
+  track.addEventListener('click', e => {
+    const toggleBtn = e.target.closest('.card__toggle');
+    if (!toggleBtn) return;
+
+    const card = toggleBtn.closest('.card');
+    if (card.classList.contains('panel-open')) {
+      closeTeaser(card);
+    } else {
+      // Close any other open teasers first
+      track.querySelectorAll('.card.panel-open').forEach(c => {
+        if (c !== card) closeTeaser(c);
+      });
+      card.classList.remove('is-closing');
+      card.classList.add('panel-open');
+    }
+  });
+</script>
+
+</body>
+</html>
