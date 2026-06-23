@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wilson Motion Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #F1F1F1; color: #3D3D3A; }
+
+  :root {
+    --canela:    'Cormorant Garamond', Georgia, serif;
+    --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+  }
+
+  /* ============================================================
+     SLIDE-STYLE SECTION HEADERS — same eyebrow/rule/headline/body
+     treatment as story.html, recolored for this page's light theme
+  ============================================================ */
+  .s-eyebrow {
+    font-family: var(--engravers);
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(26,26,46,0.4);
+    margin-bottom: 18px;
+  }
+  .s-num { font-family: var(--canela); font-size: 11px; font-style: italic; color: rgba(26,26,46,0.3); margin-right: 8px; }
+  .s-rule { width: 32px; height: 1px; background: rgba(26,26,46,0.18); margin-bottom: 28px; }
+  .s-headline {
+    font-family: var(--canela);
+    font-size: clamp(28px, 2.6vw, 42px);
+    font-weight: 300;
+    font-style: italic;
+    color: #1A1A2E;
+    line-height: 1.12;
+    margin-bottom: 18px;
+  }
+  .s-body {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: #737269;
+    line-height: 1.78;
+    max-width: 540px;
+  }
+  .s-body strong { color: #1A1A2E; font-weight: 500; }
+
+  @keyframes aFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes aUp   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  .ml-section-head { background: #fff; padding: 56px 48px 48px; }
+  .ml-section-head .s-eyebrow, .ml-section-head .s-rule, .ml-section-head .s-headline, .ml-section-head .s-body { opacity: 0; }
+  .ml-section-head.revealed .s-eyebrow  { animation: aUp .55s .05s cubic-bezier(0.4,0,0.2,1) both; }
+  .ml-section-head.revealed .s-rule     { animation: aFade .5s .1s cubic-bezier(0.4,0,0.2,1) both; }
+  .ml-section-head.revealed .s-headline { animation: aUp .65s .12s cubic-bezier(0.4,0,0.2,1) both; }
+  .ml-section-head.revealed .s-body     { animation: aUp .65s .22s cubic-bezier(0.4,0,0.2,1) both; }
+
+  /* ============================================================
+     PAGE CHROME
+  ============================================================ */
+  .ml-header {
+    background: #1A1A2E;
+    color: #fff;
+    padding: 56px 48px 48px;
+  }
+  /* header sits on dark navy, so its eyebrow/rule/headline/body need the
+     white-based variants — everywhere else on this page is light, so the
+     default .s-* colors (defined above) apply as-is */
+  .ml-header .s-eyebrow { color: rgba(255,255,255,0.4); }
+  .ml-header .s-rule { background: rgba(255,255,255,0.18); }
+  .ml-header .s-headline { color: rgba(255,255,255,0.92); }
+  .ml-header .s-body { color: rgba(255,255,255,0.6); max-width: 640px; }
+  .ml-header .s-body strong { color: rgba(255,255,255,0.9); }
+
+  .ml-nav {
+    display: flex;
+    gap: 24px;
+    padding: 14px 48px;
+    background: #14142A;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .ml-nav a {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+  }
+  .ml-nav a:hover { color: #fff; }
+
+  /* ============================================================
+     ANNOTATED ROW — same pattern as fvAnnotations wireframes
+  ============================================================ */
+  .annotated-row { display: grid; grid-template-columns: 1fr 360px; align-items: stretch; scroll-margin-top: 48px; }
+  .section-wf {
+    position: relative;
+    padding: 56px 48px;
+    background: #D4D4D4;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .section-annot {
+    position: sticky;
+    top: 0;
+    padding: 24px 24px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #EBEBEB;
+    min-height: 520px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #1A1A2E;
+    margin-bottom: 4px;
+  }
+
+  /* ============================================================
+     DEMO CARD — abstract stand-in, driven entirely by the tokens below
+  ============================================================ */
+  :root {
+    --ease-panel: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* how far title/meta slide up to clear the desc text —
+       must be ≥ (desc anchor + max desc height) − body bottom offset */
+    --reveal-distance: 118px;
+
+    /* OPEN — title leads, everything else trails it */
+    --open-title-delay: 0s;     --open-title-dur: 0.65s;
+    --open-meta-delay:  0.08s;  --open-meta-dur:  0.65s;
+    --open-desc-delay:  0.3s;   --open-desc-dur:  0.5s;
+    --open-link-delay:  0.38s;  --open-link-dur:  0.5s;
+
+    /* CLOSE — desc/link drop first, title returns last + slowest */
+    --close-desc-delay:  0s;     --close-desc-dur:  0.3s;
+    --close-link-delay:  0s;     --close-link-dur:  0.3s;
+    --close-meta-delay:  0.18s;  --close-meta-dur:  0.65s;
+    --close-title-delay: 0.36s;  --close-title-dur: 1.2s;
+  }
+
+  .demo-card {
+    position: relative;
+    width: 300px;
+    height: 375px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: linear-gradient(160deg, #5B5470 0%, #2E2A40 100%);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .demo-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 38%, rgba(0,0,0,0.45) 62%, rgba(0,0,0,0.75) 100%);
+    pointer-events: none;
+  }
+
+  .demo-card__body {
+    position: absolute;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    padding: 0 16px 0 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    z-index: 2;
+  }
+
+  .demo-block {
+    border-radius: 3px;
+    color: #fff;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+  }
+
+  .demo-card__title {
+    height: 28px;
+    width: 200px;
+    background: rgba(255,255,255,0.92);
+    color: #1A1A2E;
+    font-weight: 700;
+    transition: transform var(--open-title-dur) var(--ease-panel) var(--open-title-delay);
+  }
+  .demo-card.open .demo-card__title {
+    transform: translateY(calc(-1 * var(--reveal-distance)));
+    transition: transform var(--open-title-dur) var(--ease-panel) var(--open-title-delay);
+  }
+  .demo-card.closing .demo-card__title {
+    transform: translateY(0);
+    transition: transform var(--close-title-dur) var(--ease-panel) var(--close-title-delay);
+  }
+
+  .demo-card__meta {
+    height: 16px;
+    width: 140px;
+    margin-top: 8px;
+    background: rgba(255,255,255,0.55);
+    transition: transform var(--open-meta-dur) var(--ease-panel) var(--open-meta-delay);
+  }
+  .demo-card.open .demo-card__meta {
+    transform: translateY(calc(-1 * var(--reveal-distance)));
+    transition: transform var(--open-meta-dur) var(--ease-panel) var(--open-meta-delay);
+  }
+  .demo-card.closing .demo-card__meta {
+    transform: translateY(0);
+    transition: transform var(--close-meta-dur) var(--ease-panel) var(--close-meta-delay);
+  }
+
+  .demo-card__meta-col { display: flex; flex-direction: column; }
+
+  .demo-card__desc {
+    position: absolute;
+    left: 24px;
+    right: 76px; /* clears the toggle's reserved column: 16px pad + 36px button + 14px margin + 10px gap */
+    max-width: 273px;
+    bottom: 58px;
+    height: 64px;
+    background: rgba(255,255,255,0.3);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--close-desc-dur) ease var(--close-desc-delay), transform var(--close-desc-dur) var(--ease-panel) var(--close-desc-delay);
+    z-index: 2;
+    align-items: flex-start;
+    padding-top: 6px;
+  }
+  .demo-card.open .demo-card__desc {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity var(--open-desc-dur) ease var(--open-desc-delay), transform var(--open-desc-dur) var(--ease-panel) var(--open-desc-delay);
+  }
+
+  .demo-card__link {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    height: 22px;
+    width: 80px;
+    background: rgba(255,255,255,0.85);
+    color: #1A1A2E;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity var(--close-link-dur) ease var(--close-link-delay), transform var(--close-link-dur) var(--ease-panel) var(--close-link-delay);
+    z-index: 2;
+  }
+  .demo-card.open .demo-card__link {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity var(--open-link-dur) ease var(--open-link-delay), transform var(--open-link-dur) var(--ease-panel) var(--open-link-delay);
+  }
+
+  .demo-card__toggle {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 3;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 50%;
+    background: transparent;
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 14px;
+  }
+  .demo-card__toggle .icon-plus, .demo-card__toggle .icon-close {
+    position: absolute;
+    transition: opacity 0.4s ease, transform 0.4s var(--ease-panel);
+  }
+  .demo-card__toggle .icon-plus { opacity: 1; transform: rotate(0deg); }
+  .demo-card__toggle .icon-close { opacity: 0; transform: rotate(-45deg); }
+  .demo-card.open .demo-card__toggle .icon-plus { opacity: 0; transform: rotate(45deg); }
+  .demo-card.open .demo-card__toggle .icon-close { opacity: 1; transform: rotate(0deg); }
+
+  .demo-hint {
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.4);
+  }
+
+  /* ============================================================
+     EASING CURVE PLOT
+  ============================================================ */
+  .curve-box { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+  .curve-box svg { width: 100%; height: 100px; background: #fff; border: 1px solid #D8D5CF; border-radius: 8px; }
+  .curve-label { font-family: 'Roboto Mono', monospace; font-size: 10px; color: #737269; }
+
+  /* ============================================================
+     DESTINATION CARD — CLICK EXPAND, SOLID SWAP (DESKTOP)
+     ported from destinations-cards-teaser.html
+  ============================================================ */
+  .swap-card {
+    position: relative;
+    width: 300px;
+    height: 375px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+  }
+  .swap-img {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #5B5470 0%, #2E2A40 100%);
+    transition: opacity 0.3s ease;
+  }
+  .swap-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 35%, rgba(6,5,15,0.38) 62%, rgba(6,5,15,0.80) 100%);
+    transition: opacity 0.3s ease;
+  }
+  .swap-card.is-expanded .swap-img,
+  .swap-card.is-expanded .swap-overlay,
+  .swap-card.is-expanded .swap-body { opacity: 0; pointer-events: none; }
+  .swap-body {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 0 16px 24px 24px;
+    color: #fff;
+  }
+  .swap-title { height: 24px; width: 160px; background: rgba(255,255,255,0.92); border-radius: 2px; }
+  .swap-plus-btn {
+    position: absolute;
+    bottom: 24px; right: 14px;
+    z-index: 3;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 50%;
+    background: transparent;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+  .swap-card.is-expanded .swap-plus-btn { opacity: 0; pointer-events: none; }
+  .swap-panel {
+    position: absolute;
+    inset: 0;
+    background: #1F4456;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 32px 16px 24px 24px;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .swap-card.is-expanded .swap-panel { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .swap-panel-title { height: 26px; width: 170px; background: rgba(255,255,255,0.95); border-radius: 2px; }
+  .swap-panel-desc { height: 48px; width: 100%; margin-top: 14px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+  .swap-panel-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+  .swap-panel-cta { height: 14px; width: 60px; background: rgba(255,255,255,0.85); border-radius: 2px; }
+  .swap-close-btn {
+    width: 24px; height: 24px;
+    background: none; border: none;
+    color: #D6D6D6;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .swap-close-btn:hover { color: #fff; }
+
+  /* ============================================================
+     DESTINATION CARD — SCROLL REVEAL (MOBILE)
+     ported from destinations-cards-mobile.html
+  ============================================================ */
+  .scroll-viewport {
+    width: 280px;
+    height: 380px;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    border: 1px solid #B8B7B5;
+    border-radius: 4px;
+    background: #fff;
+  }
+  .scroll-spacer {
+    height: 380px;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #B8B7B5;
+  }
+  .rev-card {
+    position: relative;
+    height: 380px;
+    scroll-snap-align: start;
+    overflow: hidden;
+  }
+  .rev-img {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #5B5470 0%, #2E2A40 100%);
+    transform: scale(1.08);
+    transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .rev-card.revealed .rev-img { transform: scale(1.0); }
+  .rev-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 38%, rgba(6,5,15,0.45) 70%, rgba(6,5,15,0.85) 100%);
+  }
+  .rev-body {
+    position: absolute;
+    bottom: 24px; left: 24px; right: 16px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    color: #fff;
+  }
+  .rev-title {
+    height: 22px; width: 140px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 2px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .rev-card.revealed .rev-title { opacity: 1; transform: translateY(0); }
+  .rev-details {
+    height: 10px; width: 100px;
+    margin-top: 8px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 2px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+  }
+  .rev-card.revealed .rev-details { opacity: 1; transform: translateY(0); }
+  .rev-meta-col { display: flex; flex-direction: column; }
+  .rev-toggle {
+    position: relative;
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 50%;
+    margin-left: 14px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+  }
+  .rev-card.revealed .rev-toggle { opacity: 1; transform: translateY(0); }
+  .rev-toggle::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.35);
+    opacity: 0;
+  }
+  .rev-card.revealed .rev-toggle::before {
+    animation: ml-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) 1.2s 2;
+  }
+  @keyframes ml-pulse {
+    0%   { opacity: 0;   transform: scale(0.85); }
+    30%  { opacity: 0.7; }
+    100% { opacity: 0;   transform: scale(1.4); }
+  }
+</style>
+</head>
+<body>
+
+<div class="ml-header">
+  <div class="s-eyebrow">Wilson Prototype System</div>
+  <div class="s-rule"></div>
+  <div class="s-headline">Motion Library</div>
+  <div class="s-body">Live, tokenized reference for interaction patterns shared across Regent prototypes — not wired into any production file. Copy the values in each spec panel into a new prototype's CSS to reproduce the choreography exactly, instead of re-deriving timing from scratch each time.</div>
+</div>
+
+<nav class="ml-nav">
+  <a href="#teaser-reveal">Teaser Card — Tap to Reveal (Mobile)</a>
+  <a href="#click-expand">Destination Card — Click Expand (Desktop)</a>
+  <a href="#scroll-reveal">Destination Card — Scroll Reveal (Mobile)</a>
+</nav>
+
+<div class="ml-section-head" data-reveal>
+  <div class="s-eyebrow"><span class="s-num">01</span>Mobile · Tap</div>
+  <div class="s-rule"></div>
+  <div class="s-headline">Teaser Card — Tap to Reveal</div>
+  <div class="s-body">Used in: <strong>wedding-amenities-teaser-mobile.html</strong> and <strong>destinations-cards-mobile.html</strong> — tapping the + button on a card. Title and meta slide up out of the way first, then description and link fade in below. Closing reverses it, with the title returning last and slowest.</div>
+</div>
+
+<div class="annotated-row" id="teaser-reveal">
+
+  <div class="section-wf">
+    <div class="demo-hint">Click to toggle</div>
+    <div class="demo-card" id="demoCard">
+      <div class="demo-card__overlay"></div>
+      <div class="demo-card__desc"></div>
+      <div class="demo-card__link"></div>
+      <div class="demo-card__body">
+        <div class="demo-card__meta-col">
+          <div class="demo-card__title"></div>
+          <div class="demo-card__meta"></div>
+        </div>
+        <button class="demo-card__toggle" aria-label="Toggle">
+          <i class="ph ph-plus icon-plus"></i>
+          <i class="ph ph-x icon-close"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-annot">
+    <div id="a-teaser-reveal"></div>
+  </div>
+
+</div>
+
+<div class="ml-section-head" data-reveal>
+  <div class="s-eyebrow"><span class="s-num">02</span>Desktop · Click</div>
+  <div class="s-rule"></div>
+  <div class="s-headline">Destination Card — Click Expand</div>
+  <div class="s-body">Used in: <strong>destinations-cards-teaser.html</strong> — clicking + on a teaser-style card. The whole card cross-fades to a solid color info panel, single-stage, no internal stagger.</div>
+</div>
+
+<div class="annotated-row" id="click-expand">
+
+  <div class="section-wf">
+    <div class="demo-hint">Click + to expand</div>
+    <div class="swap-card" id="swapCard">
+      <div class="swap-img"></div>
+      <div class="swap-overlay"></div>
+      <div class="swap-body">
+        <div class="swap-title"></div>
+      </div>
+      <button class="swap-plus-btn" id="swapPlusBtn" aria-label="Learn more">
+        <i class="ph ph-plus"></i>
+      </button>
+      <div class="swap-panel">
+        <div class="swap-panel-title"></div>
+        <div class="swap-panel-desc"></div>
+        <div class="swap-panel-footer">
+          <div class="swap-panel-cta"></div>
+          <button class="swap-close-btn" id="swapCloseBtn" aria-label="Close">
+            <i class="ph ph-x"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-annot">
+    <div id="a-click-expand"></div>
+  </div>
+
+</div>
+
+<div class="ml-section-head" data-reveal>
+  <div class="s-eyebrow"><span class="s-num">03</span>Mobile · Scroll</div>
+  <div class="s-rule"></div>
+  <div class="s-headline">Destination Card — Scroll Reveal</div>
+  <div class="s-body">Used in: <strong>destinations-cards-mobile.html</strong> — each card's entrance as it scrolls into view in the vertical snap-scroll carousel. Image scale-in, staggered text, and a pulse-ring affordance on the toggle.</div>
+</div>
+
+<div class="annotated-row" id="scroll-reveal">
+
+  <div class="section-wf">
+    <div class="demo-hint">Scroll the frame</div>
+    <div class="scroll-viewport" id="scrollViewport">
+      <div class="scroll-spacer">Scroll down ▾</div>
+      <div class="rev-card" id="revCard">
+        <div class="rev-img"></div>
+        <div class="rev-overlay"></div>
+        <div class="rev-body">
+          <div class="rev-meta-col">
+            <div class="rev-title"></div>
+            <div class="rev-details"></div>
+          </div>
+          <div class="rev-toggle"></div>
+        </div>
+      </div>
+      <div class="scroll-spacer">Scroll back up ▴</div>
+    </div>
+  </div>
+
+  <div class="section-annot">
+    <div id="a-scroll-reveal"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── Section header scroll-reveal (mirrors story.html's slide entrance) ──
+  const headObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('revealed');
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-reveal]').forEach(el => headObserver.observe(el));
+
+  const demoCard = document.getElementById('demoCard');
+  let closeTimer = null;
+
+  demoCard.addEventListener('click', () => {
+    if (demoCard.classList.contains('open')) {
+      demoCard.classList.add('closing');
+      demoCard.classList.remove('open');
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(() => demoCard.classList.remove('closing'), 1800);
+    } else {
+      clearTimeout(closeTimer);
+      demoCard.classList.remove('closing');
+      demoCard.classList.add('open');
+    }
+  });
+
+  // ── Click Expand (solid swap) ────────────────────────────────────────────
+  const swapCard = document.getElementById('swapCard');
+  document.getElementById('swapPlusBtn').addEventListener('click', () => {
+    swapCard.classList.add('is-expanded');
+  });
+  document.getElementById('swapCloseBtn').addEventListener('click', () => {
+    swapCard.classList.remove('is-expanded');
+  });
+
+  // ── Scroll Reveal ────────────────────────────────────────────────────────
+  // Single trigger, 300ms after intersecting — image and text both key off
+  // the same .revealed class; the image just has a longer transition (1.4s)
+  // so it visibly keeps settling after the text has already finished.
+  const scrollViewport = document.getElementById('scrollViewport');
+  const revCard = document.getElementById('revCard');
+  let revealTimer = null;
+  const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        revealTimer = setTimeout(() => entry.target.classList.add('revealed'), 300);
+      } else {
+        clearTimeout(revealTimer);
+        entry.target.classList.remove('revealed');
+      }
+    });
+  }, { root: scrollViewport, threshold: 0.5 });
+  scrollObserver.observe(revCard);
+</script>
+
+<script type="text/babel">
+
+// ─── AnnotationCard (ported from fvAnnotations/reference.html) ────────────────
+function AnnotationCard({ index="00", title="Pattern", rows=[], meta=[] }) {
+  return (
+    <div style={{ width:"100%", borderRadius:12, background:"#FFF", border:"1px solid #D8D5CF", overflow:"hidden", fontFamily:"Inter,sans-serif" }}>
+      <div style={{ padding:"12px 14px 10px", display:"flex", alignItems:"center", gap:10 }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minWidth:25, height:15, borderRadius:18, background:"#FAF9F6", border:"1px solid #B8B7B5", padding:"2px 6px" }}>
+          <span style={{ fontSize:9, fontWeight:700, color:"#3D3D3A", lineHeight:1 }}>{index}</span>
+        </div>
+        <span style={{ fontSize:13, fontWeight:700, color:"#1A1A2E", flex:1 }}>{title}</span>
+      </div>
+      <div style={{ padding:"10px 14px 14px", display:"flex", flexDirection:"column", gap:6 }}>
+        {rows.map((r,i)=>(
+          <div key={i} style={{ display:"flex", gap:8, alignItems:"baseline" }}>
+            <span style={{ fontSize:11, fontWeight:500, color:"#737269", minWidth:80 }}>{r.key}</span>
+            <span style={{ fontSize:11, color:"#3D3D3A", fontFamily:"'Roboto Mono',monospace" }}>{r.value}</span>
+          </div>
+        ))}
+        {rows.length>0 && meta.length>0 && <div style={{ height:1, background:"#EEECEA", margin:"2px 0" }}/>}
+        {meta.map((r,i)=>(
+          <div key={i} style={{ display:"flex", gap:8, alignItems:"baseline" }}>
+            <span style={{ fontSize:11, fontWeight:500, color:"#737269", minWidth:80 }}>{r.key}</span>
+            <span style={{ fontSize:11, color:"#3D3D3A", fontFamily:"'Roboto Mono',monospace" }}>{r.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── StickyNote (ported from fvAnnotations/reference.html) ────────────────────
+const STICKY_STYLES = {
+  Observation:{ bg:"#EEEDFD", border:"#7E77D7", pillBg:"#AEA9E7", pillColor:"#3B3484", textColor:"#3B3484" },
+  Decision:   { bg:"#F8EDE8", border:"#C9623D", pillBg:"#E49D81", pillColor:"#69301A", textColor:"#69301A" },
+};
+function StickyNote({ type="Observation", children }) {
+  const s = STICKY_STYLES[type] || STICKY_STYLES.Observation;
+  return (
+    <div style={{ width:"100%", borderRadius:12, border:`1px solid ${s.border}`, overflow:"hidden", fontFamily:"Inter,sans-serif" }}>
+      <div style={{ padding:"8px 14px", background:s.bg }}>
+        <span style={{ display:"inline-flex", alignItems:"center", height:16, borderRadius:20, padding:"2px 8px", fontSize:10, fontWeight:500, lineHeight:1.2, background:s.pillBg, color:s.pillColor }}>{type}</span>
+      </div>
+      <div style={{ padding:"8px 14px 12px", background:s.bg }}>
+        <span style={{ fontSize:11, fontWeight:500, color:s.textColor, lineHeight:1.5, display:"block" }}>{children}</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Easing curve plot ─────────────────────────────────────────────────────────
+function CurvePlot({ label="cubic-bezier(0.16, 1, 0.3, 1)" }) {
+  // control points scaled into a 100x100 box, y flipped (SVG y grows downward)
+  const p1x=16, p1y=100, p2x=30, p2y=0;
+  return (
+    <div className="curve-box">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+        <line x1="0" y1="100" x2="100" y2="100" stroke="#EEECEA" strokeWidth="1"/>
+        <line x1="0" y1="0" x2="0" y2="100" stroke="#EEECEA" strokeWidth="1"/>
+        <path d={`M0,100 C${p1x},${p1y} ${p2x},${p2y} 100,0`} fill="none" stroke="#7E77D7" strokeWidth="2"/>
+        <circle cx="0" cy="100" r="2.5" fill="#3B3484"/>
+        <circle cx="100" cy="0" r="2.5" fill="#3B3484"/>
+      </svg>
+      <span className="curve-label">{label} — "ease-panel"</span>
+    </div>
+  );
+}
+
+// ─── Mounts ─────────────────────────────────────────────────────────────────────
+const mounts = {
+  "a-teaser-reveal": <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+    <div className="section-title">Teaser Card — Tap to Reveal (Mobile)</div>
+    <div style={{ fontSize:11, color:"#737269", lineHeight:1.5 }}>Used in: wedding-amenities-teaser-mobile.html and destinations-cards-mobile.html — tapping the + button on a card.</div>
+
+    <CurvePlot/>
+
+    <AnnotationCard index="01" title="Open Sequence" rows={[
+      {key:"title",value:"0s delay · 0.65s"},
+      {key:"meta",value:"+0.08s · 0.65s"},
+      {key:"desc",value:"+0.3s · 0.5s"},
+      {key:"link",value:"+0.38s · 0.5s"},
+    ]}/>
+
+    <AnnotationCard index="02" title="Close Sequence" rows={[
+      {key:"desc",value:"0s delay · 0.3s"},
+      {key:"link",value:"0s delay · 0.3s"},
+      {key:"meta",value:"+0.18s · 0.65s"},
+      {key:"title",value:"+0.36s · 1.2s (slow)"},
+    ]}/>
+
+    <AnnotationCard index="03" title="Tokens" rows={[
+      {key:"--ease-panel",value:"cubic-bezier(.16,1,.3,1)"},
+      {key:"--reveal-distance",value:"118px"},
+    ]}/>
+
+    <StickyNote type="Observation">
+      Title/meta must slide up far enough to clear the desc text fully — distance needs to be ≥ (desc bottom-anchor + max desc height) − body bottom-offset, or the header overlaps the body copy. Recalculate per card size; don't reuse 118px blindly on a differently-sized card.
+    </StickyNote>
+
+    <StickyNote type="Decision">
+      Ported from destinations-cards-mobile.html into wedding-amenities-teaser-mobile.html on Jun 23 — title leads, body copy trails, close reverses with title returning last and slowest. This is now the canonical teaser-reveal choreography for Regent prototypes.
+    </StickyNote>
+  </div>,
+
+  "a-click-expand": <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+    <div className="section-title">Destination Card — Click Expand (Desktop)</div>
+    <div style={{ fontSize:11, color:"#737269", lineHeight:1.5 }}>Used in: destinations-cards-teaser.html — clicking + on a teaser-style card.</div>
+
+    <AnnotationCard index="01" title="Open (click +)" rows={[
+      {key:"image/overlay/body",value:"fade out, 0.3s ease"},
+      {key:"panel",value:"fade + slide in, 0.55s"},
+    ]}/>
+
+    <AnnotationCard index="02" title="Close (click ×)" rows={[
+      {key:"panel",value:"fade + slide out, 0.55s"},
+      {key:"image/overlay/body",value:"fade back in, 0.3s ease"},
+    ]}/>
+
+    <AnnotationCard index="03" title="Tokens" rows={[
+      {key:"--dur",value:"0.55s"},
+      {key:"--ease",value:"cubic-bezier(.4,0,.2,1)"},
+      {key:"panel bg",value:"var(--teal) / #1F4456"},
+    ]}/>
+
+    <StickyNote type="Observation">
+      Single-stage cross-fade — no internal stagger like the teaser-reveal pattern. The whole card swaps to a solid color panel rather than overlaying on top of the image, so this only really works at the same fixed dur/ease for every element.
+    </StickyNote>
+  </div>,
+
+  "a-scroll-reveal": <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+    <div className="section-title">Destination Card — Scroll Reveal (Mobile)</div>
+    <div style={{ fontSize:11, color:"#737269", lineHeight:1.5 }}>Used in: destinations-cards-mobile.html — each card's entrance as it scrolls into view in the vertical snap-scroll carousel.</div>
+
+    <AnnotationCard index="01" title="Trigger" rows={[
+      {key:"observer",value:"IntersectionObserver, threshold 0.5"},
+      {key:"delay",value:"300ms after intersecting"},
+    ]}/>
+
+    <AnnotationCard index="02" title="On Reveal" rows={[
+      {key:"image",value:"scale 1.08 → 1.0, 1.4s"},
+      {key:"title",value:"fade + slide, 0.8s / 0.65s"},
+      {key:"details",value:"+0.15s · 0.8s / 0.65s"},
+      {key:"toggle",value:"+0.15s · 0.8s / 0.65s"},
+    ]}/>
+
+    <AnnotationCard index="03" title="Toggle Pulse (affordance)" rows={[
+      {key:"animation",value:"ring scale 0.85→1.4, opacity 0→0.7→0"},
+      {key:"timing",value:"2.4s, 1.2s delay, ×2"},
+    ]}/>
+
+    <AnnotationCard index="04" title="Tokens" rows={[
+      {key:"--ease",value:"cubic-bezier(.16,1,.3,1)"},
+    ]}/>
+
+    <StickyNote type="Observation">
+      The image and card content actually key off the same single .revealed class — there's a leftover img.classList.add('revealed') call in the source with no matching CSS rule, so it's a no-op. Don't carry that dead line into a new file; the image just has a longer transition duration than the text, which is what makes it look like a separate stage.
+    </StickyNote>
+
+    <StickyNote type="Decision">
+      Pulse ring fires twice, starting 1.2s after reveal — a deliberate "tap me" affordance so first-time users notice the + is interactive, not just decorative.
+    </StickyNote>
+  </div>,
+};
+
+Object.entries(mounts).forEach(([id, el]) => {
+  const container = document.getElementById(id);
+  if (container) ReactDOM.createRoot(container).render(el);
+});
+
+</script>
+
+</body>
+</html>
