@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-shell-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Regent — Wedding Amenities Teaser (Mobile)</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 100 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 600 900;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: #211551;
+    }
+
+    :root {
+      --brand:      #211551;
+      --canela:     'Canela', Georgia, serif;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease-panel: cubic-bezier(0.16, 1, 0.3, 1); /* same easing as wedding-amenities-teaser.html */
+      --pad:        28px;
+    }
+
+    /* ─── Section ─────────────────────────────────────────── */
+    .section {
+      background: #fff;
+      padding: 64px 0 56px;
+      overflow: hidden;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .section-header {
+      padding: 0 var(--pad) 32px;
+    }
+
+    .section-header h3 {
+      font-family: var(--canela);
+      font-size: 32px;
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── Carousel ───────────────────────────────────────── */
+    .carousel-scroll {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-left: var(--pad);
+      padding: 0 var(--pad);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .carousel-scroll::-webkit-scrollbar { display: none; }
+
+    /* ─── Card ───────────────────────────────────────────── */
+    .card {
+      position: relative;
+      flex: 0 0 78vw;
+      max-width: 340px;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      scroll-snap-align: start;
+    }
+
+    /* ─── Image ──────────────────────────────────────────── */
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ─── Dark overlay ───────────────────────────────────── */
+    /* Per Figma spec: solid wash 003B49 @ 10% + linear black gradient @ 75% */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(0, 59, 73, 0.1), rgba(0, 59, 73, 0.1)),
+        linear-gradient(
+          to bottom,
+          transparent 38%,
+          rgba(0, 0, 0, 0.45) 62%,
+          rgba(0, 0, 0, 0.75) 100%
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Frost panel (same as wedding-amenities-teaser.html) ─── */
+    .card__blur {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      background: rgba(6, 5, 15, 0.45);
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 0.6s var(--ease-panel);
+    }
+
+    .card.panel-open .card__blur {
+      opacity: 1;
+    }
+
+    .card.is-closing .card__blur {
+      opacity: 0;
+      transition: opacity 0.65s var(--ease-panel) 0.28s;
+    }
+
+    /* ─── Card body ──────────────────────────────────────── */
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 16px 24px 24px;
+      color: #fff;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .card__meta-wrap {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 24px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+
+    /* Title has no margin of its own — desc/link reveal below it via
+       max-height + margin-top, which grows the wrap's height and (since
+       .card__body is bottom-anchored) pushes the title upward — same
+       flow-based reveal as wedding-amenities-teaser.html. */
+
+    .card__desc {
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 22px;
+      color: #d6d6d6;
+      pointer-events: none;
+      transition: max-height 0.65s var(--ease-panel) 0s, margin-top 0.65s var(--ease-panel) 0s, opacity 0.3s ease 0s;
+    }
+
+    .card__link {
+      display: inline-block;
+      width: fit-content;
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      font-family: var(--engravers);
+      font-size: 14px;
+      line-height: 22px;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      padding-bottom: 3px;
+      text-decoration: none;
+      pointer-events: none;
+      transition: max-height 0.5s var(--ease-panel) 0s, margin-top 0.5s var(--ease-panel) 0s, opacity 0.3s ease 0s;
+    }
+
+    .card.panel-open .card__desc {
+      margin-top: 14px;
+      max-height: 140px;
+      opacity: 1;
+      pointer-events: all;
+      transition: max-height 0.65s var(--ease-panel) 0s, margin-top 0.65s var(--ease-panel) 0s, opacity 0.5s ease 0.3s;
+    }
+
+    .card.panel-open .card__link {
+      margin-top: 14px;
+      max-height: 28px;
+      opacity: 1;
+      pointer-events: all;
+      transition: max-height 0.5s var(--ease-panel) 0.08s, margin-top 0.5s var(--ease-panel) 0.08s, opacity 0.5s ease 0.38s;
+    }
+
+    .card.is-closing .card__desc {
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 0.45s var(--ease-panel) 0.1s, margin-top 0.45s var(--ease-panel) 0.1s, opacity 0.2s ease 0s;
+    }
+
+    .card.is-closing .card__link {
+      margin-top: 0;
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: max-height 0.4s var(--ease-panel) 0s, margin-top 0.4s var(--ease-panel) 0s, opacity 0.2s ease 0s;
+    }
+
+    /* ─── Toggle button ──────────────────────────────────── */
+    .card__toggle {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 200;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 14px;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.3s;
+      align-self: flex-end;
+    }
+
+    .card__toggle .icon-plus,
+    .card__toggle .icon-close {
+      position: absolute;
+      transition: opacity 0.4s ease, transform 0.4s var(--ease-panel);
+    }
+
+    .card__toggle .icon-plus  { opacity: 1; transform: rotate(0deg); }
+    .card__toggle .icon-close { opacity: 0; transform: rotate(-45deg); }
+    .card.panel-open .card__toggle .icon-plus  { opacity: 0; transform: rotate(45deg); }
+    .card.panel-open .card__toggle .icon-close { opacity: 1; transform: rotate(0deg); }
+  </style>
+</head>
+<body>
+
+<section class="section">
+
+  <div class="section-header">
+    <h3>Wedding amenities at Regent Santa Monica Beach</h3>
+  </div>
+
+  <div class="carousel-scroll" id="track">
+
+    <div class="card" data-index="0">
+      <img class="card__img" src="../_assets/_imgs/teaser_prototype/1.png" alt="Bespoke Event Services">
+      <div class="card__overlay"></div>
+      <div class="card__blur"></div>
+      <div class="card__body">
+        <div class="card__meta-wrap">
+          <div class="card__title">Bespoke Event Services</div>
+          <p class="card__desc">A dedicated planner curates every detail of your celebration, from the first consultation to the final farewell.</p>
+          <a href="#" class="card__link">Explore</a>
+        </div>
+        <button class="card__toggle" aria-label="Toggle info for Bespoke Event Services">
+          <span class="icon-plus">+</span>
+          <span class="icon-close">×</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" data-index="1">
+      <img class="card__img" src="../_assets/_imgs/teaser_prototype/2.png" alt="Luxury Vendors">
+      <div class="card__overlay"></div>
+      <div class="card__blur"></div>
+      <div class="card__body">
+        <div class="card__meta-wrap">
+          <div class="card__title">Luxury Vendors</div>
+          <p class="card__desc">A curated roster of florists, bakers, and stylists — handpicked for their craft and devotion to detail.</p>
+          <a href="#" class="card__link">Explore</a>
+        </div>
+        <button class="card__toggle" aria-label="Toggle info for Luxury Vendors">
+          <span class="icon-plus">+</span>
+          <span class="icon-close">×</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" data-index="2">
+      <img class="card__img" src="../_assets/_imgs/teaser_prototype/3.png" alt="Wellness & Leisure">
+      <div class="card__overlay"></div>
+      <div class="card__blur"></div>
+      <div class="card__body">
+        <div class="card__meta-wrap">
+          <div class="card__title">Wellness & Leisure</div>
+          <p class="card__desc">Spa rituals and quiet moments of restoration, reserved for the wedding party in the days before the celebration.</p>
+          <a href="#" class="card__link">Explore</a>
+        </div>
+        <button class="card__toggle" aria-label="Toggle info for Wellness & Leisure">
+          <span class="icon-plus">+</span>
+          <span class="icon-close">×</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" data-index="3">
+      <img class="card__img" src="../_assets/_imgs/teaser_prototype/4.png" alt="The Atelier">
+      <div class="card__overlay"></div>
+      <div class="card__blur"></div>
+      <div class="card__body">
+        <div class="card__meta-wrap">
+          <div class="card__title">The Atelier</div>
+          <p class="card__desc">A private studio for gown fittings and final touches, set apart for the bride in the hours before the ceremony.</p>
+          <a href="#" class="card__link">Explore</a>
+        </div>
+        <button class="card__toggle" aria-label="Toggle info for The Atelier">
+          <span class="icon-plus">+</span>
+          <span class="icon-close">×</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /track -->
+
+</section>
+
+<script>
+  const track = document.getElementById('track');
+
+  // ── Teaser frost panel toggle (same pattern as wedding-amenities-teaser.html) ──
+  function closeTeaser(card) {
+    card.classList.add('is-closing');
+    card.classList.remove('panel-open');
+    setTimeout(() => card.classList.remove('is-closing'), 1800);
+  }
+
+  track.addEventListener('click', e => {
+    const toggleBtn = e.target.closest('.card__toggle');
+    if (!toggleBtn) return;
+
+    const card = toggleBtn.closest('.card');
+    if (card.classList.contains('panel-open')) {
+      closeTeaser(card);
+    } else {
+      track.querySelectorAll('.card.panel-open').forEach(c => {
+        if (c !== card) closeTeaser(c);
+      });
+      card.classList.remove('is-closing');
+      card.classList.add('panel-open');
+    }
+  });
+</script>
+
+</body>
+</html>
