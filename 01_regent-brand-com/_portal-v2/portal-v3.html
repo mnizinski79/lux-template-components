@@ -1253,6 +1253,175 @@
       background: rgba(255,255,255,0.04);
     }
 
+    /* ── Empty-state section divider + Motion Library card ──────── */
+    .canvas-empty__divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 36px;
+    }
+    .canvas-empty__divider::before,
+    .canvas-empty__divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+    }
+    .canvas-empty__divider span {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      white-space: nowrap;
+    }
+
+    .canvas-empty__section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      text-decoration: none;
+      transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+    }
+    .canvas-empty__section:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.16);
+    }
+
+    .canvas-empty__section-preview {
+      position: relative;
+      flex-shrink: 0;
+      width: 120px;
+      height: 80px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: linear-gradient(160deg, #5B5470 0%, #2E2A40 100%);
+    }
+    .canvas-empty__section-preview::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.45) 75%, rgba(0,0,0,0.75) 95%);
+    }
+    .ml-preview-title, .ml-preview-meta, .ml-preview-desc, .ml-preview-link {
+      position: absolute;
+      left: 10px;
+      border-radius: 2px;
+    }
+    .ml-preview-title {
+      bottom: 11px;
+      width: 56px; height: 7px;
+      background: rgba(255,255,255,0.92);
+      animation: mlPreviewTitle 3.2s cubic-bezier(0.16,1,0.3,1) infinite;
+    }
+    .ml-preview-meta {
+      bottom: 6px;
+      width: 34px; height: 4px;
+      background: rgba(255,255,255,0.5);
+      animation: mlPreviewMeta 3.2s cubic-bezier(0.16,1,0.3,1) infinite;
+    }
+    .ml-preview-desc {
+      bottom: 20px;
+      width: 64px; height: 14px;
+      background: rgba(255,255,255,0.28);
+      animation: mlPreviewFade 3.2s ease-in-out infinite;
+    }
+    .ml-preview-link {
+      bottom: 6px;
+      width: 20px; height: 4px;
+      background: rgba(255,255,255,0.85);
+      animation: mlPreviewFade 3.2s ease-in-out infinite 0.08s;
+    }
+    .ml-preview-toggle {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      width: 10px; height: 10px;
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 50%;
+      animation: mlPreviewRing 3.2s cubic-bezier(0.16,1,0.3,1) infinite;
+    }
+    .ml-preview-toggle::before, .ml-preview-toggle::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      background: rgba(255,255,255,0.9);
+      transform-origin: center;
+    }
+    .ml-preview-toggle::before {
+      /* plus → becomes one bar of the × */
+      width: 6px; height: 1px;
+      transform: translate(-50%,-50%) rotate(0deg);
+      animation: mlPreviewBar1 3.2s cubic-bezier(0.16,1,0.3,1) infinite;
+    }
+    .ml-preview-toggle::after {
+      width: 1px; height: 6px;
+      transform: translate(-50%,-50%) rotate(0deg);
+      animation: mlPreviewBar2 3.2s cubic-bezier(0.16,1,0.3,1) infinite;
+    }
+
+    @keyframes mlPreviewTitle {
+      0%, 12%   { transform: translateY(0); }
+      27%, 62%  { transform: translateY(-22px); }
+      80%, 100% { transform: translateY(0); }
+    }
+    @keyframes mlPreviewMeta {
+      0%, 14%   { transform: translateY(0); }
+      29%, 58%  { transform: translateY(-22px); }
+      76%, 100% { transform: translateY(0); }
+    }
+    @keyframes mlPreviewFade {
+      0%, 22%   { opacity: 0; transform: translateY(4px); }
+      36%, 56%  { opacity: 1; transform: translateY(0); }
+      68%, 100% { opacity: 0; transform: translateY(4px); }
+    }
+    @keyframes mlPreviewRing {
+      0%, 22%, 68%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+      40%                 { transform: scale(1.15); box-shadow: 0 0 6px 1px rgba(255,255,255,0.25); }
+    }
+    @keyframes mlPreviewBar1 {
+      0%, 22%   { transform: translate(-50%,-50%) rotate(0deg); }
+      36%, 56%  { transform: translate(-50%,-50%) rotate(45deg); }
+      68%, 100% { transform: translate(-50%,-50%) rotate(0deg); }
+    }
+    @keyframes mlPreviewBar2 {
+      0%, 22%   { transform: translate(-50%,-50%) rotate(0deg); }
+      36%, 56%  { transform: translate(-50%,-50%) rotate(45deg); }
+      68%, 100% { transform: translate(-50%,-50%) rotate(0deg); }
+    }
+
+    .canvas-empty__section-text { flex: 1; min-width: 0; text-align: left; }
+    .canvas-empty__section-title {
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+    }
+    .canvas-empty__section-desc {
+      margin-top: 4px;
+      font-family: var(--inter);
+      font-size: 10.5px;
+      font-weight: 300;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.32);
+    }
+    .canvas-empty__section-cta {
+      flex-shrink: 0;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
     /* ── iOS Shell ────────────────────────────────────────────── */
     .shell-ios {
       position: relative;
@@ -2130,7 +2299,7 @@ function goHome() {
 function showEmpty() {
   const scaler = document.getElementById('deviceScaler');
   scaler.style.width  = '480px';
-  scaler.style.height = '320px';
+  scaler.style.height = '460px';
   scaler.innerHTML = `
     <div class="canvas-empty">
       <div class="canvas-empty__logo">
@@ -2142,18 +2311,29 @@ function showEmpty() {
           <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg>
           Add Prototype
         </a>
-        <a href="motion-library-light.html" class="canvas-empty__cta canvas-empty__cta--ghost">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3l5 3-5 3V3z"/></svg>
-          Motion Library
-        </a>
         <a href="guide.html" class="canvas-empty__cta canvas-empty__cta--ghost">
           <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 5.5v3M6 4h.01"/></svg>
           Team Guide
         </a>
       </div>
+      <div class="canvas-empty__divider"><span>Tools</span></div>
+      <a href="motion-library-light.html" class="canvas-empty__section">
+        <div class="canvas-empty__section-preview">
+          <div class="ml-preview-desc"></div>
+          <div class="ml-preview-link"></div>
+          <div class="ml-preview-title"></div>
+          <div class="ml-preview-meta"></div>
+          <div class="ml-preview-toggle"></div>
+        </div>
+        <div class="canvas-empty__section-text">
+          <div class="canvas-empty__section-title">Motion Library</div>
+          <div class="canvas-empty__section-desc">Live, tokenized reference for interaction patterns shared across Regent prototypes — exact timing and distance values to copy into new work.</div>
+        </div>
+        <span class="canvas-empty__section-cta">Open →</span>
+      </a>
     </div>`;
   const w = document.getElementById('scaleWrapper');
-  w.style.width = '480px'; w.style.height = '320px';
+  w.style.width = '480px'; w.style.height = '460px';
 }
 
 /* ══════════════════════════════════════════════════════════════
