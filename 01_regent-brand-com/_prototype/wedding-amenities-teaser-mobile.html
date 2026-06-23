@@ -135,12 +135,16 @@
     }
 
     /* ─── Card body ──────────────────────────────────────── */
+    /* Title + meta sit in normal flow inside .card__body, which stays put.
+       desc/link are absolutely positioned siblings of .card__body, hidden
+       behind it until title/meta slide up out of the way — same staggered
+       choreography as destinations-cards-mobile.html, not a grow/collapse. */
     .card__body {
       position: absolute;
-      bottom: 0;
+      bottom: 24px;
       left: 0;
       right: 0;
-      padding: 0 16px 24px 24px;
+      padding: 0 16px 0 24px;
       color: #fff;
       z-index: 2;
       display: flex;
@@ -161,34 +165,74 @@
       font-weight: 300;
       line-height: 1.15;
       letter-spacing: 0.01em;
+      transition: transform 0.65s var(--ease-panel) 0s;
     }
 
-    /* Title has no margin of its own — desc/link reveal below it via
-       max-height + margin-top, which grows the wrap's height and (since
-       .card__body is bottom-anchored) pushes the title upward — same
-       flow-based reveal as wedding-amenities-teaser.html. */
+    /* open: title moves first */
+    .card.panel-open .card__title {
+      transform: translateY(-118px);
+      transition: transform 0.65s var(--ease-panel) 0s;
+    }
 
+    /* close: title drifts back slowly, last to arrive */
+    .card.is-closing .card__title {
+      transform: translateY(0);
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.36s;
+    }
+
+    .card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      transition: transform 0.65s var(--ease-panel) 0.08s;
+    }
+
+    .card__meta .sep {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* open: meta follows title */
+    .card.panel-open .card__meta {
+      transform: translateY(-118px);
+      transition: transform 0.65s var(--ease-panel) 0.08s;
+    }
+
+    /* close: meta returns second to last */
+    .card.is-closing .card__meta {
+      transform: translateY(0);
+      transition: transform 0.65s var(--ease-panel) 0.18s;
+    }
+
+    /* ─── Desc + link — absolutely positioned, fade in after title clears ─── */
     .card__desc {
-      margin-top: 0;
-      max-height: 0;
-      opacity: 0;
-      overflow: hidden;
+      position: absolute;
+      left: 24px;
+      right: 16px;
+      bottom: 58px;
       font-family: var(--inter);
       font-size: 14px;
       font-weight: 300;
       line-height: 22px;
       color: #d6d6d6;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
       pointer-events: none;
-      transition: max-height 0.65s var(--ease-panel) 0s, margin-top 0.65s var(--ease-panel) 0s, opacity 0.3s ease 0s;
+      z-index: 2;
     }
 
     .card__link {
-      display: inline-block;
-      width: fit-content;
-      margin-top: 0;
-      max-height: 0;
-      opacity: 0;
-      overflow: hidden;
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
       font-family: var(--engravers);
       font-size: 14px;
       line-height: 22px;
@@ -198,40 +242,41 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.4);
       padding-bottom: 3px;
       text-decoration: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
       pointer-events: none;
-      transition: max-height 0.5s var(--ease-panel) 0s, margin-top 0.5s var(--ease-panel) 0s, opacity 0.3s ease 0s;
+      z-index: 2;
     }
 
+    /* open: desc + link appear after title has moved */
     .card.panel-open .card__desc {
-      margin-top: 14px;
-      max-height: 140px;
       opacity: 1;
+      transform: translateY(0);
       pointer-events: all;
-      transition: max-height 0.65s var(--ease-panel) 0s, margin-top 0.65s var(--ease-panel) 0s, opacity 0.5s ease 0.3s;
+      transition: opacity 0.5s ease 0.3s, transform 0.5s var(--ease-panel) 0.3s;
     }
 
     .card.panel-open .card__link {
-      margin-top: 14px;
-      max-height: 28px;
       opacity: 1;
+      transform: translateY(0);
       pointer-events: all;
-      transition: max-height 0.5s var(--ease-panel) 0.08s, margin-top 0.5s var(--ease-panel) 0.08s, opacity 0.5s ease 0.38s;
+      transition: opacity 0.5s ease 0.38s, transform 0.5s var(--ease-panel) 0.38s;
     }
 
+    /* close: desc + link disappear first */
     .card.is-closing .card__desc {
-      margin-top: 0;
-      max-height: 0;
       opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
       pointer-events: none;
-      transition: max-height 0.45s var(--ease-panel) 0.1s, margin-top 0.45s var(--ease-panel) 0.1s, opacity 0.2s ease 0s;
     }
 
     .card.is-closing .card__link {
-      margin-top: 0;
-      max-height: 0;
       opacity: 0;
+      transform: translateY(3px);
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
       pointer-events: none;
-      transition: max-height 0.4s var(--ease-panel) 0s, margin-top 0.4s var(--ease-panel) 0s, opacity 0.2s ease 0s;
     }
 
     /* ─── Toggle button ──────────────────────────────────── */
@@ -283,11 +328,16 @@
       <img class="card__img" src="../_assets/_imgs/teaser_prototype/1.png" alt="Bespoke Event Services">
       <div class="card__overlay"></div>
       <div class="card__blur"></div>
+      <p class="card__desc">A dedicated planner curates every detail of your celebration, from the first consultation to the final farewell.</p>
+      <a href="#" class="card__link">Explore</a>
       <div class="card__body">
         <div class="card__meta-wrap">
           <div class="card__title">Bespoke Event Services</div>
-          <p class="card__desc">A dedicated planner curates every detail of your celebration, from the first consultation to the final farewell.</p>
-          <a href="#" class="card__link">Explore</a>
+          <div class="card__meta">
+            <span>Planning</span>
+            <span class="sep">·</span>
+            <span>9–12 Months Out</span>
+          </div>
         </div>
         <button class="card__toggle" aria-label="Toggle info for Bespoke Event Services">
           <i class="ph ph-plus icon-plus"></i>
@@ -300,11 +350,16 @@
       <img class="card__img" src="../_assets/_imgs/teaser_prototype/2.png" alt="Luxury Vendors">
       <div class="card__overlay"></div>
       <div class="card__blur"></div>
+      <p class="card__desc">A curated roster of florists, bakers, and stylists — handpicked for their craft and devotion to detail.</p>
+      <a href="#" class="card__link">Explore</a>
       <div class="card__body">
         <div class="card__meta-wrap">
           <div class="card__title">Luxury Vendors</div>
-          <p class="card__desc">A curated roster of florists, bakers, and stylists — handpicked for their craft and devotion to detail.</p>
-          <a href="#" class="card__link">Explore</a>
+          <div class="card__meta">
+            <span>Vendors</span>
+            <span class="sep">·</span>
+            <span>6–9 Months Out</span>
+          </div>
         </div>
         <button class="card__toggle" aria-label="Toggle info for Luxury Vendors">
           <i class="ph ph-plus icon-plus"></i>
@@ -317,11 +372,16 @@
       <img class="card__img" src="../_assets/_imgs/teaser_prototype/3.png" alt="Wellness & Leisure">
       <div class="card__overlay"></div>
       <div class="card__blur"></div>
+      <p class="card__desc">Spa rituals and quiet moments of restoration, reserved for the wedding party in the days before the celebration.</p>
+      <a href="#" class="card__link">Explore</a>
       <div class="card__body">
         <div class="card__meta-wrap">
           <div class="card__title">Wellness & Leisure</div>
-          <p class="card__desc">Spa rituals and quiet moments of restoration, reserved for the wedding party in the days before the celebration.</p>
-          <a href="#" class="card__link">Explore</a>
+          <div class="card__meta">
+            <span>Wellness</span>
+            <span class="sep">·</span>
+            <span>1–2 Days Before</span>
+          </div>
         </div>
         <button class="card__toggle" aria-label="Toggle info for Wellness & Leisure">
           <i class="ph ph-plus icon-plus"></i>
@@ -334,11 +394,16 @@
       <img class="card__img" src="../_assets/_imgs/teaser_prototype/4.png" alt="The Atelier">
       <div class="card__overlay"></div>
       <div class="card__blur"></div>
+      <p class="card__desc">A private studio for gown fittings and final touches, set apart for the bride in the hours before the ceremony.</p>
+      <a href="#" class="card__link">Explore</a>
       <div class="card__body">
         <div class="card__meta-wrap">
           <div class="card__title">The Atelier</div>
-          <p class="card__desc">A private studio for gown fittings and final touches, set apart for the bride in the hours before the ceremony.</p>
-          <a href="#" class="card__link">Explore</a>
+          <div class="card__meta">
+            <span>Styling</span>
+            <span class="sep">·</span>
+            <span>Day Of</span>
+          </div>
         </div>
         <button class="card__toggle" aria-label="Toggle info for The Atelier">
           <i class="ph ph-plus icon-plus"></i>
