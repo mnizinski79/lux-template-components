@@ -152,7 +152,7 @@
     /* CLOSE — desc/link drop first, title returns last + slowest */
     --close-desc-delay:  0s;     --close-desc-dur:  0.3s;
     --close-link-delay:  0s;     --close-link-dur:  0.3s;
-    --close-meta-delay:  0.18s;  --close-meta-dur:  0.65s;
+    --close-meta-delay:  0.27s;  --close-meta-dur:  0.9s;
     --close-title-delay: 0.36s;  --close-title-dur: 1.2s;
   }
 
@@ -171,7 +171,9 @@
   .demo-card__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent 38%, rgba(0,0,0,0.45) 62%, rgba(0,0,0,0.75) 100%);
+    background:
+      linear-gradient(rgba(33,21,81,0.1), rgba(33,21,81,0.1)),
+      linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.45) 75%, rgba(0,0,0,0.75) 95%);
     pointer-events: none;
   }
 
@@ -505,16 +507,16 @@
 </div>
 
 <nav class="ml-nav">
-  <a href="#teaser-reveal">Teaser Card — Tap to Reveal (Mobile)</a>
+  <a href="#teaser-reveal">Teaser Card — Tap to Reveal</a>
   <a href="#click-expand">Destination Card — Click Expand (Desktop)</a>
   <a href="#scroll-reveal">Destination Card — Scroll Reveal (Mobile)</a>
 </nav>
 
 <div class="ml-section-head" data-reveal>
-  <div class="s-eyebrow"><span class="s-num">01</span>Mobile · Tap</div>
+  <div class="s-eyebrow"><span class="s-num">01</span>Mobile + Desktop · Tap / Click</div>
   <div class="s-rule"></div>
   <div class="s-headline">Teaser Card — Tap to Reveal</div>
-  <div class="s-body">Used in: <strong>wedding-amenities-teaser-mobile.html</strong> and <strong>destinations-cards-mobile.html</strong> — tapping the + button on a card. Title and meta slide up out of the way first, then description and link fade in below. Closing reverses it, with the title returning last and slowest.</div>
+  <div class="s-body">Used in: <strong>wedding-amenities-teaser-mobile.html</strong>, <strong>wedding-amenities-teaser.html</strong> (desktop), and <strong>destinations-cards-mobile.html</strong> — tapping/clicking the + button on a card. Title and meta slide up out of the way first, then description and link fade in below with an exact 16px gap. Closing reverses it, with meta and title settling back down nearly together — meta leads by a touch, title finishes last and slowest.</div>
 </div>
 
 <div class="annotated-row" id="teaser-reveal">
@@ -742,8 +744,8 @@ function CurvePlot({ label="cubic-bezier(0.16, 1, 0.3, 1)" }) {
 // ─── Mounts ─────────────────────────────────────────────────────────────────────
 const mounts = {
   "a-teaser-reveal": <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-    <div className="section-title">Teaser Card — Tap to Reveal (Mobile)</div>
-    <div style={{ fontSize:11, color:"#737269", lineHeight:1.5 }}>Used in: wedding-amenities-teaser-mobile.html and destinations-cards-mobile.html — tapping the + button on a card.</div>
+    <div className="section-title">Teaser Card — Tap to Reveal</div>
+    <div style={{ fontSize:11, color:"#737269", lineHeight:1.5 }}>Used in: wedding-amenities-teaser-mobile.html, wedding-amenities-teaser.html (desktop), and destinations-cards-mobile.html — tapping/clicking the + button on a card.</div>
 
     <CurvePlot/>
 
@@ -757,21 +759,28 @@ const mounts = {
     <AnnotationCard index="02" title="Close Sequence" rows={[
       {key:"desc",value:"0s delay · 0.3s"},
       {key:"link",value:"0s delay · 0.3s"},
-      {key:"meta",value:"+0.18s · 0.65s"},
-      {key:"title",value:"+0.36s · 1.2s (slow)"},
+      {key:"meta",value:"+0.27s · 0.9s"},
+      {key:"title",value:"+0.36s · 1.2s (slight trail)"},
     ]}/>
 
     <AnnotationCard index="03" title="Tokens" rows={[
       {key:"--ease-panel",value:"cubic-bezier(.16,1,.3,1)"},
-      {key:"--reveal-distance",value:"118px"},
+      {key:"--reveal-distance",value:"mobile 120px · desktop 162px"},
+      {key:"meta→desc gap",value:"16px (exact, top-anchored)"},
+      {key:"desc max-height",value:"3 lines (line-clamp)"},
+    ]}/>
+
+    <AnnotationCard index="04" title="Overlay" rows={[
+      {key:"wash",value:"rgba(var(--brand-rgb), 0.1) — #211551"},
+      {key:"gradient",value:"transparent 50% → .45 @75% → .75 @95%"},
     ]}/>
 
     <StickyNote type="Observation">
-      Title/meta must slide up far enough to clear the desc text fully — distance needs to be ≥ (desc bottom-anchor + max desc height) − body bottom-offset, or the header overlaps the body copy. Recalculate per card size; don't reuse 118px blindly on a differently-sized card.
+      --reveal-distance is per-card, not a universal constant — it must clear the desc text fully (≥ desc anchor + max desc height − body bottom-offset). Desktop's larger card/type needs 162px; mobile's smaller card needs 120px. Recalculate for any new card size rather than reusing either number.
     </StickyNote>
 
     <StickyNote type="Decision">
-      Ported from destinations-cards-mobile.html into wedding-amenities-teaser-mobile.html on Jun 23 — title leads, body copy trails, close reverses with title returning last and slowest. This is now the canonical teaser-reveal choreography for Regent prototypes.
+      Ported from destinations-cards-mobile.html into wedding-amenities-teaser-mobile.html on Jun 23, then into the desktop teaser too — title leads on open, body copy trails. On close, meta and title now move within 0.09s of each other (0.27s vs 0.36s delay) and finish 0.39s apart (0.9s vs 1.2s duration) — a deliberate in-between: less staggered than the original gap (meta finished 0.73s before title), but title still visibly trails meta rather than landing in perfect sync. Desktop uses a top-anchored desc box (not bottom-anchored) so the 16px gap holds regardless of copy length; mobile's anchors were recalibrated to match. Meta line simplified to a single word (no separator); overlay wash switched from a raw Figma hex to the --brand token. This is now the canonical teaser-reveal choreography for Regent prototypes.
     </StickyNote>
   </div>,
 
