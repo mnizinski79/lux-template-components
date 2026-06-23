@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Regent — Destinations Teaser Carousel</title>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
   <style>
     @font-face {
@@ -116,15 +117,18 @@
     }
 
     /* ─── Dark overlay ───────────────────────────────────── */
+    /* Per Figma spec: solid wash 003B49 @ 10% + linear black gradient @ 75% */
     .card__overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        to bottom,
-        transparent 38%,
-        rgba(6, 5, 15, 0.35) 62%,
-        rgba(6, 5, 15, 0.78) 100%
-      );
+      background:
+        linear-gradient(rgba(0, 59, 73, 0.1), rgba(0, 59, 73, 0.1)),
+        linear-gradient(
+          to bottom,
+          transparent 38%,
+          rgba(0, 0, 0, 0.45) 62%,
+          rgba(0, 0, 0, 0.75) 100%
+        );
       pointer-events: none;
       z-index: 1;
     }
@@ -406,8 +410,8 @@
             <a href="#" class="card__link">Explore</a>
           </div>
           <button class="card__toggle" aria-label="Toggle info for Bespoke Event Services">
-            <span class="icon-plus">+</span>
-            <span class="icon-close">×</span>
+            <i class="ph ph-plus icon-plus"></i>
+            <i class="ph ph-x icon-close"></i>
           </button>
         </div>
       </div>
@@ -424,8 +428,8 @@
             <a href="#" class="card__link">Explore</a>
           </div>
           <button class="card__toggle" aria-label="Toggle info for Luxury Vendors">
-            <span class="icon-plus">+</span>
-            <span class="icon-close">×</span>
+            <i class="ph ph-plus icon-plus"></i>
+            <i class="ph ph-x icon-close"></i>
           </button>
         </div>
       </div>
@@ -442,8 +446,8 @@
             <a href="#" class="card__link">Explore</a>
           </div>
           <button class="card__toggle" aria-label="Toggle info for Wellness & Leisure">
-            <span class="icon-plus">+</span>
-            <span class="icon-close">×</span>
+            <i class="ph ph-plus icon-plus"></i>
+            <i class="ph ph-x icon-close"></i>
           </button>
         </div>
       </div>
@@ -460,8 +464,8 @@
             <a href="#" class="card__link">Explore</a>
           </div>
           <button class="card__toggle" aria-label="Toggle info for The Atelier">
-            <span class="icon-plus">+</span>
-            <span class="icon-close">×</span>
+            <i class="ph ph-plus icon-plus"></i>
+            <i class="ph ph-x icon-close"></i>
           </button>
         </div>
       </div>
