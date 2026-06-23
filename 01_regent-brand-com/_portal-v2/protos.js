@@ -272,7 +272,7 @@ const PROTOS = [
     notes: [
       { date: 'Jun 23', text: 'Tokenized reference for shared interaction patterns (teaser tap-reveal, click expand, scroll reveal) — copy values into a new prototype instead of re-deriving timing. Not wired into any production file.' },
     ],
-    urls: { desktop: 'motion-library.html' },
+    urls: { desktop: 'motion-library-light.html' },
     default: 'desktop',
   },
 
