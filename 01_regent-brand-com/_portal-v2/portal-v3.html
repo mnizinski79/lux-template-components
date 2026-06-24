@@ -1397,6 +1397,36 @@
       68%, 100% { transform: translate(-50%,-50%) rotate(0deg); }
     }
 
+    .vf-preview-frost {
+      position: absolute;
+      left: 10px; top: 10px;
+      width: 40px; height: 24px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.3);
+      animation: vfPreviewFrost 3.2s ease-in-out infinite;
+    }
+    .vf-preview-wash {
+      position: absolute;
+      left: 10px; bottom: 8px;
+      width: 56px; height: 6px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.85);
+      animation: vfPreviewWash 3.2s ease-in-out infinite;
+    }
+    @keyframes vfPreviewFrost {
+      0%, 20%   { backdrop-filter: blur(2px); opacity: 0.6; }
+      50%       { backdrop-filter: blur(10px); opacity: 1; }
+      80%, 100% { backdrop-filter: blur(2px); opacity: 0.6; }
+    }
+    @keyframes vfPreviewWash {
+      0%, 30%   { opacity: 0.4; }
+      55%       { opacity: 1; }
+      85%, 100% { opacity: 0.4; }
+    }
+
     .canvas-empty__section-text { flex: 1; min-width: 0; text-align: left; }
     .canvas-empty__section-title {
       font-family: var(--engravers);
@@ -2317,7 +2347,7 @@ function showEmpty() {
         </a>
       </div>
       <div class="canvas-empty__divider"><span>Tools</span></div>
-      <a href="motion-library-light.html" class="canvas-empty__section">
+      <a href="../../_tools/_motionLibrary/motion-library-v2.html" class="canvas-empty__section">
         <div class="canvas-empty__section-preview">
           <div class="ml-preview-desc"></div>
           <div class="ml-preview-link"></div>
@@ -2328,6 +2358,17 @@ function showEmpty() {
         <div class="canvas-empty__section-text">
           <div class="canvas-empty__section-title">Motion Library</div>
           <div class="canvas-empty__section-desc">Live, tokenized reference for interaction patterns shared across Regent prototypes — exact timing and distance values to copy into new work.</div>
+        </div>
+        <span class="canvas-empty__section-cta">Open →</span>
+      </a>
+      <a href="visual-foundations.html" class="canvas-empty__section">
+        <div class="canvas-empty__section-preview">
+          <div class="vf-preview-frost"></div>
+          <div class="vf-preview-wash"></div>
+        </div>
+        <div class="canvas-empty__section-text">
+          <div class="canvas-empty__section-title">Visual Foundations</div>
+          <div class="canvas-empty__section-desc">Live reference for surface treatments shared across Regent prototypes — frost/glass blur and overlay gradients, not components, not motion.</div>
         </div>
         <span class="canvas-empty__section-cta">Open →</span>
       </a>
