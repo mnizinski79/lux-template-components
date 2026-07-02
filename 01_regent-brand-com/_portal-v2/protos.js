@@ -84,7 +84,7 @@ const PROTOS = [
 
   {
     id: 'r-wedding-amenities', section: 'review', subsection: null,
-    label: 'Wedding Amenities Teaser', tags: ['Desktop', 'Mobile'],
+    label: 'wdsCard', tags: ['Desktop', 'Mobile'],
     status: 'review',
     figma: null,
     notes: [
