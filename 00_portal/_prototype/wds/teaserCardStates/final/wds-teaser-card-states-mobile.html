@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" data-shell-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Regent — TeaserCard Animated States (Mobile)</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../../../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../../../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: #211551;
+    }
+
+    :root {
+      --brand:      #211551;
+      --brand-rgb:  33, 21, 81;
+      --focus-blue: #6941C6;
+      --canela:     'Canela', Georgia, serif;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section {
+      padding: 40px 0 56px;
+    }
+
+    .section-header {
+      padding: 0 24px 28px;
+    }
+
+    .section-header h3 {
+      font-family: var(--canela);
+      font-size: 24px;
+      font-weight: 300;
+      color: var(--brand);
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 400;
+      color: #2b2b2b;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    .stage {
+      display: flex;
+      justify-content: center;
+      padding: 0 24px;
+    }
+
+    /* ─── Card ───────────────────────────────────────────── */
+    .card {
+      position: relative;
+      width: 320px;
+      height: 400px;
+      overflow: hidden;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      display: block;
+    }
+
+    .card:focus-visible {
+      outline: 2px solid var(--focus-blue);
+      outline-offset: 0;
+      border-radius: 4px;
+    }
+
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease);
+    }
+
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(var(--brand-rgb), 0.1), rgba(var(--brand-rgb), 0.1)),
+        linear-gradient(
+          to bottom,
+          transparent 50%,
+          rgba(0, 0, 0, 0.45) 75%,
+          rgba(0, 0, 0, 0.75) 95%
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .card__active-layer {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.15s var(--ease);
+    }
+
+    .card:active .card__active-layer,
+    .card.is-active-touch .card__active-layer {
+      opacity: 1;
+    }
+
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 22px 22px;
+      color: #fff;
+      z-index: 2;
+    }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 22px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+
+    .card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-family: var(--engravers);
+      font-size: 11px;
+      line-height: 24px;
+      font-weight: 400;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .card__meta .sep { font-size: 9px; color: rgba(255, 255, 255, 0.4); }
+
+    .card__link {
+      display: inline-block;
+      margin-top: 12px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      padding-bottom: 2px;
+    }
+
+    .card__link:focus-visible {
+      outline: 2px solid var(--focus-blue);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ─── Live state badge (review aid, not part of the shipped component) ─── */
+    .state-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 3;
+      font-family: var(--inter);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--brand);
+      background: #fff;
+      padding: 4px 9px;
+      border-radius: 100px;
+      pointer-events: none;
+    }
+
+    .stage-copy {
+      max-width: 320px;
+      margin: 28px auto 0;
+      padding: 0 24px;
+    }
+
+    .stage-copy h4 {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 12px;
+    }
+
+    .stage-copy p {
+      font-family: var(--inter);
+      font-size: 13.5px;
+      font-weight: 400;
+      line-height: 1.65;
+      color: #2b2b2b;
+      margin-bottom: 16px;
+    }
+
+    .stage-copy ul {
+      font-family: var(--inter);
+      font-size: 13.5px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: #1e1e1e;
+      padding-left: 18px;
+    }
+
+    .stage-copy li {
+      margin-bottom: 10px;
+    }
+
+    .stage-copy li strong {
+      font-weight: 600;
+      color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+  <div class="section-header">
+    <h3>teaserCard — Animated States</h3>
+    <p>Tap the card to preview Active. Tab (or use an external keyboard/switch control) to preview Focus. Hover isn't a real touch interaction, so it's not demoed here — see the desktop version for that.</p>
+  </div>
+
+  <div class="stage">
+    <div class="card" tabindex="0" id="card" role="link" aria-label="The Meridian Residences — Rooftop, Level 12">
+      <span class="state-badge" id="stateBadge">Default</span>
+      <img class="card__img" src="../../../_assets/_imgs/teaserCardStates/building.jpg" alt="">
+      <div class="card__overlay"></div>
+      <div class="card__active-layer"></div>
+      <div class="card__body">
+        <div class="card__title">The Meridian Residences</div>
+        <div class="card__meta">Rooftop <span class="sep">•</span> Level 12</div>
+        <a class="card__link" href="#" onclick="event.stopPropagation()">Explore</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage-copy">
+    <h4>What to check</h4>
+    <p>This is a live, interactive comparison — trigger each state directly on the card instead of judging from static Figma frames. Active is the one behavior actually under review for whether the base teaserCard ships animated in v1; Hover doesn't apply on touch, so it's covered on the desktop version instead.</p>
+    <ul>
+      <li><strong>Focus</strong> — Tab lands on the card first (its own visible ring), then Tab again moves to the nested link, which has its own distinct focus treatment. Two separate, sequential tab stops.</li>
+      <li><strong>Active</strong> — an 18% opacity black overlay washes across the full image on tap. It's momentary and reverts to Default as soon as the tap releases — no layout or text change.</li>
+    </ul>
+  </div>
+
+</section>
+
+<script>
+  const card = document.getElementById('card');
+  const badge = document.getElementById('stateBadge');
+  const link = card.querySelector('.card__link');
+
+  function setState(label) { badge.textContent = label; }
+
+  card.addEventListener('touchstart', () => { card.classList.add('is-active-touch'); setState('Active'); });
+  card.addEventListener('touchend', () => { card.classList.remove('is-active-touch'); setState('Default'); });
+  card.addEventListener('mousedown', () => setState('Active'));
+  card.addEventListener('mouseup', () => setState('Default'));
+  card.addEventListener('focus', () => { if (card.matches(':focus-visible')) setState('Focus — Tab 1 (Card)'); });
+  card.addEventListener('blur', () => setState('Default'));
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = link.href; }
+  });
+  link.addEventListener('focus', (e) => {
+    e.stopPropagation();
+    if (link.matches(':focus-visible')) setState('Focus — Tab 2 (Link)');
+  });
+  link.addEventListener('blur', () => setState('Default'));
+</script>
+
+</body>
+</html>

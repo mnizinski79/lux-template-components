@@ -1,0 +1,2847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Prototype Portal · Live</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:     #211551;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+
+      --sidebar-w:   272px;
+      --toolbar-h:   62px;
+      --drawer-w:    320px;
+      --sidebar-bg:  #0d0a1a;
+      --canvas-bg:   #0e0c14;
+      --tb-bg:       #18131f;
+
+      --sb-text:       rgba(255,255,255,0.85);
+      --sb-text-muted: rgba(255,255,255,0.42);
+      --sb-border:     rgba(255,255,255,0.09);
+      --sb-active:     rgba(255,255,255,0.11);
+      --sb-hover:      rgba(255,255,255,0.06);
+      --tb-border:     rgba(255,255,255,0.1);
+      --tb-text:       rgba(255,255,255,0.68);
+      --tb-active:     rgba(255,255,255,0.14);
+    }
+
+    /* ── Layout ───────────────────────────────────────────────── */
+    .portal {
+      display: flex;
+      width: 100%; height: 100%;
+      font-family: var(--inter);
+    }
+
+    /* ── Presenter mode ───────────────────────────────────────── */
+    .portal.presenter .sidebar,
+    .portal.presenter .toolbar,
+    .portal.presenter .subrow,
+    .portal.presenter .drawer { display: none !important; }
+
+    .portal.presenter .main { height: 100vh; }
+
+    .presenter-hint {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 9px 20px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s var(--ease);
+      z-index: 999;
+    }
+    .portal.presenter .presenter-hint { opacity: 1; }
+
+    /* ── Sidebar ──────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      height: 100%;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sb-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.26s var(--ease);
+    }
+
+    .portal.sb-collapsed .sidebar { width: 0; border-right-color: transparent; }
+    .portal.sb-collapsed .sb-collapse-btn { opacity: 0.4; }
+
+    .sidebar__head {
+      padding: 22px 20px 16px;
+      border-bottom: 1px solid var(--sb-border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sidebar__head-text { flex: 1; min-width: 0; }
+
+    .sidebar__logo {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .sidebar__wordmark {
+      display: block;
+      font-family: var(--canela);
+      font-size: 15px;
+      font-weight: 300;
+      font-style: italic;
+      letter-spacing: 0.01em;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 3px;
+      white-space: nowrap;
+    }
+
+    .sidebar__sub {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.32);
+    }
+
+    /* Search */
+    .sb-search {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--sb-border);
+      flex-shrink: 0;
+    }
+
+    .sb-search__wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 7px;
+      padding: 7px 10px;
+      transition: border-color 0.12s;
+    }
+    .sb-search__wrap:focus-within {
+      border-color: rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .sb-search__icon {
+      flex-shrink: 0;
+      color: rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+    }
+    .sb-search__icon svg { width: 13px; height: 13px; }
+
+    .sb-search__input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.75);
+      caret-color: rgba(255,255,255,0.5);
+      min-width: 0;
+    }
+    .sb-search__input::placeholder { color: rgba(255,255,255,0.22); }
+
+    .sb-search__clear {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.25);
+      display: none;
+      align-items: center;
+      padding: 0;
+    }
+    .sb-search__clear svg { width: 12px; height: 12px; }
+    .sb-search__clear:hover { color: rgba(255,255,255,0.55); }
+    .sb-search--has-value .sb-search__clear { display: flex; }
+    .sb-search--has-value .sb-search__icon { color: rgba(255,255,255,0.4); }
+
+    .sb-no-results {
+      padding: 20px 16px;
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.22);
+      text-align: center;
+      display: none;
+    }
+
+    /* Collapse button */
+    .sb-collapse-btn {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.3);
+      transition: background 0.12s, color 0.12s;
+      margin-top: 2px;
+    }
+    .sb-collapse-btn svg { width: 15px; height: 15px; }
+    .sb-collapse-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+
+    /* Expand tab — visible when sidebar is collapsed */
+    .sb-expand-tab {
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 20px; height: 48px;
+      background: var(--sidebar-bg);
+      border: 1px solid var(--sb-border);
+      border-left: none;
+      border-radius: 0 6px 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.26s var(--ease);
+      color: rgba(255,255,255,0.3);
+    }
+    .sb-expand-tab svg { width: 12px; height: 12px; }
+    .sb-expand-tab:hover { color: rgba(255,255,255,0.7); }
+    .portal.sb-collapsed .sb-expand-tab { opacity: 1; pointer-events: auto; }
+
+    .sidebar__scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 32px;
+    }
+
+    .sidebar__scroll::-webkit-scrollbar { width: 3px; }
+    .sidebar__scroll::-webkit-scrollbar-track { background: transparent; }
+    .sidebar__scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.09); border-radius: 2px; }
+
+    .sidebar__foot {
+      flex-shrink: 0;
+      padding: 16px 20px;
+      border-top: 1px solid var(--sb-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar__author {
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.48);
+      letter-spacing: 0.01em;
+    }
+
+    .sidebar__sprint {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+    }
+
+    /* ── Sidebar section dividers (editorial) ─────────────────── */
+    .sb-section { padding-top: 28px; }
+
+    .sb-section__label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px 14px;
+      position: relative;
+    }
+
+    .sb-section__label-rule {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.14);
+    }
+
+    .sb-section__label-text {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.52);
+      white-space: nowrap;
+    }
+
+    .sb-section__label--review .sb-section__label-text { color: rgba(74,188,118,0.78); }
+    .sb-section__label--review .sb-section__label-rule  { background: rgba(74,188,118,0.22); }
+
+    .sb-subsection { padding-top: 6px; }
+
+    .sb-subsection__label {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      padding: 10px 20px 4px;
+    }
+
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 0.12s var(--ease);
+      position: relative;
+    }
+
+    .sb-item:hover { background: var(--sb-hover); }
+    .sb-item.is-active { background: var(--sb-active); }
+
+    .sb-item.is-active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 2px; height: 56%;
+      background: rgba(255,255,255,0.35);
+      border-radius: 1px;
+    }
+
+    /* Status badge (replaces dot) */
+    .sb-badge {
+      font-family: var(--engravers);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 3px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .sb-badge--approved {
+      color: rgba(74,188,118,0.9);
+      background: rgba(74,188,118,0.1);
+      border: 1px solid rgba(74,188,118,0.2);
+    }
+    .sb-badge--review {
+      color: rgba(240,192,80,0.9);
+      background: rgba(240,192,80,0.08);
+      border: 1px solid rgba(240,192,80,0.18);
+    }
+    .sb-badge--draft {
+      color: rgba(255,255,255,0.2);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sb-item__label {
+      flex: 1;
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--sb-text);
+      line-height: 1.3;
+    }
+
+    .sb-item.is-active .sb-item__label { color: #fff; font-weight: 400; }
+
+    .sb-item__tag {
+      font-family: var(--engravers);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      flex-shrink: 0;
+    }
+
+    .sb-item__tag--review { color: rgba(74,188,118,0.35); }
+    .sb-item__tag--mobile { color: rgba(100,180,255,0.35); }
+
+    /* ── Main ─────────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      position: relative;
+    }
+
+    /* ── Toolbar ──────────────────────────────────────────────── */
+    .toolbar {
+      height: var(--toolbar-h);
+      flex-shrink: 0;
+      background: var(--tb-bg);
+      border-bottom: 1px solid var(--tb-border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 6px;
+      position: relative;
+    }
+
+    /* Proto name — centered in toolbar */
+    .tb-proto-info {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s var(--ease);
+      white-space: nowrap;
+    }
+    .tb-proto-info.is-visible { opacity: 1; }
+
+    .tb-proto-name {
+      font-family: var(--canela);
+      font-size: 15px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: 0.01em;
+    }
+
+    .tb-proto-badge {
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+    .tb-proto-badge--approved { color: rgba(74,188,118,0.85); background: rgba(74,188,118,0.1); border: 1px solid rgba(74,188,118,0.18); }
+    .tb-proto-badge--review   { color: rgba(240,192,80,0.85);  background: rgba(240,192,80,0.08);  border: 1px solid rgba(240,192,80,0.16); }
+    .tb-proto-badge--draft    { color: rgba(255,255,255,0.22); background: transparent; border: 1px solid rgba(255,255,255,0.08); }
+
+    .tb-group { display: flex; align-items: center; gap: 2px; }
+
+    .tb-home {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--tb-text);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-right: 6px;
+      transition: background 0.12s var(--ease), color 0.12s var(--ease);
+    }
+    .tb-home svg { width: 15px; height: 15px; opacity: 0.55; }
+    .tb-home:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .tb-home:hover svg { opacity: 0.9; }
+
+    .tb-sep {
+      width: 1px; height: 22px;
+      background: var(--tb-border);
+      margin: 0 10px;
+    }
+
+    /* Hide toolbar + subrow when no prototype is selected */
+    .toolbar--empty { display: none !important; }
+    .toolbar--empty ~ .subrow { display: none !important; }
+
+    .tb-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 7px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--tb-text);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      transition: background 0.12s var(--ease), color 0.12s var(--ease);
+      white-space: nowrap;
+    }
+
+    .tb-btn svg { width: 14px; height: 14px; opacity: 0.65; flex-shrink: 0; }
+    .tb-btn:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+    .tb-btn.is-active { background: var(--tb-active); color: #fff; }
+    .tb-btn.is-active svg { opacity: 1; }
+
+    /* Figma link button */
+    .tb-figma {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 13px;
+      border-radius: 7px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--tb-text);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.12s var(--ease);
+      white-space: nowrap;
+    }
+    .tb-figma .fig-logo { width: 11px; height: 16px; flex-shrink: 0; }
+    .tb-figma:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+    .tb-figma.is-visible { display: inline-flex; }
+
+    /* Edit button (pencil icon, sits in tb-proto-info) */
+    .tb-edit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      transition: all 0.12s var(--ease);
+      flex-shrink: 0;
+    }
+    .tb-edit svg { width: 12px; height: 12px; }
+    .tb-edit:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.7); }
+    .tb-edit.is-open { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+    .tb-proto-info .tb-edit { pointer-events: auto; }
+
+    /* Edit popover + overlay */
+    .edit-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 199;
+    }
+    .edit-overlay.is-open { display: block; }
+
+    .edit-popover {
+      display: none;
+      position: fixed;
+      top: calc(var(--toolbar-h) + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 288px;
+      background: #1a1528;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 200;
+      box-shadow: 0 16px 56px rgba(0,0,0,0.7);
+      flex-direction: column;
+      gap: 14px;
+    }
+    .edit-popover.is-open { display: flex; }
+
+    .edit-pop__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .edit-pop__title {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+    }
+    .edit-pop__close {
+      width: 22px; height: 22px;
+      border-radius: 5px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s;
+      line-height: 1;
+    }
+    .edit-pop__close:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.8); }
+
+    .edit-pop__field { display: flex; flex-direction: column; gap: 6px; }
+    .edit-pop__label {
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .edit-pop__select, .edit-pop__input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px;
+      color: rgba(255,255,255,0.78);
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      padding: 9px 12px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.12s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .edit-pop__select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 30px;
+    }
+    .edit-pop__select:focus, .edit-pop__input:focus { border-color: rgba(255,255,255,0.22); }
+    .edit-pop__input::placeholder { color: rgba(255,255,255,0.22); }
+
+    .edit-pop__checks { display: flex; gap: 14px; }
+    .edit-pop__check {
+      display: flex; align-items: center; gap: 7px;
+      font-family: var(--inter);
+      font-size: 13px; font-weight: 300;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      user-select: none;
+    }
+    .edit-pop__check input[type="checkbox"] {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      accent-color: #6b5ce7;
+      cursor: pointer;
+    }
+
+    .edit-pop__save {
+      width: 100%;
+      padding: 10px;
+      border-radius: 7px;
+      background: var(--brand);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.85);
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.12s;
+      margin-top: 2px;
+    }
+    .edit-pop__save:hover { background: #2e1e6e; }
+    .edit-pop__save:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Changelog toggle */
+    .tb-log {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 7px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--tb-text);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.12s var(--ease);
+      white-space: nowrap;
+    }
+    .tb-log svg { width: 14px; height: 14px; opacity: 0.6; flex-shrink: 0; }
+    .tb-log:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+    .tb-log:hover svg { opacity: 0.9; }
+    .tb-log.is-visible { display: inline-flex; }
+    .tb-log.is-open { background: var(--tb-active); color: #fff; }
+    .tb-log.is-open svg { opacity: 1; }
+
+    /* Presenter button — same style as changelog */
+    .tb-present {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 7px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--tb-text);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.12s var(--ease);
+      white-space: nowrap;
+    }
+    .tb-present svg { width: 14px; height: 14px; opacity: 0.6; flex-shrink: 0; }
+    .tb-present:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+    .tb-present:hover svg { opacity: 0.9; }
+
+    /* Scale group */
+    .tb-scale {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .tb-scale__label {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .tb-slider {
+      -webkit-appearance: none;
+      width: 96px; height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 1px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .tb-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.75);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .tb-slider::-webkit-slider-thumb:hover { background: #fff; }
+
+    .tb-scale__val {
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.5);
+      width: 34px;
+      text-align: right;
+    }
+
+    .tb-fit {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.09);
+      transition: all 0.12s;
+    }
+
+    .tb-fit:hover { color: rgba(255,255,255,0.65); border-color: rgba(255,255,255,0.22); }
+
+    /* ── FAB cluster ─────────────────────────────────────────── */
+    .fab-cluster {
+      position: absolute;
+      bottom: 28px;
+      right: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .fab-cluster.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .fab {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 22px;
+      border-radius: 100px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s var(--ease);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+    }
+    .fab svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    .fab--share {
+      color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .fab--share svg { opacity: 0.6; }
+    .fab--share:hover { color: #fff; background: var(--brand); border-color: rgba(255,255,255,0.2); box-shadow: 0 6px 32px rgba(0,0,0,0.55); }
+    .fab--share:hover svg { opacity: 1; }
+    .fab--share.copied { background: #1a5c35; border-color: rgba(100,220,140,0.3); color: rgba(160,255,190,0.95); }
+    .fab--share.copied svg { opacity: 1; }
+
+    .fab--open {
+      color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .fab--open svg { opacity: 0.6; }
+    .fab--open:hover { color: rgba(255,255,255,0.95); background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.25); box-shadow: 0 6px 32px rgba(0,0,0,0.55); }
+    .fab--open:hover svg { opacity: 1; }
+
+    /* ── Changelog drawer ─────────────────────────────────────── */
+    .drawer {
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: var(--drawer-w);
+      background: #0f0c1c;
+      border-left: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.28s var(--ease);
+      z-index: 100;
+    }
+    .drawer.is-open { transform: translateX(0); }
+
+    .drawer__head {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+
+    .drawer__eyebrow {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer__close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.12s;
+    }
+    .drawer__close:hover { color: rgba(255,255,255,0.7); }
+    .drawer__close svg { width: 16px; height: 16px; }
+
+    .drawer__proto-name {
+      font-family: var(--canela);
+      font-size: 18px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.25;
+    }
+
+    .drawer__body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 20px 32px;
+    }
+    .drawer__body::-webkit-scrollbar { width: 3px; }
+    .drawer__body::-webkit-scrollbar-track { background: transparent; }
+    .drawer__body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.09); border-radius: 2px; }
+
+    .drawer__empty {
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.2);
+      text-align: center;
+      margin-top: 32px;
+      line-height: 1.6;
+    }
+
+    .changelog-entry {
+      display: flex;
+      gap: 14px;
+      padding-bottom: 24px;
+      position: relative;
+    }
+
+    .changelog-entry::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 18px;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+    .changelog-entry:last-child::before { display: none; }
+
+    .changelog-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: #0f0c1c;
+      flex-shrink: 0;
+      margin-top: 3px;
+      position: relative;
+      z-index: 1;
+    }
+    .changelog-entry:first-child .changelog-dot {
+      border-color: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.15);
+    }
+
+    .changelog-content { flex: 1; }
+
+    .changelog-date {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 5px;
+    }
+
+    .changelog-text {
+      font-family: var(--inter);
+      font-size: 12.5px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+    }
+
+    /* ── QR modal ────────────────────────────────────────────── */
+    .qr-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .qr-overlay.is-open { display: flex; }
+
+    .qr-card {
+      background: #1a1625;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      min-width: 260px;
+    }
+
+    .qr-label {
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.48);
+    }
+
+    .qr-img {
+      width: 180px; height: 180px;
+      border-radius: 10px;
+      background: #fff;
+      display: block;
+    }
+
+    .qr-proto-name {
+      font-family: var(--canela);
+      font-size: 17px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+    }
+
+    .qr-hint {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.28);
+      text-align: center;
+    }
+
+    .qr-close {
+      margin-top: 4px;
+      padding: 9px 24px;
+      border-radius: 8px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .qr-close:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.25); }
+
+    .qr-url-row { width: 100%; }
+
+    .qr-url-input {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6);
+      font-family: var(--inter);
+      font-size: 10px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.12s;
+    }
+    .qr-url-input:focus { border-color: rgba(255,255,255,0.28); color: rgba(255,255,255,0.85); }
+
+    .qr-warning {
+      display: none;
+      font-family: var(--inter);
+      font-size: 10px;
+      font-weight: 300;
+      color: rgba(255,200,80,0.75);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .qr-warning code {
+      font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 9.5px;
+      background: rgba(255,200,80,0.12);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ── Loading shimmer ─────────────────────────────────────── */
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position:  400px 0; }
+    }
+
+    .shell-shimmer {
+      position: absolute;
+      inset: 0;
+      z-index: 200;
+      border-radius: inherit;
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0)    0%,
+        rgba(255,255,255,0.04) 40%,
+        rgba(255,255,255,0.08) 50%,
+        rgba(255,255,255,0.04) 60%,
+        rgba(255,255,255,0)    100%
+      );
+      background-size: 800px 100%;
+      animation: shimmer 1.2s infinite linear;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+    .shell-shimmer.done { opacity: 0; }
+
+    /* ── Sub-row (model picker) ───────────────────────────────── */
+    .subrow {
+      height: 46px;
+      flex-shrink: 0;
+      background: #120f1a;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 2px;
+    }
+
+    .subrow__btn {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      white-space: nowrap;
+      transition: background 0.12s var(--ease), color 0.12s var(--ease);
+    }
+
+    .subrow__btn:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+
+    .subrow__btn.is-active {
+      background: rgba(255,255,255,0.11);
+      color: rgba(255,255,255,0.95);
+    }
+
+    .subrow__btn__sub {
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+    }
+
+    /* ── Canvas ───────────────────────────────────────────────── */
+    .canvas {
+      flex: 1;
+      background: var(--canvas-bg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+
+    /* Ambient glow behind device */
+    .scale-wrapper {
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .scale-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: -80px;
+      background: radial-gradient(ellipse at center, rgba(33,21,81,0.55) 0%, transparent 68%);
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+    }
+
+    .device-scaler {
+      position: absolute;
+      top: 0; left: 0;
+      transform-origin: top left;
+      transition: transform 0.25s var(--ease);
+      z-index: 1;
+    }
+
+    /* ── Empty state ──────────────────────────────────────────── */
+    .canvas-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 0;
+      user-select: none;
+    }
+
+    .canvas-empty__logo {
+      margin-bottom: 28px;
+      opacity: 0.62;
+    }
+
+    .canvas-empty__hint {
+      font-family: var(--inter);
+      font-size: 11.5px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.04em;
+    }
+
+    .canvas-empty__ctas {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .canvas-empty__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s var(--ease);
+      white-space: nowrap;
+    }
+    .canvas-empty__cta svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    .canvas-empty__cta--primary {
+      color: rgba(255,255,255,0.75);
+      background: var(--brand);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 4px 20px rgba(33,21,81,0.5);
+    }
+    .canvas-empty__cta--primary:hover {
+      background: #2e1e6e;
+      color: #fff;
+      box-shadow: 0 6px 28px rgba(33,21,81,0.7);
+    }
+
+    .canvas-empty__cta--ghost {
+      color: rgba(255,255,255,0.35);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .canvas-empty__cta--ghost:hover {
+      color: rgba(255,255,255,0.7);
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ── iOS Shell ────────────────────────────────────────────── */
+    .shell-ios {
+      position: relative;
+      width: 393px; height: 852px;
+      border-radius: 47px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.13),
+        0 60px 140px rgba(0,0,0,0.92);
+    }
+
+    .shell-ios[data-mode="light"] {
+      background: #fff;
+      --fill-0: #1b1b1b;
+      --stroke-0: #1b1b1b;
+      --icon-color: #1b1b1b;
+      --text-primary: #1b1b1b;
+    }
+
+    .shell-ios[data-mode="dark"] {
+      background: #000;
+      --fill-0: #ffffff;
+      --stroke-0: #ffffff;
+      --icon-color: #ffffff;
+      --text-primary: #ffffff;
+    }
+
+    .shell-ios .proto-frame {
+      position: absolute;
+      top: 59px; left: 0; right: 0; bottom: 94px;
+      width: 100%;
+      height: calc(100% - 59px - 94px);
+      border: none;
+    }
+
+    .ios-status {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 59px;
+      z-index: 20;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      padding-top: 13px;
+    }
+
+    .ios-status__blur {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+    }
+
+    .ios-status__time {
+      position: absolute;
+      left: 0; width: 135px;
+      text-align: center;
+      top: 50%; transform: translateY(-50%);
+      font-family: -apple-system, 'SF Pro Display', sans-serif;
+      font-size: 17px; font-weight: 700;
+      letter-spacing: -0.4px; line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .ios-status__icons {
+      position: absolute;
+      right: 35px; top: 50%; transform: translateY(-50%);
+      display: flex; align-items: center; gap: 7px;
+    }
+
+    .ios-battery-wrap {
+      position: relative;
+      width: 27.333px; height: 13.667px;
+      flex-shrink: 0;
+    }
+
+    .ios-battery-wrap__fill {
+      position: absolute;
+      left: 2px; top: 50%; transform: translateY(-50%);
+      width: 21px; height: 9px;
+      border-radius: 2.667px;
+      background: var(--fill-0, #1b1b1b);
+    }
+
+    .ios-battery-wrap > svg {
+      position: absolute;
+      inset: 0; width: 100%; height: 100%;
+    }
+
+    .ios-di {
+      position: absolute;
+      top: 13px; left: 50%; transform: translateX(-50%);
+      width: 122px; height: 36px;
+      background: #000; border-radius: 20px;
+      z-index: 30; pointer-events: none;
+    }
+
+    .ios-bottom-blur {
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 110px;
+      z-index: 19; pointer-events: none;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      -webkit-mask-image: linear-gradient(to top, black 30%, transparent 100%);
+      mask-image: linear-gradient(to top, black 30%, transparent 100%);
+    }
+
+    .ios-toolbar {
+      position: absolute;
+      bottom: 34px; left: 50%; transform: translateX(-50%) scale(1);
+      display: flex; align-items: center; gap: 10px;
+      z-index: 20; white-space: nowrap;
+      transform-origin: center bottom;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .ios-pill {
+      height: 48px; border-radius: 24px;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; border: 1px solid;
+    }
+
+    .shell-ios[data-mode="light"] .ios-pill {
+      background: rgba(250,250,250,0.7);
+      border-color: rgba(255,255,255,0.9);
+      box-shadow: 0 2px 40px rgba(0,0,0,0.09);
+    }
+
+    .shell-ios[data-mode="dark"] .ios-pill {
+      background: rgba(21,21,21,0.82);
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 2px 40px rgba(0,0,0,0.09);
+    }
+
+    .ios-pill--back { width: 48px; }
+    .ios-pill--back svg { width: 22px; height: 22px; color: var(--icon-color); }
+
+    .ios-pill--url { width: 218px; position: relative; }
+
+    .ios-pill--url__domain {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      font-family: -apple-system, sans-serif;
+      font-size: 17px; font-weight: 500; letter-spacing: -0.2px;
+      white-space: nowrap; color: var(--text-primary);
+    }
+
+    .ios-pill--more { width: 48px; }
+
+    .ios-pill--more__dots {
+      display: flex; gap: 3.5px; align-items: center;
+    }
+
+    .ios-pill--more__dots span {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--icon-color);
+    }
+
+    .ios-home-bar {
+      position: absolute;
+      bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 134px; height: 5px; border-radius: 3px;
+      z-index: 25; pointer-events: none;
+    }
+
+    .shell-ios[data-mode="light"] .ios-home-bar { background: rgba(0,0,0,0.22); }
+    .shell-ios[data-mode="dark"]  .ios-home-bar { background: rgba(255,255,255,0.28); }
+
+    /* ── iOS scroll-collapsed pill ────────────────────────────── */
+    .ios-scroll-pill {
+      position: absolute;
+      bottom: 34px; left: 50%;
+      transform: translateX(-50%) scale(0.82);
+      transform-origin: center bottom;
+      height: 32px; padding: 0 18px;
+      border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20; cursor: pointer;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border: 1px solid;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
+      box-shadow: 0 2px 40px rgba(0,0,0,0.10);
+    }
+
+    .shell-ios[data-mode="light"] .ios-scroll-pill {
+      background: rgba(250,250,250,0.7);
+      border-color: rgba(255,255,255,0.9);
+    }
+
+    .shell-ios[data-mode="dark"] .ios-scroll-pill {
+      background: rgba(21,21,21,0.82);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .ios-scroll-pill__text {
+      font-family: -apple-system, sans-serif;
+      font-size: 12px; font-weight: 510; letter-spacing: 0.12px;
+      color: var(--text-primary);
+    }
+
+    .shell-ios.ios-scrolled .ios-toolbar {
+      opacity: 0; pointer-events: none;
+      transform: translateX(-50%) scale(0.82);
+    }
+
+    .shell-ios.ios-scrolled .ios-scroll-pill {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) scale(1);
+    }
+
+    /* ── Android Shell ────────────────────────────────────────── */
+    .shell-android {
+      position: relative;
+      width: 412px; height: 892px;
+      border-radius: 18px;
+      overflow: hidden;
+      flex-shrink: 0;
+      outline: 8px solid rgba(116,119,117,0.45);
+      box-shadow: 0 60px 140px rgba(0,0,0,0.92);
+    }
+
+    .shell-android[data-mode="light"] {
+      background: #f4fbf8;
+      --and-surface:    #f4fbf8;
+      --and-on-surface: #171d1b;
+      --and-camera:     #2e2e2e;
+      --and-pill-bg:    rgba(23,29,27,0.06);
+      --and-divider:    rgba(23,29,27,0.08);
+    }
+
+    .shell-android[data-mode="dark"] {
+      background: #191c1b;
+      --and-surface:    #191c1b;
+      --and-on-surface: #e1e3e0;
+      --and-camera:     #2e2e2e;
+      --and-pill-bg:    rgba(225,227,224,0.08);
+      --and-divider:    rgba(225,227,224,0.06);
+    }
+
+    .shell-android .proto-frame {
+      position: absolute;
+      top: 96px; left: 0; bottom: 24px;
+      width: 100%;
+      height: calc(100% - 96px - 24px);
+      border: none;
+    }
+
+    .and-status {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 40px;
+      z-index: 20;
+      display: flex; align-items: center; padding: 0 16px;
+      background: var(--and-surface);
+    }
+
+    .and-status__time {
+      font-family: 'Roboto', 'Google Sans', sans-serif;
+      font-size: 14px; font-weight: 400; letter-spacing: 0.25px;
+      color: var(--and-on-surface);
+    }
+
+    .and-status__icons {
+      margin-left: auto;
+      display: flex; align-items: center;
+    }
+
+    .and-punch {
+      position: absolute;
+      top: 8px; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 24px; border-radius: 100px;
+      background: var(--and-camera);
+      z-index: 30; pointer-events: none;
+    }
+
+    .and-abar {
+      position: absolute;
+      top: 40px; left: 0; right: 0; height: 56px;
+      background: var(--and-surface);
+      display: flex; align-items: center;
+      padding: 8px 8px 8px 12px; gap: 4px;
+      z-index: 20;
+      border-bottom: 1px solid var(--and-divider);
+    }
+
+    .and-omnibox {
+      flex: 1; height: 40px; border-radius: 20px;
+      background: var(--and-pill-bg);
+      display: flex; align-items: center; padding: 0 12px; gap: 8px;
+    }
+
+    .and-omnibox__domain {
+      flex: 1;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px; font-weight: 400;
+      color: var(--and-on-surface);
+      text-align: center;
+    }
+
+    .and-btn {
+      flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .and-btn svg { width: 20px; height: 20px; }
+
+    .and-gesture {
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 24px;
+      background: var(--and-surface);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
+    }
+
+    .and-gesture-pill {
+      width: 108px; height: 4px; border-radius: 12px;
+      background: var(--and-on-surface);
+      opacity: 0.4;
+    }
+
+    /* ── Desktop Shell ────────────────────────────────────────── */
+    .shell-desktop {
+      position: relative;
+      display: flex; flex-direction: column;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.07),
+        0 60px 140px rgba(0,0,0,0.8);
+    }
+
+    .shell-desktop[data-mode="dark"] {
+      --dt-chrome-bg:  #2a2630;
+      --dt-url-bg:     rgba(255,255,255,0.07);
+      --dt-domain:     rgba(255,255,255,0.5);
+      --dt-lock:       rgba(255,255,255,0.35);
+    }
+
+    .shell-desktop[data-mode="light"] {
+      --dt-chrome-bg:  #e2e0e6;
+      --dt-url-bg:     rgba(0,0,0,0.07);
+      --dt-domain:     rgba(0,0,0,0.5);
+      --dt-lock:       rgba(0,0,0,0.35);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.1),
+        0 60px 140px rgba(0,0,0,0.4);
+    }
+
+    .desktop-chrome {
+      flex-shrink: 0;
+      height: 44px;
+      background: var(--dt-chrome-bg, #2a2630);
+      display: flex; align-items: center;
+      padding: 0 16px; gap: 16px;
+      transition: background 0.2s ease;
+    }
+
+    .desktop-chrome__dots { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .desktop-chrome__dot { width: 12px; height: 12px; border-radius: 50%; }
+    .desktop-chrome__dot:nth-child(1) { background: #ff5f57; }
+    .desktop-chrome__dot:nth-child(2) { background: #febe2e; }
+    .desktop-chrome__dot:nth-child(3) { background: #28c840; }
+
+    .desktop-chrome__urlbar {
+      flex: 1; max-width: 440px; margin: 0 auto;
+      height: 28px; border-radius: 6px;
+      background: var(--dt-url-bg, rgba(255,255,255,0.07));
+      display: flex; align-items: center; padding: 0 10px; gap: 6px;
+      transition: background 0.2s ease;
+    }
+
+    .desktop-chrome__domain {
+      flex: 1;
+      font-family: -apple-system, sans-serif;
+      font-size: 12px; font-weight: 400;
+      color: var(--dt-domain, rgba(255,255,255,0.5));
+      text-align: center;
+      transition: color 0.2s ease;
+    }
+
+    .desktop-chrome__lock { color: var(--dt-lock, rgba(255,255,255,0.35)); }
+
+    .shell-desktop .proto-frame { border: none; display: block; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="portal" id="portal">
+
+  <!-- Sidebar expand tab (visible when collapsed) -->
+  <button class="sb-expand-tab" onclick="toggleSidebar()" title="Expand sidebar">
+    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 2l4 3-4 3"/>
+    </svg>
+  </button>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__head">
+      <div class="sidebar__head-text">
+        <div class="sidebar__logo">
+          <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha" alt="IHG Hotels &amp; Resorts" height="24" style="display:block;opacity:0.78;filter:brightness(0) invert(1);">
+        </div>
+        <span class="sidebar__sub">Prototype Portal · Live</span>
+      </div>
+      <button class="sb-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 2L5 7l4 5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="sb-search" id="sbSearch">
+      <div class="sb-search__wrap">
+        <span class="sb-search__icon">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="4.5"/>
+            <path d="M10 10l2.5 2.5"/>
+          </svg>
+        </span>
+        <input class="sb-search__input" id="sbSearchInput" type="text" placeholder="Search prototypes…" oninput="filterSidebar(this.value)" autocomplete="off" spellcheck="false">
+        <button class="sb-search__clear" id="sbSearchClear" onclick="clearSearch()" tabindex="-1">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M2 2l8 8M10 2l-8 8"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="sidebar__scroll" id="sidebarScroll"></div>
+    <div class="sidebar__foot">
+      <span class="sidebar__author">Francisco Vivar</span>
+      <span class="sidebar__sprint">Sprint 2.1 · 2026</span>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Toolbar -->
+    <header class="toolbar">
+
+      <!-- Home -->
+      <button class="tb-home" onclick="goHome()" title="Home">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 7.5L8 2l6 5.5"/>
+          <path d="M4 6v7a1 1 0 0 0 1 1h2v-3h2v3h2a1 1 0 0 0 1-1V6"/>
+        </svg>
+      </button>
+
+      <!-- Centered proto name + status -->
+      <div class="tb-proto-info" id="tbProtoInfo">
+        <span class="tb-proto-name" id="tbProtoName"></span>
+        <span class="tb-proto-badge" id="tbProtoBadge"></span>
+        <button class="tb-edit" id="tbEdit" title="Edit prototype" onclick="toggleEdit()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11.5 2.5a1.414 1.414 0 0 1 2 2L5 13H3v-2L11.5 2.5z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Device -->
+      <div class="tb-group" id="deviceGroup">
+        <button class="tb-btn is-active" data-device="desktop" onclick="setDevice('desktop')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="2" width="14" height="10" rx="1.5"/>
+            <path d="M5 14h6M8 12v2"/>
+          </svg>
+          Desktop
+        </button>
+        <button class="tb-btn" data-device="ios" onclick="setDevice('ios')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="1" width="8" height="14" rx="2"/>
+            <circle cx="8" cy="12.5" r="0.7" fill="currentColor" stroke="none"/>
+          </svg>
+          iOS
+        </button>
+        <button class="tb-btn" data-device="android" onclick="setDevice('android')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3.5" y="3" width="9" height="12" rx="1.5"/>
+            <path d="M6 3V2M10 3V2M3.5 7h9"/>
+          </svg>
+          Android
+        </button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <!-- Mode -->
+      <div class="tb-group" id="modeGroup">
+        <button class="tb-btn is-active" data-mode="light" onclick="setMode('light')">Light</button>
+        <button class="tb-btn"           data-mode="dark"  onclick="setMode('dark')">Dark</button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <!-- Figma source link -->
+      <button class="tb-figma" id="tbFigma" title="Open in Figma" onclick="openFigma()">
+        <svg class="fig-logo" viewBox="0 0 38 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5Z" fill="#1ABCFE"/>
+          <path d="M0 47.5C0 42.2533 4.25329 38 9.5 38H19V47.5C19 52.7467 14.7467 57 9.5 57C4.25329 57 0 52.7467 0 47.5Z" fill="#0ACF83"/>
+          <path d="M19 0V19H28.5C33.7467 19 38 14.7467 38 9.5C38 4.25329 33.7467 0 28.5 0H19Z" fill="#FF7262"/>
+          <path d="M0 9.5C0 14.7467 4.25329 19 9.5 19H19V0H9.5C4.25329 0 0 4.25329 0 9.5Z" fill="#F24E1E"/>
+          <path d="M0 28.5C0 33.7467 4.25329 38 9.5 38H19V19H9.5C4.25329 19 0 23.2533 0 28.5Z" fill="#A259FF"/>
+        </svg>
+        Open in Figma
+      </button>
+
+      <!-- Scale -->
+      <div class="tb-scale">
+        <span class="tb-scale__label">Scale</span>
+        <input type="range" class="tb-slider" id="scaleSlider"
+               min="15" max="100" value="70" step="1"
+               oninput="onScaleInput(this.value)">
+        <span class="tb-scale__val" id="scaleVal">70%</span>
+        <button class="tb-fit" onclick="fitToCanvas()">Fit</button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <!-- Changelog toggle -->
+      <button class="tb-log" id="tbLog" onclick="toggleDrawer()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4h12M2 8h8M2 12h5"/>
+        </svg>
+        Changelog
+      </button>
+
+      <!-- Presenter mode -->
+      <button class="tb-present" onclick="enterPresenter()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="2" width="14" height="10" rx="1.5"/>
+          <path d="M5 14h6M8 12v2"/>
+          <circle cx="8" cy="7" r="2" fill="currentColor" stroke="none" opacity="0.5"/>
+        </svg>
+        Present
+      </button>
+
+    </header>
+
+    <!-- Model sub-row -->
+    <div class="subrow" id="subrow"></div>
+
+    <!-- Canvas -->
+    <div class="canvas" id="canvas">
+      <div class="scale-wrapper" id="scaleWrapper">
+        <div class="device-scaler" id="deviceScaler"></div>
+      </div>
+
+      <!-- FABs -->
+      <div class="fab-cluster" id="fabCluster">
+        <button class="fab fab--share" id="tbShare" onclick="shareLink()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="3" r="1.5"/>
+            <circle cx="4"  cy="8" r="1.5"/>
+            <circle cx="12" cy="13" r="1.5"/>
+            <path d="M5.5 8.8l5 2.7M10.5 4.2l-5 2.7"/>
+          </svg>
+          <span id="tbShareLabel">Share Link</span>
+        </button>
+        <button class="fab fab--open" id="tbOpen" onclick="handleOpen()">
+          <svg id="tbOpenIconDesktop" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9"/>
+            <path d="M10 2h4v4M14 2 8 8"/>
+          </svg>
+          <svg id="tbOpenIconQR" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <rect x="2" y="2" width="5" height="5" rx="1"/>
+            <rect x="9" y="2" width="5" height="5" rx="1"/>
+            <rect x="2" y="9" width="5" height="5" rx="1"/>
+            <rect x="3" y="3" width="3" height="3" fill="currentColor" stroke="none"/>
+            <rect x="10" y="3" width="3" height="3" fill="currentColor" stroke="none"/>
+            <rect x="3" y="10" width="3" height="3" fill="currentColor" stroke="none"/>
+            <path d="M9 9h2v2H9zM11 11h2v2h-2zM9 13h2"/>
+          </svg>
+          <span id="tbOpenLabel">Open in Browser</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Changelog drawer -->
+    <div class="drawer" id="drawer">
+      <div class="drawer__head">
+        <div class="drawer__eyebrow">
+          Changelog
+          <button class="drawer__close" onclick="closeDrawer()">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M3 3l10 10M13 3L3 13"/>
+            </svg>
+          </button>
+        </div>
+        <div class="drawer__proto-name" id="drawerProtoName">—</div>
+      </div>
+      <div class="drawer__body" id="drawerBody"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Presenter mode hint -->
+<div class="presenter-hint" id="presenterHint">Press Esc to exit presenter mode</div>
+
+<script src="protos.js"></script>
+<script>
+/* Guard — if protos.js failed to load (file://, no server) fall back gracefully */
+if (typeof PROTOS === 'undefined') window.PROTOS = [];
+
+/* ══════════════════════════════════════════════════════════════
+   Device models
+══════════════════════════════════════════════════════════════ */
+const MODELS = {
+  ios: [
+    { id: 'ios-se3',    label: 'SE 3',        sub: '375 × 667', w: 375, h: 667,  radius: 20, di: false },
+    { id: 'ios-16',     label: 'iPhone 16',   sub: '390 × 844', w: 390, h: 844,  radius: 44, di: true  },
+    { id: 'ios-16pro',  label: '16 Pro',      sub: '402 × 874', w: 402, h: 874,  radius: 47, di: true  },
+    { id: 'ios-16pm',   label: '16 Pro Max',  sub: '440 × 956', w: 440, h: 956,  radius: 55, di: true  },
+    { id: 'ios-17pro',  label: '17 Pro',      sub: '393 × 852', w: 393, h: 852,  radius: 47, di: true  },
+    { id: 'ios-17pm',   label: '17 Pro Max',  sub: '440 × 956', w: 440, h: 956,  radius: 55, di: true  },
+  ],
+  android: [
+    { id: 'and-px9',    label: 'Pixel 9',     sub: '412 × 892', w: 412, h: 892 },
+    { id: 'and-px9pro', label: 'Pixel 9 Pro', sub: '412 × 892', w: 412, h: 892 },
+    { id: 'and-s24',    label: 'S24',         sub: '360 × 780', w: 360, h: 780 },
+    { id: 'and-s24u',   label: 'S24 Ultra',   sub: '412 × 915', w: 412, h: 915 },
+  ],
+  desktop: [
+    { id: 'dt-1280', label: '1280', sub: 'MacBook Air',  w: 1280, h: 800  },
+    { id: 'dt-1440', label: '1440', sub: 'Standard',     w: 1440, h: 900  },
+    { id: 'dt-1920', label: '1920', sub: 'Full HD',      w: 1920, h: 1080 },
+    { id: 'dt-2560', label: '2560', sub: '2K',           w: 2560, h: 1440 },
+  ],
+};
+
+function currentModel() {
+  const id = S.models[S.device];
+  return MODELS[S.device].find(m => m.id === id) || MODELS[S.device][0];
+}
+
+function getDeviceDims() {
+  const m = currentModel();
+  return { w: m.w, h: m.h };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   State
+══════════════════════════════════════════════════════════════ */
+const S = {
+  protoId: null,
+  device:  'desktop',
+  mode:    'light',
+  scale:   0.7,
+  models:  { ios: 'ios-17pro', android: 'and-px9pro', desktop: 'dt-1440' },
+};
+
+/* ══════════════════════════════════════════════════════════════
+   Shell renderers
+══════════════════════════════════════════════════════════════ */
+function renderDesktop(url) {
+  const m      = currentModel();
+  const scaler = document.getElementById('deviceScaler');
+  scaler.style.width  = m.w + 'px';
+  scaler.style.height = m.h + 'px';
+  scaler.innerHTML = `
+    <div class="shell-desktop" id="shellEl" data-mode="${S.mode}" style="width:${m.w}px;height:${m.h}px;">
+      <div class="desktop-chrome">
+        <div class="desktop-chrome__dots">
+          <span class="desktop-chrome__dot"></span>
+          <span class="desktop-chrome__dot"></span>
+          <span class="desktop-chrome__dot"></span>
+        </div>
+        <div class="desktop-chrome__urlbar">
+          <svg class="desktop-chrome__lock" width="11" height="12" viewBox="0 0 16 16" fill="none">
+            <path d="M5 7V5a3 3 0 1 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="3" y="7" width="10" height="8" rx="1.5" fill="currentColor"/>
+          </svg>
+          <span class="desktop-chrome__domain">regent.com</span>
+        </div>
+      </div>
+      <iframe class="proto-frame" id="protoFrame"
+        src="${url}" style="width:${m.w}px;height:${m.h - 44}px;"
+        allow="autoplay" scrolling="yes"></iframe>
+    </div>`;
+}
+
+function renderIos(url) {
+  const m      = currentModel();
+  const scaler = document.getElementById('deviceScaler');
+  scaler.style.width  = m.w + 'px';
+  scaler.style.height = m.h + 'px';
+  scaler.innerHTML = `
+    <div class="shell-ios" id="shellEl" data-mode="${S.mode}"
+         style="width:${m.w}px;height:${m.h}px;border-radius:${m.radius}px;">
+      <iframe class="proto-frame" id="protoFrame" src="${url}" allow="autoplay"></iframe>
+
+      <div class="ios-status">
+        <div class="ios-status__blur" aria-hidden="true"></div>
+        <div class="ios-status__time" id="shellClock">9:41</div>
+        <div class="ios-status__icons">
+          <svg width="19.333" height="12.333" viewBox="0 0 19.3333 12.3333" fill="none" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 0C16.4477 0 16 .447715 16 1V11.3333C16 11.8856 16.4477 12.3333 17 12.3333H18.3333C18.8856 12.3333 19.3333 11.8856 19.3333 11.3333V1C19.3333 .447715 18.8856 0 18.3333 0H17Z" fill="var(--fill-0,black)"/>
+            <path d="M10.6667 3.66667C10.6667 3.11438 11.1144 2.66667 11.6667 2.66667H13C13.5523 2.66667 14 3.11438 14 3.66667V11.3333C14 11.8856 13.5523 12.3333 13 12.3333H11.6667C11.1144 12.3333 10.6667 11.8856 10.6667 11.3333V3.66667Z" fill="var(--fill-0,black)"/>
+            <path d="M6.33333 5.33333C5.78105 5.33333 5.33333 5.78105 5.33333 6.33333V11.3333C5.33333 11.8856 5.78105 12.3333 6.33333 12.3333H7.66667C8.21895 12.3333 8.66667 11.8856 8.66667 11.3333V6.33333C8.66667 5.78105 8.21895 5.33333 7.66667 5.33333H6.33333Z" fill="var(--fill-0,black)"/>
+            <path d="M1 7.66667C.447715 7.66667 0 8.11438 0 8.66667V11.3333C0 11.8856 .447715 12.3333 1 12.3333H2.33333C2.88562 12.3333 3.33333 11.8856 3.33333 11.3333V8.66667C3.33333 8.11438 2.88562 7.66667 2.33333 7.66667H1Z" fill="var(--fill-0,black)"/>
+          </svg>
+          <svg width="17" height="12.333" viewBox="0 0 17 12.3333" fill="none" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.50046 2.56141C10.967 2.56152 13.3393 3.51917 15.1269 5.23644C15.2615 5.36901 15.4766 5.36734 15.6092 5.23269L16.896 3.92048C16.9631 3.85219 17.0005 3.75967 17 3.66342C16.9994 3.56716 16.9609 3.4751 16.893 3.4076C12.2011-1.13587 4.79908-1.13587 .107163 3.4076C.0391973 3.47505 .000634479 3.56708 7.75932e-06 3.66334C-.00061896 3.7596 .0367421 3.85214 .103824 3.92048L1.39096 5.23269C1.52346 5.36754 1.73878 5.36922 1.87331 5.23644C3.66116 3.51906 6.03367 2.56141 8.50046 2.56141ZM8.50049 6.8305C9.8557 6.83041 11.1626 7.3394 12.1671 8.25855C12.303 8.389 12.517 8.38617 12.6495 8.25217L13.9347 6.93997C14.0024 6.87114 14.04 6.77777 14.039 6.68074C14.038 6.58372 13.9986 6.49114 13.9296 6.42371C10.8705 3.54843 6.1331 3.54843 3.07403 6.42371C3.00493 6.49114 2.9655 6.58376 2.9646 6.68082C2.96369 6.77788 3.00138 6.87124 3.0692 6.93997L4.35412 8.25217C4.48656 8.38617 4.7006 8.389 4.83647 8.25855C5.84036 7.34 7.14617 6.83106 8.50049 6.8305ZM11.0751 9.70276C11.0771 9.80006 11.0392 9.89387 10.9705 9.96203L8.74721 12.2291C8.68203 12.2958 8.59318 12.3333 8.50047 12.3333C8.40775 12.3333 8.3189 12.2958 8.25373 12.2291L6.03008 9.96203C5.96139 9.89382 5.9236 9.79998 5.92564 9.70268C5.92767 9.60538 5.96935 9.51325 6.04084 9.44803C7.46071 8.23456 9.54023 8.23456 10.9601 9.44803C11.0315 9.5133 11.0731 9.60547 11.0751 9.70276Z" fill="var(--fill-0,black)"/>
+          </svg>
+          <div class="ios-battery-wrap">
+            <div class="ios-battery-wrap__fill"></div>
+            <svg viewBox="0 0 27.3333 13" fill="none" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+              <g opacity="0.4">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M18.5188 0H6.48123C5.56534 0 4.85217 0 4.27734 .03922C3.69406 .0790172 3.21655 .160859 2.77792 .342542C1.6753 .799265 .799265 1.6753 .342542 2.77792C.160859 3.21655 .0790172 3.69406 .03922 4.27734C0 4.85217 0 5.56511 0 6.481V6.51877C0 7.43467 0 8.14783 .03922 8.72266C.0790172 9.30594 .160859 9.78345 .342542 10.2221C.799265 11.3247 1.6753 12.2007 2.77792 12.6575C3.21655 12.8391 3.69406 12.921 4.27734 12.9608C4.85221 13 5.56522 13 6.48122 13H18.5188C19.4348 13 20.1478 13 20.7227 12.9608C21.3059 12.921 21.7835 12.8391 22.2221 12.6575C23.3247 12.2007 24.2007 11.3247 24.6575 10.2221C24.8391 9.78345 24.921 9.30594 24.9608 8.72266C25 8.14779 25 7.43479 25 6.51881V6.48123C25 5.56524 25 4.85221 24.9608 4.27734C24.921 3.69406 24.8391 3.21655 24.6575 2.77792C24.2007 1.6753 23.3247 .799265 22.2221 .342542C21.7835 .160859 21.3059 .0790172 20.7227 .03922C20.1478 0 19.4347 0 18.5188 0ZM3.16061 1.26642C3.45707 1.14362 3.81304 1.07322 4.34541 1.0369C4.88227 1.00027 5.56128 1 6.5 1H18.5C19.4387 1 20.1177 1.00027 20.6546 1.0369C21.187 1.07322 21.5429 1.14362 21.8394 1.26642C22.697 1.62165 23.3783 2.30301 23.7336 3.16061C23.8564 3.45707 23.9268 3.81304 23.9631 4.34541C23.9997 4.88227 24 5.56128 24 6.5C24 7.43872 23.9997 8.11773 23.9631 8.65459C23.9268 9.18696 23.8564 9.54293 23.7336 9.83939C23.3783 10.697 22.697 11.3783 21.8394 11.7336C21.5429 11.8564 21.187 11.9268 20.6546 11.9631C20.1177 11.9997 19.4387 12 18.5 12H6.5C5.56128 12 4.88227 11.9997 4.34541 11.9631C3.81304 11.9268 3.45707 11.8564 3.16061 11.7336C2.30301 11.3783 1.62165 10.697 1.26642 9.83939C1.14362 9.54293 1.07322 9.18696 1.0369 8.65459C1.00027 8.11773 1 7.43872 1 6.5C1 5.56128 1.00027 4.88227 1.0369 4.34541C1.07322 3.81304 1.14362 3.45707 1.26642 3.16061C1.62165 2.30301 2.30301 1.62165 3.16061 1.26642Z" fill="var(--fill-0,black)"/>
+                <path d="M26 4.49927C26.783 4.82579 27.3333 5.59856 27.3333 6.49988C27.3333 7.4012 26.783 8.17397 26 8.50049V4.49927Z" fill="var(--fill-0,black)"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      ${m.di ? '<div class="ios-di" aria-hidden="true"></div>' : ''}
+      <div class="ios-bottom-blur" aria-hidden="true"></div>
+
+      <div class="ios-toolbar">
+        <div class="ios-pill ios-pill--back" role="button" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round"
+               style="width:22px;height:22px;color:var(--icon-color)">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </div>
+        <div class="ios-pill ios-pill--url" role="button" aria-label="Address bar">
+          <span class="ios-pill--url__domain">regent.com</span>
+        </div>
+        <div class="ios-pill ios-pill--more" role="button" aria-label="More">
+          <div class="ios-pill--more__dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ios-scroll-pill" id="iosScrollPill" role="button" aria-label="URL bar">
+        <span class="ios-scroll-pill__text">regent.com</span>
+      </div>
+
+      <div class="ios-home-bar" aria-hidden="true"></div>
+    </div>`;
+  startClock();
+  setupIosScroll();
+}
+
+function renderAndroid(url) {
+  const scaler = document.getElementById('deviceScaler');
+  const m = currentModel();
+  scaler.style.width  = m.w + 'px';
+  scaler.style.height = m.h + 'px';
+  scaler.innerHTML = `
+    <div class="shell-android" id="shellEl" data-mode="${S.mode}"
+         style="width:${m.w}px;height:${m.h}px;">
+      <iframe class="proto-frame" id="protoFrame" src="${url}" allow="autoplay"></iframe>
+
+      <div class="and-status">
+        <span class="and-status__time" id="shellClock">9:41</span>
+        <div class="and-status__icons">
+          <div style="display:flex;align-items:center;padding-right:2px">
+            <div style="position:relative;width:16px;height:16px;margin-right:-2px">
+              <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:14px;height:10px">
+                <svg preserveAspectRatio="none" width="100%" height="100%" viewBox="0 0 14.6667 10.3733" fill="none">
+                  <path d="M0 3.04L7.33333 10.3733L14.6667 3.04C10.6133-1.01333 4.05333-1.01333 0 3.04Z" fill="var(--and-on-surface,#171D1B)"/>
+                </svg>
+              </div>
+            </div>
+            <div style="position:relative;width:16px;height:16px;margin-right:-2px">
+              <div style="position:absolute;inset:8.33%">
+                <svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" viewBox="0 0 13.3333 13.3333" fill="none">
+                  <path d="M13.3333 0L0 13.3333H13.3333V0Z" fill="var(--and-on-surface,#171D1B)"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:2px;align-items:center">
+            <div style="position:relative;width:16px;height:16px">
+              <div style="position:absolute;width:8.5px;height:14.167px;left:50%;top:50%;transform:translate(-50%,-50%)">
+                <svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" viewBox="0 0 8.5 14.1667" fill="none">
+                  <path d="M5.84375 0H2.65625V1.41667H1.0625C.475697 1.41667 0 1.89236 0 2.47917V13.1042C0 13.691 .475697 14.1667 1.0625 14.1667H7.4375C8.0243 14.1667 8.5 13.691 8.5 13.1042V2.47917C8.5 1.89236 8.0243 1.41667 7.4375 1.41667H5.84375V0Z" fill="var(--and-on-surface,#171D1B)"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="and-punch" aria-hidden="true"></div>
+
+      <div class="and-abar">
+        <div class="and-omnibox" role="button" aria-label="Address bar">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <path d="M5 7V5a3 3 0 1 1 6 0v2" stroke="var(--and-on-surface,#171d1b)" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="3" y="7" width="10" height="8" rx="1.5" fill="var(--and-on-surface,#171d1b)"/>
+          </svg>
+          <span class="and-omnibox__domain">regent.com</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" opacity="0.45">
+            <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5a5.47 5.47 0 0 1 3.89 1.61L10 6h4V2l-1.46 1.46" stroke="var(--and-on-surface,#171d1b)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="and-btn" role="button" aria-label="Tabs">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+            <rect x="4" y="7" width="12" height="14" rx="2" stroke="var(--and-on-surface,#171d1b)" stroke-width="1.6"/>
+            <path d="M8 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2" stroke="var(--and-on-surface,#171d1b)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="and-btn" role="button" aria-label="More">
+          <svg viewBox="0 0 24 24" fill="var(--and-on-surface,#171d1b)" width="20" height="20">
+            <circle cx="12" cy="5"  r="1.5"/>
+            <circle cx="12" cy="12" r="1.5"/>
+            <circle cx="12" cy="19" r="1.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="and-gesture" aria-hidden="true">
+        <div class="and-gesture-pill"></div>
+      </div>
+    </div>`;
+  startClock();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Render dispatcher
+══════════════════════════════════════════════════════════════ */
+function renderShell() {
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  if (!proto) { showEmpty(); return; }
+
+  const url = proto.urls[S.device] || proto.urls[proto.default] || '';
+
+  if      (S.device === 'ios')     renderIos(url);
+  else { teardownIosScroll(); }
+
+  if      (S.device === 'android') renderAndroid(url);
+  else if (S.device === 'desktop') renderDesktop(url);
+
+  applyScale(S.scale);
+}
+
+function setToolbarMode(hasProto) {
+  document.querySelector('.toolbar').classList.toggle('toolbar--empty', !hasProto);
+  if (!hasProto) closeEdit();
+}
+
+function goHome() {
+  S.protoId = null;
+  document.querySelectorAll('.sb-item.is-active').forEach(el => el.classList.remove('is-active'));
+  showEmpty();
+  history.replaceState(null, '', location.pathname);
+  const cluster = document.getElementById('fabCluster');
+  if (cluster) cluster.classList.remove('is-visible');
+  const tbLog = document.getElementById('tbLog');
+  if (tbLog) { tbLog.classList.remove('is-visible', 'is-open'); }
+  const drawer = document.getElementById('drawer');
+  if (drawer) drawer.classList.remove('is-open');
+  const tbFigma = document.getElementById('tbFigma');
+  if (tbFigma) tbFigma.classList.remove('is-visible');
+  document.getElementById('tbProtoName').textContent = '';
+  document.getElementById('tbProtoBadge').textContent = '';
+  document.getElementById('subrow').innerHTML = '';
+  setToolbarMode(false);
+}
+
+function showEmpty() {
+  const scaler = document.getElementById('deviceScaler');
+  scaler.style.width  = '480px';
+  scaler.style.height = '320px';
+  scaler.innerHTML = `
+    <div class="canvas-empty">
+      <div class="canvas-empty__logo">
+        <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha" alt="IHG Hotels &amp; Resorts" height="56" style="display:block;filter:brightness(0) invert(1);">
+      </div>
+      <p class="canvas-empty__hint">Select a prototype from the sidebar</p>
+      <div class="canvas-empty__ctas">
+        <a href="add.html" class="canvas-empty__cta canvas-empty__cta--primary">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg>
+          Add Prototype
+        </a>
+        <a href="guide.html" class="canvas-empty__cta canvas-empty__cta--ghost">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 5.5v3M6 4h.01"/></svg>
+          Team Guide
+        </a>
+      </div>
+    </div>`;
+  const w = document.getElementById('scaleWrapper');
+  w.style.width = '480px'; w.style.height = '320px';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Scale
+══════════════════════════════════════════════════════════════ */
+function applyScale(scale) {
+  const dims    = getDeviceDims();
+  const scaler  = document.getElementById('deviceScaler');
+  const wrapper = document.getElementById('scaleWrapper');
+
+  scaler.style.transform       = `scale(${scale})`;
+  scaler.style.transformOrigin = 'top left';
+
+  wrapper.style.width  = (dims.w * scale) + 'px';
+  wrapper.style.height = (dims.h * scale) + 'px';
+}
+
+function fitToCanvas() {
+  const canvas  = document.getElementById('canvas');
+  const dims    = getDeviceDims();
+  const pad     = 80;
+  const scaleX  = (canvas.offsetWidth  - pad) / dims.w;
+  const scaleY  = (canvas.offsetHeight - pad) / dims.h;
+  const scale   = Math.min(scaleX, scaleY, 1.0);
+  const pct     = Math.round(scale * 100);
+  S.scale       = scale;
+  document.getElementById('scaleSlider').value = pct;
+  document.getElementById('scaleVal').textContent = pct + '%';
+  applyScale(scale);
+}
+
+function onScaleInput(val) {
+  S.scale = val / 100;
+  document.getElementById('scaleVal').textContent = val + '%';
+  applyScale(S.scale);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Sub-row: model picker
+══════════════════════════════════════════════════════════════ */
+function buildSubrow() {
+  const subrow   = document.getElementById('subrow');
+  const models   = MODELS[S.device];
+  const activeId = S.models[S.device];
+
+  subrow.innerHTML = models.map(m => `
+    <button class="subrow__btn ${m.id === activeId ? 'is-active' : ''}"
+            onclick="setModel('${m.id}')">
+      ${m.label}${m.sub ? `<span class="subrow__btn__sub">${m.sub}</span>` : ''}
+    </button>`).join('');
+}
+
+function setModel(id) {
+  S.models[S.device] = id;
+  buildSubrow();
+  renderShell();
+  fitToCanvas();
+  syncURL();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Device + Mode
+══════════════════════════════════════════════════════════════ */
+function setDevice(device) {
+  S.device = device;
+  document.querySelectorAll('[data-device]').forEach(b =>
+    b.classList.toggle('is-active', b.dataset.device === device));
+  buildSubrow();
+  renderShell();
+  addShimmer();
+  fitToCanvas();
+  syncURL();
+  updateOpenBtn();
+}
+
+function setMode(mode) {
+  S.mode = mode;
+  document.querySelectorAll('[data-mode]').forEach(b =>
+    b.classList.toggle('is-active', b.dataset.mode === mode));
+  const shellEl = document.getElementById('shellEl');
+  if (shellEl) shellEl.dataset.mode = mode;
+  syncURL();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Prototype selection
+══════════════════════════════════════════════════════════════ */
+function selectProto(id) {
+  const proto = PROTOS.find(p => p.id === id);
+  if (!proto) return;
+
+  S.protoId = id;
+
+  if (!proto.urls[S.device]) {
+    S.device = proto.default;
+    document.querySelectorAll('[data-device]').forEach(b =>
+      b.classList.toggle('is-active', b.dataset.device === S.device));
+  }
+
+  document.querySelectorAll('.sb-item').forEach(el =>
+    el.classList.toggle('is-active', el.dataset.id === id));
+
+  setToolbarMode(true);
+  renderShell();
+  addShimmer();
+  fitToCanvas();
+  syncURL();
+  updateOpenBtn();
+  updateFigmaBtn();
+  updateLogBtn();
+  updateProtoInfo();
+
+  // Refresh drawer if open
+  if (document.getElementById('drawer').classList.contains('is-open')) {
+    renderDrawer(id);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   iOS scroll detection
+══════════════════════════════════════════════════════════════ */
+let _iosScrollPoll = null;
+
+function teardownIosScroll() {
+  if (_iosScrollPoll) { clearInterval(_iosScrollPoll); _iosScrollPoll = null; }
+}
+
+function setupIosScroll() {
+  teardownIosScroll();
+
+  const frame = document.getElementById('protoFrame');
+  const shell = document.getElementById('shellEl');
+  const pill  = document.getElementById('iosScrollPill');
+  if (!frame || !shell || !pill) return;
+
+  let scrolled = false;
+  let prevTop  = 0;
+
+  function setScrolled(val) {
+    if (scrolled === val) return;
+    scrolled = val;
+    shell.classList.toggle('ios-scrolled', val);
+    const bottom = val ? '72px' : '94px';
+    frame.style.bottom = bottom;
+    frame.style.height = `calc(100% - 59px - ${bottom})`;
+  }
+
+  pill.addEventListener('click', () => setScrolled(false));
+
+  _iosScrollPoll = setInterval(() => {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc || !doc.body) return;
+      const root = doc.querySelector('.scroll-root') ||
+                   doc.scrollingElement ||
+                   doc.documentElement ||
+                   doc.body;
+      const top = root?.scrollTop || 0;
+      if (top > prevTop && top > 40) setScrolled(true);
+      else if (top < prevTop)        setScrolled(false);
+      prevTop = top;
+    } catch(e) {}
+  }, 100);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Clock
+══════════════════════════════════════════════════════════════ */
+let _clockTimer = null;
+
+function startClock() {
+  if (_clockTimer) clearInterval(_clockTimer);
+  const tick = () => {
+    const el = document.getElementById('shellClock');
+    if (!el) { clearInterval(_clockTimer); return; }
+    const now = new Date();
+    el.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  };
+  tick();
+  _clockTimer = setInterval(tick, 15000);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Sidebar search
+══════════════════════════════════════════════════════════════ */
+function filterSidebar(query) {
+  const q = query.trim().toLowerCase();
+  const wrap = document.getElementById('sbSearch');
+  wrap.classList.toggle('sb-search--has-value', q.length > 0);
+
+  const items    = document.querySelectorAll('.sb-item');
+  const sections = document.querySelectorAll('.sb-section');
+  let   anyVisible = false;
+
+  items.forEach(el => {
+    const label   = el.querySelector('.sb-item__label')?.textContent.toLowerCase() || '';
+    const tags    = el.querySelector('.sb-item__tag')?.textContent.toLowerCase()   || '';
+    const matches = !q || label.includes(q) || tags.includes(q);
+    el.style.display = matches ? '' : 'none';
+    if (matches) anyVisible = true;
+  });
+
+  // Hide subsection labels with no visible items
+  document.querySelectorAll('.sb-subsection').forEach(sub => {
+    const visible = [...sub.querySelectorAll('.sb-item')].some(el => el.style.display !== 'none');
+    sub.style.display = visible ? '' : 'none';
+  });
+
+  // Hide section headers that have no visible items
+  sections.forEach(section => {
+    const visible = [...section.querySelectorAll('.sb-item')].some(el => el.style.display !== 'none');
+    section.style.display = visible ? '' : 'none';
+  });
+
+  let noResults = document.getElementById('sbNoResults');
+  if (!noResults) {
+    noResults = document.createElement('p');
+    noResults.id = 'sbNoResults';
+    noResults.className = 'sb-no-results';
+    noResults.textContent = 'No prototypes found';
+    document.getElementById('sidebarScroll').appendChild(noResults);
+  }
+  noResults.style.display = (!anyVisible && q) ? 'block' : 'none';
+}
+
+function clearSearch() {
+  const input = document.getElementById('sbSearchInput');
+  input.value = '';
+  filterSidebar('');
+  input.focus();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Sidebar builder
+══════════════════════════════════════════════════════════════ */
+function statusBadge(status) {
+  return '';
+}
+
+function buildSidebar() {
+  const container = document.getElementById('sidebarScroll');
+  let html = '';
+
+  const reviewItems = PROTOS.filter(p => p.section === 'review');
+  html += `
+    <div class="sb-section">
+      <div class="sb-section__label sb-section__label--review">
+        <span class="sb-section__label-rule"></span>
+        <span class="sb-section__label-text">Ready for Review</span>
+        <span class="sb-section__label-rule"></span>
+      </div>`;
+  reviewItems.forEach(p => {
+    const tagClass = p.tags.includes('Mobile') && !p.tags.includes('Desktop')
+      ? 'sb-item__tag--mobile' : 'sb-item__tag--review';
+    html += `<div class="sb-item" data-id="${p.id}" onclick="selectProto('${p.id}')">
+      <span class="sb-item__label">${p.label}</span>
+      ${statusBadge(p.status)}
+    </div>`;
+  });
+  html += `</div>`;
+
+  const explItems   = PROTOS.filter(p => p.section === 'explorations');
+  const subsections = [...new Set(explItems.map(p => p.subsection))];
+
+  html += `
+    <div class="sb-section">
+      <div class="sb-section__label">
+        <span class="sb-section__label-rule"></span>
+        <span class="sb-section__label-text">Explorations</span>
+        <span class="sb-section__label-rule"></span>
+      </div>`;
+
+  subsections.forEach(sub => {
+    html += `<div class="sb-subsection"><p class="sb-subsection__label">${sub}</p>`;
+    explItems.filter(p => p.subsection === sub).forEach(p => {
+      const isMobileOnly = p.tags.includes('Mobile') && !p.tags.includes('Desktop');
+      const tagClass = isMobileOnly ? 'sb-item__tag--mobile' : '';
+      html += `<div class="sb-item" data-id="${p.id}" onclick="selectProto('${p.id}')">
+        <span class="sb-item__label">${p.label}</span>
+        <span class="sb-item__tag ${tagClass}">${p.tags.join(' · ')}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Deep links
+══════════════════════════════════════════════════════════════ */
+function syncURL() {
+  const p = new URLSearchParams();
+  if (S.protoId) p.set('proto',  S.protoId);
+  p.set('device', S.device);
+  p.set('model',  S.models[S.device]);
+  p.set('mode',   S.mode);
+  history.replaceState(null, '', '?' + p.toString());
+}
+
+function restoreFromURL() {
+  const p = new URLSearchParams(location.search);
+  if (p.has('mode'))   { S.mode   = p.get('mode');   }
+  if (p.has('device')) { S.device = p.get('device'); }
+  if (p.has('model'))  { S.models[S.device] = p.get('model'); }
+
+  document.querySelectorAll('[data-device]').forEach(b =>
+    b.classList.toggle('is-active', b.dataset.device === S.device));
+  document.querySelectorAll('[data-mode]').forEach(b =>
+    b.classList.toggle('is-active', b.dataset.mode === S.mode));
+
+  if (p.has('proto')) selectProto(p.get('proto'));
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Sidebar collapse
+══════════════════════════════════════════════════════════════ */
+function toggleSidebar() {
+  document.getElementById('portal').classList.toggle('sb-collapsed');
+  setTimeout(fitToCanvas, 280);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Proto info in toolbar
+══════════════════════════════════════════════════════════════ */
+function updateProtoInfo() {
+  const info  = document.getElementById('tbProtoInfo');
+  const name  = document.getElementById('tbProtoName');
+  const badge = document.getElementById('tbProtoBadge');
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  if (!proto) { info.classList.remove('is-visible'); return; }
+  const labels = { approved: 'Approved', review: 'In Review', draft: 'Draft' };
+  name.textContent  = proto.label;
+  badge.textContent = labels[proto.status] || proto.status;
+  badge.className   = `tb-proto-badge tb-proto-badge--${proto.status}`;
+  info.classList.add('is-visible');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Loading shimmer
+══════════════════════════════════════════════════════════════ */
+function addShimmer() {
+  const scaler = document.getElementById('deviceScaler');
+  if (!scaler) return;
+  const el = document.createElement('div');
+  el.className = 'shell-shimmer';
+  el.id = 'shellShimmer';
+  scaler.appendChild(el);
+
+  const frame = document.getElementById('protoFrame');
+  if (!frame) return;
+  frame.addEventListener('load', () => {
+    el.classList.add('done');
+    setTimeout(() => el.remove(), 350);
+  }, { once: true });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Presenter mode
+══════════════════════════════════════════════════════════════ */
+function enterPresenter() {
+  document.getElementById('portal').classList.add('presenter');
+  setTimeout(fitToCanvas, 50);
+}
+
+function exitPresenter() {
+  document.getElementById('portal').classList.remove('presenter');
+  setTimeout(fitToCanvas, 50);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') exitPresenter();
+  if ((e.key === 'p' || e.key === 'P') && !e.metaKey && !e.ctrlKey &&
+      document.activeElement.tagName !== 'INPUT') {
+    enterPresenter();
+  }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Figma source link
+══════════════════════════════════════════════════════════════ */
+function updateFigmaBtn() {
+  const btn   = document.getElementById('tbFigma');
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  btn.classList.toggle('is-visible', !!(proto && proto.figma));
+}
+
+function openFigma() {
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  if (proto && proto.figma) window.open(proto.figma, '_blank');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Changelog drawer
+══════════════════════════════════════════════════════════════ */
+function updateLogBtn() {
+  const btn   = document.getElementById('tbLog');
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  btn.classList.toggle('is-visible', !!(proto && proto.notes && proto.notes.length));
+}
+
+function renderDrawer(id) {
+  const proto = PROTOS.find(p => p.id === id);
+  const nameEl = document.getElementById('drawerProtoName');
+  const body   = document.getElementById('drawerBody');
+
+  nameEl.textContent = proto ? proto.label : '—';
+
+  if (!proto || !proto.notes || !proto.notes.length) {
+    body.innerHTML = `<p class="drawer__empty">No changelog entries yet.</p>`;
+    return;
+  }
+
+  body.innerHTML = proto.notes.map((n, i) => `
+    <div class="changelog-entry">
+      <div class="changelog-dot"></div>
+      <div class="changelog-content">
+        <div class="changelog-date">${n.date}</div>
+        <div class="changelog-text">${n.text}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleDrawer() {
+  const drawer = document.getElementById('drawer');
+  const isOpen = drawer.classList.contains('is-open');
+  if (isOpen) {
+    closeDrawer();
+  } else {
+    openDrawer();
+  }
+}
+
+function openDrawer() {
+  if (!S.protoId) return;
+  renderDrawer(S.protoId);
+  document.getElementById('drawer').classList.add('is-open');
+  document.getElementById('tbLog').classList.add('is-open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('is-open');
+  document.getElementById('tbLog').classList.remove('is-open');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Open / QR
+══════════════════════════════════════════════════════════════ */
+function currentProtoURL() {
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  if (!proto) return null;
+  const rel = proto.urls[S.device] || proto.urls[proto.default];
+  if (!rel) return null;
+  return new URL(rel, location.href).href;
+}
+
+function updateOpenBtn() {
+  const cluster = document.getElementById('fabCluster');
+  const icoD    = document.getElementById('tbOpenIconDesktop');
+  const icoQR   = document.getElementById('tbOpenIconQR');
+  const lbl     = document.getElementById('tbOpenLabel');
+  if (!S.protoId) { cluster.classList.remove('is-visible'); return; }
+  cluster.classList.add('is-visible');
+  if (S.device === 'desktop') {
+    icoD.style.display  = '';
+    icoQR.style.display = 'none';
+    lbl.textContent     = 'Open in Browser';
+  } else {
+    icoD.style.display  = 'none';
+    icoQR.style.display = '';
+    lbl.textContent     = 'View on Device';
+  }
+}
+
+let _shareTimeout = null;
+function shareLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const btn = document.getElementById('tbShare');
+    const lbl = document.getElementById('tbShareLabel');
+    btn.classList.add('copied');
+    lbl.textContent = 'Copied!';
+    clearTimeout(_shareTimeout);
+    _shareTimeout = setTimeout(() => {
+      btn.classList.remove('copied');
+      lbl.textContent = 'Share Link';
+    }, 2000);
+  });
+}
+
+function handleOpen() {
+  if (!S.protoId) return;
+  if (S.device === 'desktop') {
+    window.open(currentProtoURL(), '_blank');
+  } else {
+    showQR();
+  }
+}
+
+function setQRCode(url) {
+  const encoded = encodeURIComponent(url);
+  document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=16&data=${encoded}`;
+}
+
+function showQR() {
+  const url   = currentProtoURL();
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  if (!url || !proto) return;
+
+  const isLocalhost = /localhost|127\.0\.0\.1/.test(url);
+  const input       = document.getElementById('qrUrlInput');
+  const warning     = document.getElementById('qrWarning');
+
+  input.value = url;
+  setQRCode(url);
+  document.getElementById('qrProtoName').textContent = proto.label;
+  warning.style.display = isLocalhost ? 'block' : 'none';
+  document.getElementById('qrOverlay').classList.add('is-open');
+}
+
+function onQRUrlInput(val) {
+  if (val.trim()) setQRCode(val.trim());
+}
+
+function closeQR() {
+  document.getElementById('qrOverlay').classList.remove('is-open');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Edit prototype popover
+══════════════════════════════════════════════════════════════ */
+function toggleEdit() {
+  const pop = document.getElementById('editPopover');
+  if (pop.classList.contains('is-open')) { closeEdit(); return; }
+  openEdit();
+}
+
+function openEdit() {
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  if (!proto) return;
+
+  document.getElementById('editStatusSel').value   = proto.status;
+  document.getElementById('editSectionSel').value  = proto.section;
+  document.getElementById('editSubsectionInput').value = proto.subsection || '';
+  document.getElementById('editTagDesktop').checked = proto.tags.includes('Desktop');
+  document.getElementById('editTagMobile').checked  = proto.tags.includes('Mobile');
+  onEditSectionChange();
+
+  document.getElementById('editPopover').classList.add('is-open');
+  document.getElementById('editOverlay').classList.add('is-open');
+  document.getElementById('tbEdit').classList.add('is-open');
+
+  const saveBtn = document.getElementById('editSaveBtn');
+  saveBtn.disabled    = false;
+  saveBtn.textContent = 'Save changes';
+}
+
+function closeEdit() {
+  document.getElementById('editPopover').classList.remove('is-open');
+  document.getElementById('editOverlay').classList.remove('is-open');
+  document.getElementById('tbEdit').classList.remove('is-open');
+}
+
+function onEditSectionChange() {
+  const isExplore = document.getElementById('editSectionSel').value === 'explorations';
+  document.getElementById('editSubsectionRow').style.display = isExplore ? '' : 'none';
+}
+
+async function saveEdit() {
+  const proto = PROTOS.find(p => p.id === S.protoId);
+  if (!proto) return;
+
+  const status  = document.getElementById('editStatusSel').value;
+  const section = document.getElementById('editSectionSel').value;
+  const subsection = section === 'explorations'
+    ? (document.getElementById('editSubsectionInput').value.trim() || proto.subsection)
+    : null;
+  const tags = [];
+  if (document.getElementById('editTagDesktop').checked) tags.push('Desktop');
+  if (document.getElementById('editTagMobile').checked)  tags.push('Mobile');
+  if (!tags.length) tags.push('Desktop');
+
+  const saveBtn = document.getElementById('editSaveBtn');
+  saveBtn.disabled    = true;
+  saveBtn.textContent = 'Saving…';
+
+  try {
+    const res  = await fetch('/api/update-proto', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: proto.id, status, section, subsection, tags })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Unknown error');
+
+    proto.status     = status;
+    proto.section    = section;
+    proto.subsection = subsection;
+    proto.tags       = tags;
+
+    buildSidebar();
+    document.querySelector(`.sb-item[data-id="${proto.id}"]`)?.classList.add('is-active');
+    updateProtoInfo();
+
+    saveBtn.textContent = 'Saved — deploying ✓';
+    setTimeout(() => { closeEdit(); }, 1200);
+  } catch (err) {
+    console.error('update-proto error:', err);
+    saveBtn.textContent = 'GitHub commit failed';
+    saveBtn.disabled = false;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Init
+══════════════════════════════════════════════════════════════ */
+buildSidebar();
+buildSubrow();
+showEmpty();
+setToolbarMode(false);
+restoreFromURL();
+
+window.addEventListener('resize', () => {
+  if (S.protoId) fitToCanvas();
+});
+
+// Wire QR backdrop after DOM is fully parsed
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('qrOverlay')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeQR();
+  });
+});
+</script>
+
+<!-- Edit prototype popover -->
+<div class="edit-overlay" id="editOverlay" onclick="closeEdit()"></div>
+<div class="edit-popover" id="editPopover">
+  <div class="edit-pop__head">
+    <span class="edit-pop__title">Edit prototype</span>
+    <button class="edit-pop__close" onclick="closeEdit()">×</button>
+  </div>
+
+  <div class="edit-pop__field">
+    <span class="edit-pop__label">Status</span>
+    <select class="edit-pop__select" id="editStatusSel">
+      <option value="draft">Draft</option>
+      <option value="review">In Review</option>
+      <option value="approved">Approved</option>
+    </select>
+  </div>
+
+  <div class="edit-pop__field">
+    <span class="edit-pop__label">Section</span>
+    <select class="edit-pop__select" id="editSectionSel" onchange="onEditSectionChange()">
+      <option value="explorations">Explorations</option>
+      <option value="review">Ready for Review</option>
+    </select>
+  </div>
+
+  <div class="edit-pop__field" id="editSubsectionRow">
+    <span class="edit-pop__label">Subsection</span>
+    <input class="edit-pop__input" type="text" id="editSubsectionInput" placeholder="e.g. Homepage">
+  </div>
+
+  <div class="edit-pop__field">
+    <span class="edit-pop__label">Tags</span>
+    <div class="edit-pop__checks">
+      <label class="edit-pop__check"><input type="checkbox" id="editTagDesktop"> Desktop</label>
+      <label class="edit-pop__check"><input type="checkbox" id="editTagMobile"> Mobile</label>
+    </div>
+  </div>
+
+  <button class="edit-pop__save" id="editSaveBtn" onclick="saveEdit()">Save changes</button>
+</div>
+
+<!-- QR modal -->
+<div class="qr-overlay" id="qrOverlay">
+  <div class="qr-card">
+    <span class="qr-label">View on Device</span>
+    <img class="qr-img" id="qrImg" src="" alt="QR code">
+    <div class="qr-proto-name" id="qrProtoName"></div>
+    <div class="qr-url-row">
+      <input class="qr-url-input" id="qrUrlInput" type="text" spellcheck="false"
+             oninput="onQRUrlInput(this.value)">
+    </div>
+    <div class="qr-warning" id="qrWarning">
+      Replace <code>localhost</code> with your Mac's IP — run <code>ipconfig getifaddr en0</code> in Terminal
+    </div>
+    <div class="qr-hint">Scan with your phone to open in the native browser</div>
+    <button class="qr-close" onclick="closeQR()">Dismiss</button>
+  </div>
+</div>
+
+</body>
+</html>

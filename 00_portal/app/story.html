@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prototype — How I Got Here</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:    #211551;
+      --canela:   'Cormorant Garamond', Georgia, serif;
+      --engravers:'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:    'Inter', system-ui, sans-serif;
+      --ease:     cubic-bezier(0.4, 0, 0.2, 1);
+      --bg:       #0e0c14;
+      --panel:    #0d0b1b;
+      --border:   rgba(255,255,255,0.07);
+    }
+
+    .deck { width:100%; height:100%; background:var(--bg); position:relative; overflow:hidden; user-select:none; }
+
+    /* ── Slides ──────────────────────────────────────────────── */
+    .slide {
+      position:absolute; inset:0; display:flex;
+      opacity:0; pointer-events:none;
+      transition: opacity .5s var(--ease), transform .5s var(--ease);
+      will-change: opacity, transform;
+    }
+    .slide.is-active      { opacity:1; pointer-events:auto; transform:none !important; }
+    .slide.out-left       { opacity:0; transform:translateX(-52px); }
+    .slide.out-right      { opacity:0; transform:translateX(52px); }
+    .slide.in-from-right  { transform:translateX(52px); }
+    .slide.in-from-left   { transform:translateX(-52px); }
+
+    /* ── Two-column layout ───────────────────────────────────── */
+    .two-col { display:flex; flex-direction:row; width:100%; height:100%; }
+
+    .col-content {
+      width:460px; flex-shrink:0;
+      display:flex; flex-direction:column; justify-content:center;
+      padding:64px 52px 64px 64px;
+      position:relative; z-index:1;
+    }
+
+    .col-visual {
+      flex:1; position:relative;
+      display:flex; align-items:center; justify-content:center; overflow:hidden;
+    }
+
+    /* ── Shared text ─────────────────────────────────────────── */
+    .s-eyebrow {
+      font-family:var(--engravers); font-size:9px; letter-spacing:.28em;
+      text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:18px;
+    }
+    .s-num { font-family:var(--canela); font-size:11px; font-style:italic; color:rgba(255,255,255,.2); margin-right:8px; }
+    .s-rule { width:32px; height:1px; background:rgba(255,255,255,.15); margin-bottom:28px; }
+    .s-headline {
+      font-family:var(--canela); font-size:clamp(34px,3.2vw,50px);
+      font-weight:300; font-style:italic; color:rgba(255,255,255,.88);
+      line-height:1.12; margin-bottom:24px;
+    }
+    .s-body {
+      font-family:var(--inter); font-size:14px; font-weight:300;
+      color:rgba(255,255,255,.5); line-height:1.78; max-width:340px;
+    }
+    .s-body strong { color:rgba(255,255,255,.78); font-weight:400; }
+
+    /* Entry animations */
+    .s-eyebrow,.s-rule,.s-headline,.s-body,.col-visual { opacity:0; }
+    .slide.is-active .s-eyebrow  { animation:aUp   .55s .05s var(--ease) both; }
+    .slide.is-active .s-rule     { animation:aFade .5s  .1s  var(--ease) both; }
+    .slide.is-active .s-headline { animation:aUp   .65s .12s var(--ease) both; }
+    .slide.is-active .s-body     { animation:aUp   .65s .22s var(--ease) both; }
+    .slide.is-active .col-visual { animation:aFade .7s  .18s var(--ease) both; }
+
+    /* ── Proto cluster (slide 1) ─────────────────────────────── */
+    .proto-cluster { position:relative; width:680px; height:500px; z-index:1; }
+
+    .pc {
+      position:absolute; overflow:hidden;
+      box-shadow:0 24px 64px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.1);
+    }
+
+    /* Desktop shell */
+    .pc-dt { border-radius:7px 7px 4px 4px; }
+    .pc-dt__chrome {
+      height:28px; background:#252232;
+      display:flex; align-items:center; padding:0 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      position:relative; flex-shrink:0;
+    }
+    .pc-dt__dots { display:flex; gap:5px; }
+    .pc-dt__dot  { width:8px; height:8px; border-radius:50%; }
+    .pc-dt__url  {
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:110px; height:15px; border-radius:3px;
+      background:rgba(255,255,255,.06);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .pc-dt__url span { font-family:-apple-system,system-ui,sans-serif; font-size:8px; color:rgba(255,255,255,.3); }
+    .pc-dt__body { background:#0e0c14; }
+
+    /* iOS shell */
+    .pc-ios { background:#000; }
+    .pc-ios__di {
+      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      background:#000; border-radius:0 0 12px 12px; z-index:6;
+    }
+    .pc-ios__status {
+      height:26px; position:relative; z-index:5;
+      padding:0 14px; display:flex; align-items:flex-end; padding-bottom:5px;
+      justify-content:space-between;
+    }
+    .pc-ios__time { font-family:-apple-system,system-ui,sans-serif; font-size:9px; font-weight:600; color:rgba(255,255,255,.85); }
+    .pc-ios__home { height:18px; display:flex; align-items:center; justify-content:center; }
+    .pc-ios__home-bar { width:54px; height:3px; border-radius:2px; background:rgba(255,255,255,.25); }
+
+    /* Mockup content */
+    .mc-hero { background:linear-gradient(180deg,rgba(20,15,40,.85) 0%,rgba(33,21,81,.55) 60%,rgba(10,8,20,.95) 100%); position:relative; overflow:hidden; }
+    .mc-hero::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 50% at 50% 60%,rgba(33,21,81,.4) 0%,transparent 70%); }
+    .mc-lines { display:flex; flex-direction:column; gap:4px; padding:8px 10px; }
+    .mc-line  { height:5px; border-radius:2px; background:rgba(255,255,255,.08); }
+    .mc-cards { display:flex; gap:4px; padding:5px 7px; }
+    .mc-card  { flex:1; border-radius:3px; overflow:hidden; }
+    .mc-card__img { height:38px; background:linear-gradient(135deg,rgba(33,21,81,.65) 0%,rgba(60,40,100,.4) 100%); }
+    .mc-card__text { height:4px; margin:4px; border-radius:2px; background:rgba(255,255,255,.08); }
+    .mc-nav { height:26px; background:rgba(0,0,0,.65); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:space-between; padding:0 10px; }
+    .mc-nav__logo { width:34px; height:4px; border-radius:2px; background:rgba(255,255,255,.45); }
+    .mc-nav__items { display:flex; gap:5px; }
+    .mc-nav__item  { width:14px; height:3px; border-radius:1px; background:rgba(255,255,255,.2); }
+    .mc-booking { height:26px; background:rgba(255,255,255,.9); margin:0 7px 6px; border-radius:4px; display:flex; align-items:center; padding:0 8px; gap:5px; }
+    .mc-booking__field { flex:1; height:9px; border-radius:2px; background:rgba(0,0,0,.08); }
+    .mc-booking__btn   { width:22px; height:14px; border-radius:2px; background:#211551; flex-shrink:0; }
+    .mc-split { display:flex; height:100%; }
+    .mc-split__img { flex:0 0 55%; background:linear-gradient(135deg,rgba(20,12,40,.95) 0%,rgba(40,25,80,.75) 100%); position:relative; }
+    .mc-split__img::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 60% at 40% 50%,rgba(60,40,120,.4) 0%,transparent 70%); }
+    .mc-split__right { flex:1; background:#0e0c14; display:flex; flex-direction:column; }
+    .mc-row { height:26px; border-bottom:1px solid rgba(255,255,255,.06); display:flex; align-items:center; justify-content:space-between; padding:0 8px; }
+    .mc-row--active { background:rgba(255,255,255,.04); }
+    .mc-row__label { height:4px; border-radius:2px; background:rgba(255,255,255,.15); }
+    .mc-row__icon  { width:8px; height:8px; border-radius:1px; border:1px solid rgba(255,255,255,.2); }
+    .mc-snap { background:linear-gradient(160deg,rgba(40,25,80,.9) 0%,rgba(15,10,30,.98) 100%); position:relative; }
+    .mc-cta { background:rgba(33,21,81,.9); display:flex; align-items:center; padding:0 8px; gap:5px; }
+    .mc-cta__field { flex:1; height:10px; border-radius:2px; background:rgba(255,255,255,.15); }
+    .mc-cta__btn   { width:18px; height:14px; border-radius:2px; background:rgba(255,255,255,.25); flex-shrink:0; }
+
+    /* Floating label */
+    .pc-tag {
+      position:absolute; z-index:10;
+      font-family:var(--engravers); font-size:7px; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(255,255,255,.42); background:rgba(10,8,20,.88);
+      border:1px solid rgba(255,255,255,.1); border-radius:4px; padding:3px 8px;
+      backdrop-filter:blur(8px); white-space:nowrap;
+    }
+
+    /* ── Visual panel base ───────────────────────────────────── */
+    .v-panel {
+      width:100%; height:100%;
+      background:linear-gradient(135deg,#0a0910 0%,#0f0d1c 100%);
+      border-left:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      position:relative; overflow:hidden;
+    }
+    .v-panel::before {
+      content:'';
+      position:absolute; inset:0;
+      background:radial-gradient(ellipse 55% 45% at 55% 50%, rgba(33,21,81,.4) 0%, transparent 70%);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       COVER
+    ══════════════════════════════════════════════════════ */
+    .s-cover { align-items:center; justify-content:center; flex-direction:column; }
+    .s-cover::before {
+      content:''; position:absolute; inset:0;
+      background-image:radial-gradient(circle,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:28px 28px;
+    }
+    .s-cover::after {
+      content:''; position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 65%,rgba(33,21,81,.85) 0%,transparent 72%),
+        radial-gradient(ellipse 35% 25% at 75% 18%,rgba(80,40,140,.18) 0%,transparent 60%);
+      pointer-events:none;
+    }
+    .cover-corner {
+      position:absolute; z-index:10; opacity:0;
+      animation:aFade .6s var(--ease) both;
+    }
+    .cover-corner--tl { top:36px; left:48px; animation-delay:0s; }
+    .cover-corner--tr { top:36px; right:48px; animation-delay:.12s; }
+    .sprint-badge {
+      font-family:var(--engravers); font-size:9px; letter-spacing:.22em;
+      text-transform:uppercase; color:rgba(255,255,255,.22);
+      padding:8px 16px; border:1px solid rgba(255,255,255,.09); border-radius:100px;
+    }
+    .cover-body {
+      position:relative; z-index:1;
+      display:flex; flex-direction:column; align-items:center; text-align:center;
+    }
+    .cover-eyebrow {
+      font-family:var(--engravers); font-size:10px; letter-spacing:.34em;
+      text-transform:uppercase; color:rgba(255,255,255,.28); margin-bottom:22px;
+      opacity:0; animation:aUp .7s .2s var(--ease) both;
+    }
+    .cover-title {
+      font-family:var(--canela); font-size:clamp(68px,8vw,112px);
+      font-weight:300; font-style:italic; color:rgba(255,255,255,.9); line-height:1;
+      opacity:0; animation:aUp .85s .32s var(--ease) both;
+    }
+    .cover-rule {
+      width:1px; height:56px;
+      background:linear-gradient(to bottom,transparent,rgba(255,255,255,.18),transparent);
+      margin:30px auto 26px;
+      opacity:0; animation:aFade .6s .55s var(--ease) both;
+    }
+    .cover-sub {
+      font-family:var(--engravers); font-size:10px; letter-spacing:.3em;
+      text-transform:uppercase; color:rgba(255,255,255,.38); margin-bottom:12px;
+      opacity:0; animation:aFade .6s .65s var(--ease) both;
+    }
+    .cover-context {
+      font-family:var(--inter); font-size:13px; font-weight:300;
+      color:rgba(255,255,255,.22); letter-spacing:.02em;
+      opacity:0; animation:aFade .6s .78s var(--ease) both;
+    }
+    .cover-cue {
+      position:absolute; bottom:44px; right:52px; z-index:10;
+      display:flex; align-items:center; gap:10px; cursor:pointer;
+      opacity:0; animation:aFade .8s 1.1s var(--ease) both;
+    }
+    .cover-cue__label {
+      font-family:var(--engravers); font-size:9px; letter-spacing:.24em;
+      text-transform:uppercase; color:rgba(255,255,255,.22); transition:color .2s;
+    }
+    .cover-cue__arrow { color:rgba(255,255,255,.22); transition:transform .22s var(--ease),color .2s; }
+    .cover-cue__arrow svg { width:16px; height:16px; display:block; }
+    .cover-cue:hover .cover-cue__label,
+    .cover-cue:hover .cover-cue__arrow { color:rgba(255,255,255,.55); }
+    .cover-cue:hover .cover-cue__arrow { transform:translateX(5px); }
+
+    /* ══════════════════════════════════════════════════════
+       SLIDE 1 — ORIGIN
+    ══════════════════════════════════════════════════════ */
+    .origin-visual {
+      width:100%; height:100%;
+      background:linear-gradient(135deg,#0a0910 0%,#120f1e 100%);
+      border-left:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center; position:relative;
+    }
+    .origin-visual::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(33,21,81,.5) 0%,transparent 70%);
+    }
+    .origin-device { position:relative; z-index:1; }
+
+    .mini-desktop {
+      width:560px; background:#1c1a28;
+      border-radius:8px 8px 4px 4px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 90px rgba(0,0,0,.9),0 0 60px rgba(33,21,81,.3);
+      overflow:hidden;
+    }
+    .mini-chrome {
+      height:36px; background:#252232;
+      display:flex; align-items:center; padding:0 14px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      position:relative; flex-shrink:0;
+    }
+    .mini-dots { display:flex; gap:6px; }
+    .mini-dot  { width:10px; height:10px; border-radius:50%; }
+    .mini-urlbar {
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:220px; height:22px; border-radius:5px;
+      background:rgba(255,255,255,.06);
+      display:flex; align-items:center; justify-content:center; gap:5px;
+    }
+    .mini-domain { font-family:-apple-system,system-ui,sans-serif; font-size:11px; color:rgba(255,255,255,.35); }
+
+    /* scaled iframe wrapper */
+    .mini-viewport-wrap { width:560px; height:356px; overflow:hidden; position:relative; flex-shrink:0; }
+    .mini-viewport {
+      width:1440px; height:900px; border:none; display:block;
+      transform:scale(0.389); transform-origin:top left;
+      pointer-events:none;
+    }
+
+    /* ══════════════════════════════════════════════════════
+       SLIDES 2-5 — PAIN POINTS
+    ══════════════════════════════════════════════════════ */
+
+    /* Pain 02 — file chaos */
+    .file-chaos {
+      position:relative; z-index:1;
+      display:flex; flex-direction:column; gap:6px; padding:32px;
+    }
+    .file-item {
+      font-family:'Menlo','Courier New',monospace; font-size:12px;
+      color:rgba(255,255,255,.28); padding:6px 12px;
+      border:1px solid rgba(255,255,255,.07); border-radius:5px;
+      background:rgba(255,255,255,.03); white-space:nowrap;
+    }
+    .file-item:nth-child(even) { margin-left:16px; opacity:.7; }
+    .file-item:nth-child(3n)   { margin-left:8px;  opacity:.5; }
+    .file-item:nth-child(5n)   { opacity:.35; }
+    .file-item:nth-child(8n)   { margin-left:24px; opacity:.25; }
+    .file-chaos-label {
+      position:absolute; bottom:32px; right:32px;
+      font-family:var(--engravers); font-size:9px; letter-spacing:.2em;
+      text-transform:uppercase; color:rgba(255,255,255,.15);
+    }
+
+    /* Pain 03 — sharing compare */
+    .share-compare { position:relative; z-index:1; display:flex; gap:28px; align-items:stretch; }
+    .share-card { width:220px; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:10px; }
+    .share-card--before { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); }
+    .share-card--after  { background:rgba(33,21,81,.25);    border:1px solid rgba(255,255,255,.12); }
+    .share-card__label {
+      font-family:var(--engravers); font-size:8.5px; letter-spacing:.2em;
+      text-transform:uppercase; color:rgba(255,255,255,.2); margin-bottom:4px;
+    }
+    .share-card__url {
+      font-family:'Menlo',monospace; font-size:10px; color:rgba(255,200,80,.5);
+      padding:8px 10px; border-radius:5px;
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+      word-break:break-all; line-height:1.5;
+    }
+    .share-card__blank {
+      flex:1; border-radius:5px; background:rgba(255,255,255,.04);
+      border:1px dashed rgba(255,255,255,.07);
+      display:flex; align-items:center; justify-content:center; min-height:80px;
+    }
+    .share-card__blank span { font-family:var(--inter); font-size:11px; color:rgba(255,255,255,.12); }
+    .share-card__portal-label {
+      font-family:var(--engravers); font-size:10px; letter-spacing:.14em;
+      text-transform:uppercase; color:rgba(255,255,255,.72);
+    }
+    .share-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:var(--engravers); font-size:8px; letter-spacing:.14em;
+      text-transform:uppercase; padding:4px 10px; border-radius:4px;
+      color:rgba(240,192,80,.9); background:rgba(240,192,80,.08); border:1px solid rgba(240,192,80,.18);
+    }
+    .share-tags { display:flex; gap:6px; }
+    .share-tag {
+      font-family:var(--engravers); font-size:8px; letter-spacing:.14em;
+      text-transform:uppercase; color:rgba(255,255,255,.3);
+      padding:4px 9px; border:1px solid rgba(255,255,255,.09); border-radius:4px;
+    }
+    .share-card__changelog { border-top:1px solid rgba(255,255,255,.07); padding-top:10px; }
+    .share-changelog-item {
+      font-family:var(--inter); font-size:11px; font-weight:300;
+      color:rgba(255,255,255,.35); line-height:1.6;
+    }
+    .share-vs {
+      display:flex; align-items:center; flex-direction:column;
+      justify-content:center; gap:6px;
+    }
+    .share-vs__line { width:1px; height:40px; background:rgba(255,255,255,.07); }
+    .share-vs__label {
+      font-family:var(--engravers); font-size:8px; letter-spacing:.18em;
+      text-transform:uppercase; color:rgba(255,255,255,.15);
+    }
+
+    /* Pain 04 — repetition */
+    .repeat-visual { position:relative; z-index:1; display:flex; gap:14px; align-items:flex-end; }
+    .repeat-proto {
+      width:160px; border-radius:8px; overflow:hidden;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03);
+    }
+    .repeat-proto__body { height:120px; padding:12px; }
+    .repeat-proto__line { height:8px; border-radius:4px; background:rgba(255,255,255,.06); margin-bottom:8px; }
+    .repeat-proto__line:nth-child(2) { width:70%; }
+    .repeat-proto__line:nth-child(3) { width:85%; }
+    .repeat-proto__line:nth-child(4) { width:55%; }
+    .repeat-footer {
+      height:44px; background:rgba(33,21,81,.35);
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:center; gap:10px; padding:0 12px;
+    }
+    .repeat-footer__item { width:24px; height:5px; border-radius:3px; background:rgba(255,255,255,.12); }
+    .repeat-arrow { color:rgba(255,255,255,.1); font-size:18px; margin-bottom:22px; }
+    .repeat-label {
+      font-family:var(--engravers); font-size:8px; letter-spacing:.16em;
+      text-transform:uppercase; color:rgba(255,255,255,.18); text-align:center; margin-top:8px;
+    }
+    .repeat-proto-wrap { display:flex; flex-direction:column; align-items:center; }
+
+    /* Pain 05 — fidelity */
+    .fidelity-compare { position:relative; z-index:1; display:flex; gap:32px; align-items:center; }
+    .fid-side { display:flex; flex-direction:column; align-items:center; gap:12px; }
+    .fid-label {
+      font-family:var(--engravers); font-size:8.5px; letter-spacing:.2em;
+      text-transform:uppercase; color:rgba(255,255,255,.2);
+    }
+    .fid-bare {
+      width:180px; height:320px; border-radius:4px;
+      border:1px dashed rgba(255,255,255,.1); background:rgba(255,255,255,.02); overflow:hidden; position:relative;
+    }
+    .fid-bare__hero { height:120px; background:linear-gradient(180deg,rgba(33,21,81,.4) 0%,rgba(33,21,81,.2) 100%); }
+    .fid-bare__lines { padding:16px; display:flex; flex-direction:column; gap:8px; }
+    .fid-bare__line  { height:7px; border-radius:3px; background:rgba(255,255,255,.06); }
+    .fid-phone {
+      position:relative; width:156px; height:338px; border-radius:34px; background:#000;
+      box-shadow:0 0 0 1px rgba(255,255,255,.13),0 30px 70px rgba(0,0,0,.9); overflow:hidden;
+    }
+    .fid-phone__status {
+      height:36px; background:rgba(0,0,0,.8);
+      display:flex; align-items:center; padding:0 18px; justify-content:space-between;
+    }
+    .fid-phone__time { font-family:-apple-system,system-ui,sans-serif; font-size:11px; font-weight:600; color:rgba(255,255,255,.85); }
+    .fid-phone__di { position:absolute; top:0; left:50%; transform:translateX(-50%); width:80px; height:22px; background:#000; border-radius:0 0 16px 16px; }
+    .fid-phone__content { height:calc(100% - 36px - 52px); background:linear-gradient(180deg,rgba(33,21,81,.5) 0%,rgba(14,12,20,.8) 100%); }
+    .fid-phone__abar { height:52px; background:rgba(0,0,0,.7); border-top:1px solid rgba(255,255,255,.06); display:flex; align-items:center; padding:0 10px 8px; }
+    .fid-phone__pill { flex:1; height:30px; border-radius:15px; background:rgba(255,255,255,.1); }
+    .fid-phone__home { position:absolute; bottom:5px; left:50%; transform:translateX(-50%); width:80px; height:4px; border-radius:2px; background:rgba(255,255,255,.25); }
+
+    /* ══════════════════════════════════════════════════════
+       SLIDE 6 — INSIGHT
+    ══════════════════════════════════════════════════════ */
+    .s-insight { align-items:center; justify-content:center; flex-direction:column; }
+    .s-insight::before {
+      content:''; position:absolute; inset:0;
+      background-image:radial-gradient(circle,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:28px 28px;
+    }
+    .s-insight::after {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse 65% 55% at 50% 60%,rgba(33,21,81,.9) 0%,transparent 72%);
+    }
+    .insight-body { position:relative; z-index:1; text-align:center; display:flex; flex-direction:column; align-items:center; }
+    .insight-kicker {
+      font-family:var(--engravers); font-size:9px; letter-spacing:.32em;
+      text-transform:uppercase; color:rgba(255,255,255,.22); margin-bottom:28px;
+      opacity:0; animation:aFade .6s .1s var(--ease) both;
+    }
+    .slide.is-active .insight-kicker { opacity:1; }
+    .insight-headline {
+      font-family:var(--canela); font-size:clamp(40px,5vw,66px);
+      font-weight:300; font-style:italic; color:rgba(255,255,255,.88);
+      line-height:1.18; max-width:740px;
+      opacity:0; animation:aUp .85s .22s var(--ease) both;
+    }
+    .slide.is-active .insight-headline { opacity:1; }
+    .insight-rule {
+      width:1px; height:48px;
+      background:linear-gradient(to bottom,transparent,rgba(255,255,255,.18),transparent);
+      margin:32px auto;
+      opacity:0; animation:aFade .6s .5s var(--ease) both;
+    }
+    .slide.is-active .insight-rule { opacity:1; }
+    .insight-sub {
+      font-family:var(--inter); font-size:14px; font-weight:300;
+      color:rgba(255,255,255,.35); letter-spacing:.01em; max-width:560px; line-height:1.7;
+      opacity:0; animation:aFade .6s .62s var(--ease) both;
+    }
+    .slide.is-active .insight-sub { opacity:1; }
+
+    /* ══════════════════════════════════════════════════════
+       SLIDE 7 — ARCHITECTURE
+    ══════════════════════════════════════════════════════ */
+    .arch-visual { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; width:420px; }
+    .arch-layer { width:100%; border-radius:10px; padding:18px 24px; border:1px solid rgba(255,255,255,.1); }
+    .arch-layer--3 { background:rgba(33,21,81,.45); border-color:rgba(255,255,255,.14); opacity:0; transform:translateY(8px); }
+    .arch-layer--2 { background:rgba(20,15,45,.6); margin-top:12px; opacity:0; transform:translateY(8px); }
+    .arch-layer--1 { background:rgba(13,11,27,.7); border-color:rgba(255,255,255,.08); margin-top:12px; opacity:0; transform:translateY(8px); }
+    .slide.is-active .arch-layer--3 { animation:aLayerIn .55s .3s  var(--ease) both; }
+    .slide.is-active .arch-layer--2 { animation:aLayerIn .55s .5s  var(--ease) both; }
+    .slide.is-active .arch-layer--1 { animation:aLayerIn .55s .7s  var(--ease) both; }
+    .arch-layer__num  { font-family:var(--canela); font-size:11px; font-style:italic; color:rgba(255,255,255,.2); margin-bottom:4px; }
+    .arch-layer__label { font-family:var(--engravers); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.78); margin-bottom:6px; }
+    .arch-layer__desc  { font-family:var(--inter); font-size:12px; font-weight:300; color:rgba(255,255,255,.38); line-height:1.6; }
+    .arch-connector { display:flex; align-items:center; justify-content:center; }
+    .arch-connector__line { width:1px; height:12px; background:rgba(255,255,255,.1); }
+
+    /* ══════════════════════════════════════════════════════
+       SLIDE 8 — PORTAL EMBED
+    ══════════════════════════════════════════════════════ */
+    .portal-embed-wrap {
+      position:relative; z-index:1;
+      width:640px; height:440px; border-radius:8px; overflow:hidden;
+      box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 90px rgba(0,0,0,.9);
+    }
+    .portal-embed-wrap iframe {
+      width:1280px; height:880px; border:none;
+      transform:scale(.5); transform-origin:top left;
+      pointer-events:none;
+    }
+
+    /* ══════════════════════════════════════════════════════
+       SLIDE 9 — INDEX (the first step)
+    ══════════════════════════════════════════════════════ */
+    /* Reuses .portal-embed-wrap */
+
+    /* ══════════════════════════════════════════════════════
+       SLIDE 10 — BOWTIE CONCLUSION
+    ══════════════════════════════════════════════════════ */
+    .s-bowtie { align-items:center; justify-content:center; flex-direction:column; }
+    .s-bowtie::before {
+      content:''; position:absolute; inset:0;
+      background-image:radial-gradient(circle,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:28px 28px;
+    }
+    .s-bowtie::after {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse 70% 60% at 50% 60%,rgba(33,21,81,.8) 0%,transparent 72%);
+    }
+    .bowtie-inner { position:relative; z-index:1; display:flex; align-items:center; gap:0; }
+
+    .bowtie-side { display:flex; flex-direction:column; gap:10px; width:220px; }
+    .bowtie-pill {
+      font-family:var(--inter); font-size:12px; font-weight:300;
+      color:rgba(255,255,255,.45); padding:10px 16px;
+      border:1px solid rgba(255,255,255,.09); border-radius:7px;
+      background:rgba(255,255,255,.03); line-height:1.3; text-align:center;
+      opacity:0; transform:translateX(-10px);
+    }
+    .bowtie-side--right .bowtie-pill { transform:translateX(10px); }
+    .slide.is-active .bowtie-pill { animation:aBowtiePill .45s var(--ease) both; }
+    .slide.is-active .bowtie-side--left  .bowtie-pill:nth-child(1) { animation-delay:.15s; }
+    .slide.is-active .bowtie-side--left  .bowtie-pill:nth-child(2) { animation-delay:.25s; }
+    .slide.is-active .bowtie-side--left  .bowtie-pill:nth-child(3) { animation-delay:.35s; }
+    .slide.is-active .bowtie-side--left  .bowtie-pill:nth-child(4) { animation-delay:.45s; }
+    .slide.is-active .bowtie-side--right .bowtie-pill:nth-child(1) { animation-delay:.55s; }
+    .slide.is-active .bowtie-side--right .bowtie-pill:nth-child(2) { animation-delay:.65s; }
+    .slide.is-active .bowtie-side--right .bowtie-pill:nth-child(3) { animation-delay:.75s; }
+
+    .bowtie-connector {
+      display:flex; flex-direction:column; align-items:center;
+      width:200px; position:relative; padding:0 12px;
+    }
+    /* SVG lines toward center */
+    .bowtie-lines { width:100%; flex:1; position:relative; }
+
+    .bowtie-center {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:20px 24px; border-radius:14px;
+      background:rgba(33,21,81,.55); border:1px solid rgba(255,255,255,.18);
+      text-align:center;
+      opacity:0;
+      animation:none;
+      flex-shrink:0;
+    }
+    .slide.is-active .bowtie-center { animation:aLayerIn .6s .1s var(--ease) both; }
+    .bowtie-center__label {
+      font-family:var(--engravers); font-size:10px; letter-spacing:.2em;
+      text-transform:uppercase; color:rgba(255,255,255,.5); margin-bottom:8px;
+    }
+    .bowtie-center__name {
+      font-family:var(--canela); font-size:28px; font-weight:300; font-style:italic;
+      color:rgba(255,255,255,.88); line-height:1.1;
+    }
+    .bowtie-center__sub {
+      font-family:var(--inter); font-size:11px; font-weight:300;
+      color:rgba(255,255,255,.28); margin-top:6px;
+    }
+
+    /* Arrow lines left→center and center→right */
+    .bowtie-arrow {
+      display:flex; align-items:center; gap:6px; padding:0 16px;
+    }
+    .bowtie-arrow__line { flex:1; height:1px; background:rgba(255,255,255,.1); }
+    .bowtie-arrow__head { color:rgba(255,255,255,.18); font-size:12px; }
+
+    .slide.is-active .bowtie-arrow { animation:aFade .5s .5s var(--ease) both; }
+    .bowtie-arrow { opacity:0; }
+
+    /* ══════════════════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════════════════ */
+    .deck-nav {
+      position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
+      display:flex; align-items:center; gap:14px; z-index:200;
+      background:rgba(10,9,22,.8); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+      border:1px solid rgba(255,255,255,.09); border-radius:100px; padding:9px 18px;
+    }
+    .nav-btn {
+      width:30px; height:30px; border-radius:50%;
+      background:transparent; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:rgba(255,255,255,.38); transition:background .14s,color .14s;
+    }
+    .nav-btn svg { width:13px; height:13px; }
+    .nav-btn:hover:not(:disabled) { background:rgba(255,255,255,.08); color:rgba(255,255,255,.88); }
+    .nav-btn:disabled { opacity:.22; cursor:default; }
+    .deck-dots { display:flex; align-items:center; gap:5px; }
+    .deck-dot {
+      height:5px; width:5px; border-radius:3px;
+      background:rgba(255,255,255,.15);
+      transition:width .25s var(--ease),background .25s var(--ease); cursor:pointer;
+    }
+    .deck-dot.is-active { width:20px; background:rgba(255,255,255,.48); }
+    .deck-dot:hover:not(.is-active) { background:rgba(255,255,255,.28); }
+    .deck-counter {
+      font-family:var(--engravers); font-size:9.5px; letter-spacing:.16em;
+      color:rgba(255,255,255,.3); min-width:34px; text-align:center;
+    }
+
+    /* CTA launch button */
+    .cta-launch {
+      display:inline-flex; align-items:center; gap:10px;
+      font-family:var(--engravers); font-size:11px; letter-spacing:.28em; text-transform:uppercase;
+      color:rgba(255,255,255,.75); text-decoration:none;
+      border:1px solid rgba(255,255,255,.18); border-radius:100px;
+      padding:14px 32px; margin-top:8px;
+      transition:color .2s, border-color .2s, background .2s;
+    }
+    .cta-launch:hover {
+      color:#fff; border-color:rgba(255,255,255,.45);
+      background:rgba(255,255,255,.05);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════════════════ */
+    @keyframes aFade    { from{opacity:0}            to{opacity:1} }
+    @keyframes aUp      { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes aLayerIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes aBowtiePill { from{opacity:0;transform:translateX(var(--tx,0))} to{opacity:1;transform:translateX(0)} }
+  </style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════════════════════
+       0 — COVER
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide s-cover">
+    <div class="cover-corner cover-corner--tl">
+      <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha"
+           alt="IHG" height="20" style="display:block;opacity:.45;filter:brightness(0) invert(1);">
+    </div>
+    <div class="cover-corner cover-corner--tr">
+      <span class="sprint-badge">Wilson Design System · 2026</span>
+    </div>
+    <div class="cover-body">
+      <div class="cover-eyebrow">Regent Brand.com</div>
+      <div class="cover-title">AI + Prototypes</div>
+      <div class="cover-rule"></div>
+      <div class="cover-sub">How I got here</div>
+      <div class="cover-context">From design exploration to an internal AI-assisted prototype review tool</div>
+    </div>
+    <div class="cover-cue" id="coverCue">
+      <span class="cover-cue__label">Begin</span>
+      <span class="cover-cue__arrow">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8h10M8 3l5 5-5 5"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       1 — ORIGIN
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow">The starting point</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">Using AI to accelerate design iteration</div>
+        <div class="s-body">
+          Regent.com needed a full redesign using the Wilson Design System.<br><br>
+          As a product designer, the challenge was <strong>validating interactions and exploring directions fast</strong> — without waiting on engineering cycles. Claude became the tool that turned a design idea into a clickable, shareable prototype in minutes.
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="origin-visual">
+          <div class="proto-cluster">
+
+            <!-- ① Main desktop — Homepage (center) -->
+            <div class="pc pc-dt" style="width:360px;top:90px;left:80px;z-index:3;">
+              <div class="pc-dt__chrome">
+                <div class="pc-dt__dots">
+                  <span class="pc-dt__dot" style="background:#ff5f57;"></span>
+                  <span class="pc-dt__dot" style="background:#febc2e;"></span>
+                  <span class="pc-dt__dot" style="background:#28c840;"></span>
+                </div>
+                <div class="pc-dt__url"><span>regent.com</span></div>
+              </div>
+              <div class="pc-dt__body" style="height:198px;">
+                <div class="mc-hero" style="height:114px;">
+                  <div class="mc-nav" style="position:relative;z-index:2;background:rgba(0,0,0,0);">
+                    <div class="mc-nav__logo"></div>
+                    <div class="mc-nav__items">
+                      <div class="mc-nav__item"></div>
+                      <div class="mc-nav__item"></div>
+                      <div class="mc-nav__item"></div>
+                    </div>
+                  </div>
+                  <div style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:5px;align-items:center;">
+                    <div style="width:130px;height:11px;border-radius:3px;background:rgba(255,255,255,.18);"></div>
+                    <div style="width:90px;height:5px;border-radius:2px;background:rgba(255,255,255,.08);"></div>
+                  </div>
+                </div>
+                <div style="padding:6px 7px 4px;">
+                  <div class="mc-booking"></div>
+                </div>
+                <div class="mc-cards">
+                  <div class="mc-card"><div class="mc-card__img"></div><div class="mc-card__text"></div></div>
+                  <div class="mc-card"><div class="mc-card__img"></div><div class="mc-card__text"></div></div>
+                  <div class="mc-card"><div class="mc-card__img"></div><div class="mc-card__text"></div></div>
+                </div>
+              </div>
+              <div class="pc-tag" style="top:-11px;right:14px;">Homepage · Desktop</div>
+            </div>
+
+            <!-- ② iOS — Mobile header (top right, rotated) -->
+            <div class="pc pc-ios" style="width:96px;height:204px;border-radius:22px;top:16px;right:56px;transform:rotate(3deg);z-index:4;box-shadow:0 20px 50px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.12);">
+              <div class="pc-ios__di" style="width:50px;height:14px;"></div>
+              <div class="pc-ios__status"><span class="pc-ios__time">9:41</span></div>
+              <div style="height:132px;background:linear-gradient(180deg,rgba(20,12,40,.96) 0%,rgba(33,21,81,.65) 100%);position:relative;">
+                <div style="position:absolute;top:0;left:0;right:0;height:22px;display:flex;align-items:center;padding:0 8px;justify-content:space-between;background:rgba(0,0,0,0);">
+                  <div style="width:18px;height:3px;border-radius:1px;background:rgba(255,255,255,.45);"></div>
+                  <div style="display:flex;gap:2px;align-items:flex-end;">
+                    <div style="width:2px;height:4px;background:rgba(255,255,255,.4);border-radius:1px;"></div>
+                    <div style="width:2px;height:6px;background:rgba(255,255,255,.4);border-radius:1px;"></div>
+                    <div style="width:2px;height:8px;background:rgba(255,255,255,.4);border-radius:1px;"></div>
+                  </div>
+                </div>
+                <div class="mc-cta" style="position:absolute;bottom:0;left:0;right:0;height:26px;">
+                  <div class="mc-cta__field"></div>
+                  <div class="mc-cta__btn"></div>
+                </div>
+              </div>
+              <div class="mc-lines" style="padding:6px 8px;gap:3px;">
+                <div class="mc-line" style="width:80%;"></div>
+                <div class="mc-line" style="width:60%;"></div>
+              </div>
+              <div class="pc-ios__home"><div class="pc-ios__home-bar"></div></div>
+              <div class="pc-tag" style="bottom:-11px;left:-4px;">Mobile Header</div>
+            </div>
+
+            <!-- ③ iOS — Destinations snap-scroll (bottom left, rotated) -->
+            <div class="pc pc-ios" style="width:90px;height:192px;border-radius:20px;bottom:26px;left:26px;transform:rotate(-2.5deg);z-index:4;box-shadow:0 20px 50px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.12);">
+              <div class="pc-ios__di" style="width:48px;height:13px;"></div>
+              <div class="pc-ios__status"><span class="pc-ios__time">9:41</span></div>
+              <div class="mc-snap" style="height:128px;">
+                <div style="position:absolute;bottom:12px;left:8px;right:8px;display:flex;flex-direction:column;gap:3px;">
+                  <div style="width:38px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);"></div>
+                  <div style="width:55px;height:7px;border-radius:2px;background:rgba(255,255,255,.22);"></div>
+                  <div style="width:30px;height:3px;border-radius:2px;background:rgba(255,255,255,.1);"></div>
+                </div>
+                <div style="position:absolute;bottom:14px;right:8px;display:flex;flex-direction:column;gap:3px;align-items:center;">
+                  <div style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.6);"></div>
+                  <div style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.18);"></div>
+                  <div style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.18);"></div>
+                </div>
+              </div>
+              <div class="mc-lines" style="padding:5px 7px;gap:3px;">
+                <div class="mc-line" style="width:75%;"></div>
+                <div class="mc-line" style="width:55%;"></div>
+              </div>
+              <div class="pc-ios__home"><div class="pc-ios__home-bar"></div></div>
+              <div class="pc-tag" style="bottom:-11px;right:-6px;">Destinations · Mobile</div>
+            </div>
+
+            <!-- ④ Desktop — Events accordion (bottom right, slightly rotated) -->
+            <div class="pc pc-dt" style="width:236px;bottom:18px;right:14px;transform:rotate(1.2deg);z-index:3;">
+              <div class="pc-dt__chrome">
+                <div class="pc-dt__dots">
+                  <span class="pc-dt__dot" style="background:rgba(255,255,255,.12);"></span>
+                  <span class="pc-dt__dot" style="background:rgba(255,255,255,.12);"></span>
+                  <span class="pc-dt__dot" style="background:rgba(255,255,255,.12);"></span>
+                </div>
+                <div class="pc-dt__url"><span>regent.com</span></div>
+              </div>
+              <div style="height:116px;">
+                <div class="mc-split">
+                  <div class="mc-split__img"></div>
+                  <div class="mc-split__right">
+                    <div class="mc-row mc-row--active"><div class="mc-row__label" style="width:58px;"></div><div class="mc-row__icon"></div></div>
+                    <div class="mc-row"><div class="mc-row__label" style="width:44px;"></div><div class="mc-row__icon"></div></div>
+                    <div class="mc-row"><div class="mc-row__label" style="width:52px;"></div><div class="mc-row__icon"></div></div>
+                    <div class="mc-row"><div class="mc-row__label" style="width:38px;"></div><div class="mc-row__icon"></div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="pc-tag" style="top:-11px;left:10px;">Events · Desktop</div>
+            </div>
+
+            <!-- ⑤ iOS — Android card (top left, floating) -->
+            <div class="pc pc-ios" style="width:82px;height:172px;border-radius:18px;top:24px;left:22px;transform:rotate(-3.5deg);z-index:2;box-shadow:0 16px 44px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.09);opacity:.85;">
+              <div class="pc-ios__di" style="width:44px;height:12px;"></div>
+              <div class="pc-ios__status"><span class="pc-ios__time">9:41</span></div>
+              <div style="height:110px;background:linear-gradient(145deg,rgba(25,15,55,.9) 0%,rgba(40,25,80,.85) 50%,rgba(12,8,25,.95) 100%);position:relative;">
+                <!-- Destination card content -->
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:8px;">
+                  <div style="width:42px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin-bottom:3px;"></div>
+                  <div style="width:30px;height:6px;border-radius:2px;background:rgba(255,255,255,.2);margin-bottom:2px;"></div>
+                  <div style="display:flex;gap:4px;margin-top:4px;">
+                    <div style="width:20px;height:12px;border-radius:2px;background:rgba(255,255,255,.15);"></div>
+                    <div style="width:20px;height:12px;border-radius:2px;background:rgba(255,255,255,.08);"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="mc-lines" style="padding:5px 6px;gap:3px;">
+                <div class="mc-line" style="width:80%;"></div>
+                <div class="mc-line" style="width:55%;"></div>
+              </div>
+              <div class="pc-ios__home"><div class="pc-ios__home-bar"></div></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       2 — PAIN 01: MANAGING
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow"><span class="s-num">01</span>Pain point</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">Prototypes multiplied fast</div>
+        <div class="s-body">
+          Rapid iteration with Claude meant new directions appeared quickly — multiple variants per component, device versions, revised explorations.<br><br>
+          <strong>No way to find work, know what was current, or see the full picture.</strong>
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="v-panel">
+          <div class="file-chaos">
+            <div class="file-item">destinations-cards.html</div>
+            <div class="file-item">destinations-cards-v2.html</div>
+            <div class="file-item">destinations-cards-mobile.html</div>
+            <div class="file-item">destinations-cards-overlap.html</div>
+            <div class="file-item">destinations-cards-teaser.html</div>
+            <div class="file-item">events-accordion.html</div>
+            <div class="file-item">events-accordion-mobile.html</div>
+            <div class="file-item">homepage-desktop.html</div>
+            <div class="file-item">mobile-header.html</div>
+            <div class="file-item">content-block-carousel.html</div>
+            <div class="file-item">footer.html</div>
+            <div class="file-item">footer-v2.html</div>
+          </div>
+          <span class="file-chaos-label">and counting…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       3 — PAIN 02: SHARING
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow"><span class="s-num">02</span>Pain point</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">Sharing was problematic</div>
+        <div class="s-body">
+          Sending raw HTML links meant stakeholders saw files with no context — no device frame, no status, no changelog.<br><br>
+          The only workaround was <strong>screen recording</strong> — slow, uneditable, and impossible to experience on the actual device.
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="v-panel">
+          <div class="share-compare">
+            <div class="share-card share-card--before">
+              <div class="share-card__label">Before</div>
+              <div class="share-card__url">file:///Users/fv/_prototypes/events-accordion-v3-FINAL.html</div>
+              <div class="share-card__blank"><span>no context</span></div>
+            </div>
+            <div class="share-vs">
+              <div class="share-vs__line"></div>
+              <div class="share-vs__label">vs</div>
+              <div class="share-vs__line"></div>
+            </div>
+            <div class="share-card share-card--after">
+              <div class="share-card__label">After</div>
+              <div class="share-card__portal-label">Events Accordion</div>
+              <div class="share-badge">In Review</div>
+              <div class="share-tags">
+                <span class="share-tag">Desktop</span>
+                <span class="share-tag">Mobile</span>
+              </div>
+              <div class="share-card__changelog">
+                <div class="share-changelog-item">May 8 — Mobile stacked variant added</div>
+                <div class="share-changelog-item">Apr 22 — Crossfade locked at 500ms</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       4 — PAIN 03: REPETITION
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow"><span class="s-num">03</span>Pain point</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">Every prototype rebuilt from scratch</div>
+        <div class="s-body">
+          Every prototype needed the same nav, booking bar, and footer — rebuilt from scratch each time.<br><br>
+          <strong>Each rebuild drifted from the last. Inconsistency crept in.</strong>
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="v-panel">
+          <div class="repeat-visual">
+            <div class="repeat-proto-wrap">
+              <div class="repeat-proto">
+                <div class="repeat-proto__body">
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                </div>
+                <div class="repeat-footer">
+                  <div class="repeat-footer__item"></div>
+                  <div class="repeat-footer__item"></div>
+                  <div class="repeat-footer__item"></div>
+                </div>
+              </div>
+              <div class="repeat-label">events-accordion</div>
+            </div>
+            <div class="repeat-arrow">→</div>
+            <div class="repeat-proto-wrap">
+              <div class="repeat-proto">
+                <div class="repeat-proto__body">
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                </div>
+                <div class="repeat-footer">
+                  <div class="repeat-footer__item"></div>
+                  <div class="repeat-footer__item"></div>
+                  <div class="repeat-footer__item"></div>
+                </div>
+              </div>
+              <div class="repeat-label">destinations-cards</div>
+            </div>
+            <div class="repeat-arrow">→</div>
+            <div class="repeat-proto-wrap">
+              <div class="repeat-proto">
+                <div class="repeat-proto__body">
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                  <div class="repeat-proto__line"></div>
+                </div>
+                <div class="repeat-footer">
+                  <div class="repeat-footer__item"></div>
+                  <div class="repeat-footer__item"></div>
+                  <div class="repeat-footer__item"></div>
+                </div>
+              </div>
+              <div class="repeat-label">homepage-desktop</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       5 — PAIN 04: FIDELITY
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow"><span class="s-num">04</span>Pain point</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">Prototypes lacked device reality</div>
+        <div class="s-body">
+          Without a device shell, stakeholders couldn't feel the mobile experience.<br><br>
+          Feedback was to get the prototype <strong>as close as possible to what a user would actually be seeing</strong> — browser chrome, native UI, and site interactions all together.
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="v-panel">
+          <div class="fidelity-compare">
+            <div class="fid-side">
+              <div class="fid-label">Without context</div>
+              <div class="fid-bare">
+                <div class="fid-bare__hero"></div>
+                <div class="fid-bare__lines">
+                  <div class="fid-bare__line"></div>
+                  <div class="fid-bare__line" style="width:70%"></div>
+                  <div class="fid-bare__line" style="width:85%"></div>
+                  <div class="fid-bare__line" style="width:55%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="fid-side">
+              <div class="fid-label">In device shell</div>
+              <div class="fid-phone">
+                <div class="fid-phone__di" aria-hidden="true"></div>
+                <div class="fid-phone__status">
+                  <span class="fid-phone__time">9:41</span>
+                </div>
+                <div class="fid-phone__content"></div>
+                <div class="fid-phone__abar"><div class="fid-phone__pill"></div></div>
+                <div class="fid-phone__home"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       6 — THE INSIGHT
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide s-insight">
+    <div class="insight-body">
+      <div class="insight-kicker">The new brief</div>
+      <div class="insight-headline">How do we get from prototype to reality?</div>
+      <div class="insight-rule"></div>
+      <div class="insight-sub">The browser chrome, native device UI, and overlaid site interactions — not just the design in isolation</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       7 — ARCHITECTURE
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow">The solution</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">Three layers. One shared working environment.</div>
+        <div class="s-body">
+          Each layer is independent. Swap the shell, keep the prototype. Update a shared component once, it updates everywhere.<br><br>
+          And thinking about scale — if one designer hit all these friction points, the entire Wilson DS team would multiply every one of them. <strong>The shells became a shared working environment</strong> to unify how the whole team builds and presents, not just a wrapper for one prototype.
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="v-panel">
+          <div class="arch-visual">
+            <div class="arch-layer arch-layer--3">
+              <div class="arch-layer__num">Layer 3</div>
+              <div class="arch-layer__label">Design Prototype</div>
+              <div class="arch-layer__desc">The design work — destinations, events, homepage. Authored per component, swappable.</div>
+            </div>
+            <div class="arch-connector"><div class="arch-connector__line"></div></div>
+            <div class="arch-layer arch-layer--2">
+              <div class="arch-layer__num">Layer 2</div>
+              <div class="arch-layer__label">Shared Components</div>
+              <div class="arch-layer__desc">Nav, footer, booking bar — written once, mounted into any prototype via URL params.</div>
+            </div>
+            <div class="arch-connector"><div class="arch-connector__line"></div></div>
+            <div class="arch-layer arch-layer--1">
+              <div class="arch-layer__num">Layer 1</div>
+              <div class="arch-layer__label">Device Shell</div>
+              <div class="arch-layer__desc">iOS Safari, Android Chrome, Desktop — realistic chrome, shared across the whole team.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       8 — INDEX (the first step)
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow">Step one</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">First, a simple index</div>
+        <div class="s-body">
+          Before a full portal, the answer was simple: <strong>one page linking every prototype</strong> — organized, accessible, with device and status at a glance.<br><br>
+          It solved the immediate problem — but surfaced the next one. The index was a list, not a workflow.
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="v-panel">
+          <div class="portal-embed-wrap">
+            <iframe src="../index.html" scrolling="no"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       9 — BOWTIE CONCLUSION
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide s-bowtie">
+    <div class="bowtie-inner">
+
+      <!-- Pain inputs -->
+      <div class="bowtie-side bowtie-side--left">
+        <div class="bowtie-pill" style="--tx:-10px">Managing<br>prototypes</div>
+        <div class="bowtie-pill" style="--tx:-10px">Sharing<br>without context</div>
+        <div class="bowtie-pill" style="--tx:-10px">Rebuilding<br>components</div>
+        <div class="bowtie-pill" style="--tx:-10px">No device<br>fidelity</div>
+      </div>
+
+      <!-- Arrow left -->
+      <div class="bowtie-arrow">
+        <div class="bowtie-arrow__line" style="width:48px"></div>
+        <div class="bowtie-arrow__head">→</div>
+      </div>
+
+      <!-- Center node -->
+      <div class="bowtie-center">
+        <div class="bowtie-center__label">The solution</div>
+        <div class="bowtie-center__name">AI Prototype<br>Portal</div>
+        <div class="bowtie-center__sub">Wilson Design System</div>
+      </div>
+
+      <!-- Arrow right -->
+      <div class="bowtie-arrow">
+        <div class="bowtie-arrow__head">→</div>
+        <div class="bowtie-arrow__line" style="width:48px"></div>
+      </div>
+
+      <!-- Outcomes -->
+      <div class="bowtie-side bowtie-side--right">
+        <div class="bowtie-pill" style="--tx:10px">Organized<br>review workflow</div>
+        <div class="bowtie-pill" style="--tx:10px">Stakeholder<br>presentations</div>
+        <div class="bowtie-pill" style="--tx:10px">Design approval<br>& sign-off</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       10 — CHAPTER: THE PORTAL
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide s-cover">
+    <div class="cover-corner cover-corner--tl">
+      <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha"
+           alt="IHG" height="20" style="display:block;opacity:.45;filter:brightness(0) invert(1);">
+    </div>
+    <div class="cover-body">
+      <div class="cover-eyebrow">What came next</div>
+      <div class="cover-title" style="font-size:clamp(56px,6.5vw,96px);">The Portal</div>
+      <div class="cover-rule"></div>
+      <div class="cover-sub">An internal design review tool</div>
+      <div class="cover-context">Built to scale across the Wilson Design System team</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       11 — PORTAL V3 (live embed)
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="two-col">
+      <div class="col-content">
+        <div class="s-eyebrow">The evolution</div>
+        <div class="s-rule"></div>
+        <div class="s-headline">Organize, share, review, approve</div>
+        <div class="s-body">
+          The design team's equivalent of what dev has in Storybook.<br><br>
+          One place to present work, collect feedback, track status, and get sign-off — across every prototype, every device, every sprint.
+        </div>
+      </div>
+      <div class="col-visual">
+        <div class="v-panel">
+          <div class="portal-embed-wrap">
+            <iframe src="portal.html" scrolling="no"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       12 — CTA FINALE
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide s-cover">
+    <div class="cover-corner cover-corner--tr">
+      <span class="sprint-badge">Wilson Design System · 2026</span>
+    </div>
+    <div class="cover-body">
+      <div class="cover-eyebrow">Regent Brand.com</div>
+      <div class="cover-title" style="font-size:clamp(48px,5.5vw,80px);">See it live</div>
+      <div class="cover-rule"></div>
+      <a href="portal.html" target="_blank" class="cta-launch">Open Portal →</a>
+      <div class="cover-context" style="margin-top:24px;opacity:.55;">AI Prototype Portal · Running locally</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       NAV
+  ══════════════════════════════════════════════════════ -->
+  <nav class="deck-nav">
+    <button class="nav-btn" id="navPrev">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 2L5 7l4 5"/>
+      </svg>
+    </button>
+    <div class="deck-dots" id="deckDots"></div>
+    <span class="deck-counter" id="deckCounter">1 / 11</span>
+    <button class="nav-btn" id="navNext">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 2l4 5-4 5"/>
+      </svg>
+    </button>
+  </nav>
+</div>
+
+<script>
+const slideEls = Array.from(document.querySelectorAll('.slide'));
+const total    = slideEls.length;
+let   current  = 0;
+
+const dotsEl = document.getElementById('deckDots');
+slideEls.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'deck-dot';
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+
+function updateNav() {
+  document.getElementById('deckCounter').textContent = `${current + 1} / ${total}`;
+  document.getElementById('navPrev').disabled = current === 0;
+  document.getElementById('navNext').disabled = current === total - 1;
+  dotsEl.querySelectorAll('.deck-dot').forEach((d, i) => d.classList.toggle('is-active', i === current));
+}
+
+function goTo(idx) {
+  if (idx === current || idx < 0 || idx >= total) return;
+  const out = slideEls[current];
+  const inn = slideEls[idx];
+  const fwd = idx > current;
+
+  inn.style.transition = 'none';
+  inn.classList.remove('is-active','out-left','out-right','in-from-right','in-from-left');
+  inn.classList.add(fwd ? 'in-from-right' : 'in-from-left');
+  void inn.offsetWidth;
+  inn.style.transition = '';
+  inn.classList.remove('in-from-right','in-from-left');
+  inn.classList.add('is-active');
+
+  out.classList.remove('is-active');
+  out.classList.add(fwd ? 'out-left' : 'out-right');
+  setTimeout(() => out.classList.remove('out-left','out-right'), 560);
+
+  current = idx;
+  updateNav();
+}
+
+document.getElementById('navPrev').addEventListener('click', () => goTo(current - 1));
+document.getElementById('navNext').addEventListener('click', () => goTo(current + 1));
+document.getElementById('coverCue')?.addEventListener('click', () => goTo(1));
+
+document.addEventListener('keydown', e => {
+  if (document.activeElement?.tagName === 'INPUT') return;
+  switch (e.key) {
+    case 'ArrowRight': case 'ArrowDown': case ' ': e.preventDefault(); goTo(current + 1); break;
+    case 'ArrowLeft':  case 'ArrowUp':             e.preventDefault(); goTo(current - 1); break;
+    case 'Escape': case 'Home': goTo(0); break;
+    case 'End': goTo(total - 1); break;
+  }
+});
+
+slideEls[0].classList.add('is-active');
+updateNav();
+</script>
+</body>
+</html>

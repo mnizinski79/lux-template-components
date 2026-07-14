@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent Brand.com · Prototype Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:      #211551;
+      --canela:     'Cormorant Garamond', Georgia, serif;
+      --engravers:  'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+      --canvas-bg:  #0e0c14;
+      --panel-bg:   #0a0910;
+      --meta-bg:    #0d0b1b;
+    }
+
+    /* ── Deck shell ────────────────────────────────────────────── */
+    .deck {
+      width: 100%; height: 100%;
+      background: var(--canvas-bg);
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── Slide base ────────────────────────────────────────────── */
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+      will-change: opacity, transform;
+    }
+    .slide.is-active         { opacity: 1; pointer-events: auto; transform: none; }
+    .slide.leave-left        { opacity: 0; transform: translateX(-48px); }
+    .slide.leave-right       { opacity: 0; transform: translateX(48px); }
+    .slide.enter-from-right  { transform: translateX(48px); }
+    .slide.enter-from-left   { transform: translateX(-48px); }
+
+    /* ══════════════════════════════════════════════════════════════
+       COVER SLIDE
+    ══════════════════════════════════════════════════════════════ */
+    .slide--cover {
+      align-items: center;
+      justify-content: center;
+      background: var(--canvas-bg);
+    }
+
+    /* Dot grid */
+    .slide--cover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.026) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    /* Brand glow */
+    .slide--cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 65%, rgba(33,21,81,0.82) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 70% 20%, rgba(80,40,140,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Top-left IHG mark */
+    .cover-ihg {
+      position: absolute;
+      top: 36px; left: 48px;
+      z-index: 10;
+      opacity: 0;
+      animation: aFadeIn 0.6s 0s var(--ease) both;
+    }
+
+    /* Top-right sprint badge */
+    .cover-sprint {
+      position: absolute;
+      top: 36px; right: 48px;
+      z-index: 10;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      padding: 8px 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      opacity: 0;
+      animation: aFadeIn 0.6s 0.15s var(--ease) both;
+    }
+
+    .cover-body {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      text-align: center;
+    }
+
+    .cover-eyebrow {
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 22px;
+      opacity: 0;
+      animation: aSlideUp 0.7s 0.2s var(--ease) both;
+    }
+
+    .cover-title {
+      font-family: var(--canela);
+      font-size: clamp(80px, 9vw, 120px);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.9);
+      line-height: 1;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      animation: aSlideUp 0.85s 0.32s var(--ease) both;
+    }
+
+    .cover-divider {
+      width: 1px;
+      height: 56px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.18), transparent);
+      margin: 32px auto;
+      opacity: 0;
+      animation: aFadeIn 0.6s 0.55s var(--ease) both;
+    }
+
+    .cover-subtitle {
+      font-family: var(--engravers);
+      font-size: 10.5px;
+      font-weight: 300;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: aFadeIn 0.6s 0.65s var(--ease) both;
+    }
+
+    .cover-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      opacity: 0;
+      animation: aFadeIn 0.6s 0.78s var(--ease) both;
+    }
+
+    .cover-meta-item {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .cover-meta-dot {
+      width: 2px; height: 2px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    /* Begin cue — bottom right */
+    .cover-cue {
+      position: absolute;
+      bottom: 44px; right: 52px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      opacity: 0;
+      animation: aFadeIn 0.8s 1.1s var(--ease) both;
+      text-decoration: none;
+    }
+
+    .cover-cue__label {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      transition: color 0.2s;
+    }
+
+    .cover-cue__icon {
+      color: rgba(255,255,255,0.22);
+      transition: transform 0.22s var(--ease), color 0.2s;
+      display: flex; align-items: center;
+    }
+    .cover-cue__icon svg { width: 16px; height: 16px; }
+
+    .cover-cue:hover .cover-cue__label { color: rgba(255,255,255,0.5); }
+    .cover-cue:hover .cover-cue__icon  { transform: translateX(5px); color: rgba(255,255,255,0.5); }
+
+    /* Keyboard hint — bottom center */
+    .cover-keys {
+      position: absolute;
+      bottom: 48px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0;
+      animation: aFadeIn 0.8s 1.3s var(--ease) both;
+      pointer-events: none;
+    }
+
+    .key-pill {
+      font-family: var(--inter);
+      font-size: 9px;
+      color: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 3px 7px;
+      line-height: 1.2;
+    }
+
+    .cover-keys__sep {
+      font-family: var(--inter);
+      font-size: 9px;
+      color: rgba(255,255,255,0.12);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       PROTO SLIDES
+    ══════════════════════════════════════════════════════════════ */
+    .slide--proto { flex-direction: row; }
+
+    /* ── Device panel ──────────────────────────────────────────── */
+    .panel-device {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    /* Dot grid */
+    .panel-device::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    .device-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(ellipse at center, rgba(33,21,81,0.6) 0%, transparent 68%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .device-stage {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .device-scaler {
+      transform-origin: top left;
+      display: block;
+    }
+
+    /* ── iOS shell ─────────────────────────────────────────────── */
+    .sh-ios {
+      position: relative;
+      background: #000;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.13),
+        0 70px 140px rgba(0,0,0,0.95),
+        0 0 80px rgba(33,21,81,0.3);
+    }
+
+    .sh-ios__status {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 59px;
+      z-index: 20;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 28px 11px;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .sh-ios__time {
+      font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .sh-ios__icons {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .sh-ios__di {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 126px; height: 37px;
+      background: #000;
+      border-radius: 0 0 26px 26px;
+      z-index: 30;
+    }
+
+    .sh-ios__frame {
+      position: absolute;
+      top: 59px; left: 0; right: 0;
+      width: 100%;
+      border: none;
+    }
+
+    .sh-ios__abar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 84px;
+      background: rgba(10,9,16,0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px 20px;
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .sh-ios__pill {
+      flex: 1;
+      height: 38px;
+      border-radius: 19px;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sh-ios__domain {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: -0.01em;
+    }
+
+    .sh-ios__home {
+      position: absolute;
+      bottom: 6px; left: 50%;
+      transform: translateX(-50%);
+      width: 134px; height: 5px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.28);
+    }
+
+    /* ── Desktop shell ─────────────────────────────────────────── */
+    .sh-desktop {
+      position: relative;
+      background: #1c1a28;
+      overflow: hidden;
+      border-radius: 9px 9px 5px 5px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.1),
+        0 50px 110px rgba(0,0,0,0.94),
+        0 0 70px rgba(33,21,81,0.28);
+    }
+
+    .sh-desktop__chrome {
+      height: 44px;
+      background: #252232;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .sh-desktop__dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .sh-desktop__dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+
+    .sh-desktop__urlbar {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .sh-desktop__lock { color: rgba(255,255,255,0.25); display: flex; align-items: center; }
+    .sh-desktop__lock svg { width: 9px; height: 10px; }
+
+    .sh-desktop__domain {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .sh-desktop__frame {
+      display: block;
+      border: none;
+      width: 100%;
+    }
+
+    /* ── Meta panel ────────────────────────────────────────────── */
+    .panel-meta {
+      width: 400px;
+      flex-shrink: 0;
+      background: var(--meta-bg);
+      border-left: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle top accent line */
+    .panel-meta::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 36px; right: 36px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .meta-head {
+      padding: 32px 36px 0;
+      flex-shrink: 0;
+    }
+
+    .meta-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .meta-eyebrow__left {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+    }
+
+    .meta-slide-num {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.18);
+    }
+
+    .meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 13px;
+      border-radius: 100px;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .meta-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .badge--approved { color: rgba(74,188,118,0.9); background: rgba(74,188,118,0.1); border: 1px solid rgba(74,188,118,0.22); }
+    .badge--approved::before { background: rgba(74,188,118,0.9); }
+    .badge--review   { color: rgba(240,192,80,0.9); background: rgba(240,192,80,0.08); border: 1px solid rgba(240,192,80,0.2); }
+    .badge--review::before   { background: rgba(240,192,80,0.9); }
+    .badge--draft    { color: rgba(255,255,255,0.35); background: transparent; border: 1px solid rgba(255,255,255,0.1); }
+    .badge--draft::before    { background: rgba(255,255,255,0.3); }
+
+    .meta-title {
+      font-family: var(--canela);
+      font-size: 44px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      margin-bottom: 18px;
+    }
+
+    .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+
+    .meta-tag {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      padding: 5px 11px;
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 4px;
+    }
+
+    .meta-rule {
+      height: 1px;
+      margin: 0 36px 28px;
+      background: rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+
+    .meta-body {
+      flex: 1;
+      padding: 0 36px 0;
+      overflow-y: auto;
+    }
+
+    .meta-body::-webkit-scrollbar { width: 2px; }
+    .meta-body::-webkit-scrollbar-track { background: transparent; }
+    .meta-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 1px; }
+
+    .changelog-label {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 20px;
+    }
+
+    .changelog-entry {
+      display: flex;
+      gap: 14px;
+      padding-bottom: 22px;
+      position: relative;
+    }
+
+    .changelog-entry::before {
+      content: '';
+      position: absolute;
+      left: 5px; top: 17px; bottom: 0;
+      width: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+    .changelog-entry:last-child::before { display: none; }
+
+    .changelog-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: var(--meta-bg);
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative; z-index: 1;
+    }
+    .changelog-entry:first-child .changelog-dot {
+      border-color: rgba(255,255,255,0.38);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .changelog-content { flex: 1; min-width: 0; }
+
+    .changelog-date {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.26);
+      margin-bottom: 5px;
+    }
+
+    .changelog-text {
+      font-family: var(--inter);
+      font-size: 12.5px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.65;
+    }
+
+    .meta-foot {
+      padding: 18px 36px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .meta-figma {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.24);
+      text-decoration: none;
+      transition: color 0.18s;
+      cursor: pointer;
+    }
+    .meta-figma:hover { color: rgba(255,255,255,0.55); }
+    .meta-figma svg { width: 12px; height: 12px; opacity: 0.7; }
+
+    /* ── Navigation ─────────────────────────────────────────────── */
+    .deck-nav {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 200;
+      background: rgba(10,9,22,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 100px;
+      padding: 9px 18px;
+    }
+
+    .nav-btn {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.38);
+      transition: background 0.14s, color 0.14s;
+      flex-shrink: 0;
+    }
+    .nav-btn svg { width: 13px; height: 13px; }
+    .nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.88); }
+    .nav-btn:disabled { opacity: 0.22; cursor: default; }
+
+    .deck-dots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .deck-dot {
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.15);
+      transition: width 0.25s var(--ease), background 0.25s var(--ease);
+      cursor: pointer;
+      width: 5px;
+    }
+    .deck-dot.is-active {
+      width: 20px;
+      background: rgba(255,255,255,0.48);
+    }
+    .deck-dot:hover:not(.is-active) { background: rgba(255,255,255,0.28); }
+
+    .deck-counter {
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
+      color: rgba(255,255,255,0.3);
+      min-width: 34px;
+      text-align: center;
+    }
+
+    /* ── Animations ─────────────────────────────────────────────── */
+    @keyframes aFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes aSlideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+  <!-- slides injected by JS -->
+
+  <nav class="deck-nav">
+    <button class="nav-btn" id="navPrev" title="Previous (←)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 2L5 7l4 5"/>
+      </svg>
+    </button>
+    <div class="deck-dots" id="deckDots"></div>
+    <span class="deck-counter" id="deckCounter">1 / 1</span>
+    <button class="nav-btn" id="navNext" title="Next (→)">
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 2l4 5-4 5"/>
+      </svg>
+    </button>
+  </nav>
+</div>
+
+<script src="protos.js"></script>
+<script>
+if (typeof PROTOS === 'undefined') window.PROTOS = [];
+
+/* ══════════════════════════════════════════════════════════
+   Data
+══════════════════════════════════════════════════════════ */
+const reviewProtos = PROTOS.filter(p => p.section === 'review');
+
+// slides[0] = cover, slides[1..N] = one per review proto
+const slides = [
+  { type: 'cover' },
+  ...reviewProtos.map(p => ({ type: 'proto', proto: p })),
+];
+
+let current = 0;
+
+const NATIVE_DIMS = {
+  ios:     { w: 393,  h: 852,  r: 47 },
+  android: { w: 412,  h: 892,  r: 20 },
+  desktop: { w: 1440, h: 900,  chrome: 44 },
+};
+
+/* ══════════════════════════════════════════════════════════
+   Helpers
+══════════════════════════════════════════════════════════ */
+function statusLabel(s) {
+  return { approved: 'Approved', review: 'In Review', draft: 'Draft' }[s] || s;
+}
+function statusClass(s) {
+  return { approved: 'badge--approved', review: 'badge--review', draft: 'badge--draft' }[s] || 'badge--draft';
+}
+
+/* ══════════════════════════════════════════════════════════
+   Cover slide
+══════════════════════════════════════════════════════════ */
+function buildCover() {
+  const el = document.createElement('div');
+  el.className = 'slide slide--cover';
+  el.dataset.idx = 0;
+  el.innerHTML = `
+    <div class="cover-ihg">
+      <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha"
+           alt="IHG Hotels &amp; Resorts" height="22"
+           style="display:block;opacity:0.5;filter:brightness(0) invert(1);">
+    </div>
+
+    <div class="cover-sprint">Sprint 2.1 · May 2026</div>
+
+    <div class="cover-body">
+      <div class="cover-eyebrow">Prototype Review · Regent Brand.com</div>
+      <div class="cover-title">Regent</div>
+      <div class="cover-divider"></div>
+      <div class="cover-subtitle">Interactive Prototype Review</div>
+      <div class="cover-meta-row">
+        <span class="cover-meta-item">Sprint 2.1</span>
+        <span class="cover-meta-dot"></span>
+        <span class="cover-meta-item">May 2026</span>
+        <span class="cover-meta-dot"></span>
+        <span class="cover-meta-item">${reviewProtos.length} prototype${reviewProtos.length !== 1 ? 's' : ''}</span>
+      </div>
+    </div>
+
+    <div class="cover-cue" id="coverCue">
+      <span class="cover-cue__label">Begin</span>
+      <span class="cover-cue__icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8h10M8 3l5 5-5 5"/>
+        </svg>
+      </span>
+    </div>
+
+    <div class="cover-keys">
+      <span class="key-pill">←</span>
+      <span class="key-pill">→</span>
+      <span class="cover-keys__sep">to navigate</span>
+    </div>
+  `;
+  el.querySelector('#coverCue').addEventListener('click', () => goTo(1));
+  return el;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Proto slide
+══════════════════════════════════════════════════════════ */
+function buildProtoSlide(s, idx) {
+  const { proto } = s;
+  const device = proto.default || Object.keys(proto.urls)[0] || 'desktop';
+  const url    = proto.urls[device] || Object.values(proto.urls)[0] || '';
+
+  const el = document.createElement('div');
+  el.className = 'slide slide--proto';
+  el.dataset.idx = idx;
+
+  /* ── Device panel ── */
+  const devicePanel = document.createElement('div');
+  devicePanel.className = 'panel-device';
+  devicePanel.innerHTML = '<div class="device-glow"></div>';
+
+  const stage  = document.createElement('div');
+  stage.className = 'device-stage';
+  stage.id = `stage-${idx}`;
+
+  const scaler = document.createElement('div');
+  scaler.className = 'device-scaler';
+  scaler.id = `scaler-${idx}`;
+
+  const d = NATIVE_DIMS[device] || NATIVE_DIMS.desktop;
+
+  if (device === 'ios' || device === 'android') {
+    const frameH = d.h - 59 - 84;
+    scaler.innerHTML = `
+      <div class="sh-ios" style="width:${d.w}px;height:${d.h}px;border-radius:${d.r}px;">
+        <div class="sh-ios__status">
+          <span class="sh-ios__time">9:41</span>
+          <div class="sh-ios__icons">
+            <!-- Signal bars -->
+            <svg width="17" height="11" viewBox="0 0 17 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="7" width="3" height="4" rx="0.8" fill="rgba(255,255,255,0.88)"/>
+              <rect x="4.5" y="4.5" width="3" height="6.5" rx="0.8" fill="rgba(255,255,255,0.88)"/>
+              <rect x="9" y="2" width="3" height="9" rx="0.8" fill="rgba(255,255,255,0.88)"/>
+              <rect x="13.5" y="0" width="3" height="11" rx="0.8" fill="rgba(255,255,255,0.88)"/>
+            </svg>
+            <!-- Wifi -->
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 9.5 L8 9.5" stroke="rgba(255,255,255,0.88)" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M5.2 6.9 Q8 4.5 10.8 6.9" stroke="rgba(255,255,255,0.88)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <path d="M2.5 4.5 Q8 0.5 13.5 4.5" stroke="rgba(255,255,255,0.88)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            </svg>
+            <!-- Battery -->
+            <svg width="26" height="13" viewBox="0 0 26 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+              <rect x="2" y="2" width="17" height="9" rx="2" fill="rgba(255,255,255,0.85)"/>
+              <path d="M24 4.5v4a2 2 0 0 0 0-4Z" fill="rgba(255,255,255,0.4)"/>
+            </svg>
+          </div>
+        </div>
+        ${device === 'ios' ? '<div class="sh-ios__di" aria-hidden="true"></div>' : ''}
+        <iframe class="sh-ios__frame" src="${url}"
+          style="height:${frameH}px;" allow="autoplay" scrolling="yes"></iframe>
+        <div class="sh-ios__abar">
+          <div class="sh-ios__pill">
+            <span class="sh-ios__domain">regent.com</span>
+          </div>
+          <div class="sh-ios__home"></div>
+        </div>
+      </div>`;
+  } else {
+    // desktop
+    scaler.innerHTML = `
+      <div class="sh-desktop" style="width:${d.w}px;height:${d.h}px;">
+        <div class="sh-desktop__chrome">
+          <div class="sh-desktop__dots">
+            <span class="sh-desktop__dot" style="background:#ff5f57;"></span>
+            <span class="sh-desktop__dot" style="background:#febc2e;"></span>
+            <span class="sh-desktop__dot" style="background:#28c840;"></span>
+          </div>
+          <div class="sh-desktop__urlbar">
+            <div class="sh-desktop__lock">
+              <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 7V5a3 3 0 1 1 6 0v2" stroke="rgba(255,255,255,0.28)" stroke-width="1.5" stroke-linecap="round"/>
+                <rect x="3" y="7" width="10" height="8" rx="1.5" fill="rgba(255,255,255,0.2)"/>
+              </svg>
+            </div>
+            <span class="sh-desktop__domain">regent.com</span>
+          </div>
+        </div>
+        <iframe class="sh-desktop__frame" src="${url}"
+          style="height:${d.h - d.chrome}px;" allow="autoplay" scrolling="yes"></iframe>
+      </div>`;
+  }
+
+  stage.appendChild(scaler);
+  devicePanel.appendChild(stage);
+
+  /* ── Meta panel ── */
+  const metaPanel = document.createElement('div');
+  metaPanel.className = 'panel-meta';
+
+  const tagsHTML = (proto.tags || [])
+    .map(t => `<span class="meta-tag">${t}</span>`).join('');
+
+  const changelogHTML = (proto.notes || []).slice(0, 4).map((n, i) => `
+    <div class="changelog-entry">
+      <div class="changelog-dot"></div>
+      <div class="changelog-content">
+        ${n.date ? `<div class="changelog-date">${n.date}</div>` : ''}
+        <div class="changelog-text">${n.text}</div>
+      </div>
+    </div>`).join('') || `
+    <div class="changelog-entry">
+      <div class="changelog-dot"></div>
+      <div class="changelog-content">
+        <div class="changelog-text" style="color:rgba(255,255,255,0.22)">No changelog entries.</div>
+      </div>
+    </div>`;
+
+  const figmaHTML = proto.figma ? `
+    <a class="meta-figma" href="${proto.figma}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 8a2.67 2.67 0 1 1 5.33 0A2.67 2.67 0 0 1 8 8Z"/>
+        <path d="M2.67 13.33A2.67 2.67 0 0 1 5.33 8H8v2.67A2.67 2.67 0 0 1 2.67 13.33Z"/>
+        <path d="M5.33 2.67H8v5.33H5.33A2.67 2.67 0 0 1 5.33 2.67Z"/>
+        <path d="M2.67 2.67H5.33A2.67 2.67 0 1 1 5.33 8H2.67A2.67 2.67 0 0 1 2.67 2.67Z"/>
+      </svg>
+      View in Figma
+    </a>` : `<span></span>`;
+
+  metaPanel.innerHTML = `
+    <div class="meta-head">
+      <div class="meta-eyebrow">
+        <span class="meta-eyebrow__left">Regent Brand.com · Sprint 2.1</span>
+        <span class="meta-slide-num">${idx} / ${slides.length - 1}</span>
+      </div>
+      <div class="meta-badge ${statusClass(proto.status)}">${statusLabel(proto.status)}</div>
+      <div class="meta-title">${proto.label}</div>
+      <div class="meta-tags">${tagsHTML}</div>
+    </div>
+    <div class="meta-rule"></div>
+    <div class="meta-body">
+      <div class="changelog-label">Changelog</div>
+      <div class="changelog-entries">${changelogHTML}</div>
+    </div>
+    <div class="meta-foot">
+      ${figmaHTML}
+    </div>
+  `;
+
+  el.appendChild(devicePanel);
+  el.appendChild(metaPanel);
+  return el;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Mount all slides
+══════════════════════════════════════════════════════════ */
+const deck = document.getElementById('deck');
+const nav  = deck.querySelector('.deck-nav');
+const slideEls = [];
+
+slides.forEach((s, i) => {
+  const el = s.type === 'cover' ? buildCover() : buildProtoSlide(s, i);
+  deck.insertBefore(el, nav);
+  slideEls.push(el);
+});
+
+/* ══════════════════════════════════════════════════════════
+   Nav dots
+══════════════════════════════════════════════════════════ */
+const dotsEl = document.getElementById('deckDots');
+slides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'deck-dot';
+  dot.title = i === 0 ? 'Cover' : (slides[i].proto?.label || `Slide ${i+1}`);
+  dot.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(dot);
+});
+
+function updateNav() {
+  document.getElementById('deckCounter').textContent = `${current + 1} / ${slides.length}`;
+  document.getElementById('navPrev').disabled = current === 0;
+  document.getElementById('navNext').disabled = current === slides.length - 1;
+  dotsEl.querySelectorAll('.deck-dot').forEach((d, i) => {
+    d.classList.toggle('is-active', i === current);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   Navigation
+══════════════════════════════════════════════════════════ */
+function goTo(idx) {
+  if (idx === current || idx < 0 || idx >= slides.length) return;
+
+  const out = slideEls[current];
+  const inn = slideEls[idx];
+  const forward = idx > current;
+
+  // Prep incoming (off-screen)
+  inn.style.transition = 'none';
+  inn.classList.remove('is-active', 'leave-left', 'leave-right', 'enter-from-right', 'enter-from-left');
+  inn.classList.add(forward ? 'enter-from-right' : 'enter-from-left');
+
+  // Force reflow then animate
+  void inn.offsetWidth;
+
+  inn.style.transition = '';
+  inn.classList.remove('enter-from-right', 'enter-from-left');
+  inn.classList.add('is-active');
+
+  out.classList.remove('is-active');
+  out.classList.add(forward ? 'leave-left' : 'leave-right');
+
+  // Clean up after transition
+  setTimeout(() => {
+    out.classList.remove('leave-left', 'leave-right');
+  }, 550);
+
+  current = idx;
+  updateNav();
+  scaleDevice(idx);
+}
+
+function nextSlide() { goTo(current + 1); }
+function prevSlide() { goTo(current - 1); }
+
+document.getElementById('navPrev').addEventListener('click', prevSlide);
+document.getElementById('navNext').addEventListener('click', nextSlide);
+
+/* ══════════════════════════════════════════════════════════
+   Device scaling
+══════════════════════════════════════════════════════════ */
+const META_W   = 400;
+const PADDING  = 72;
+
+function scaleDevice(idx) {
+  const s = slides[idx];
+  if (!s || s.type !== 'proto') return;
+
+  const scaler = document.getElementById(`scaler-${idx}`);
+  const stage  = document.getElementById(`stage-${idx}`);
+  if (!scaler || !stage) return;
+
+  const device = s.proto.default || Object.keys(s.proto.urls)[0] || 'desktop';
+  const d      = NATIVE_DIMS[device] || NATIVE_DIMS.desktop;
+
+  const availW = (window.innerWidth - META_W) - PADDING * 2;
+  const availH = window.innerHeight - PADDING * 2;
+
+  const scale  = Math.min(availW / d.w, availH / d.h, 1);
+
+  scaler.style.transform       = `scale(${scale})`;
+  scaler.style.transformOrigin = 'top left';
+
+  stage.style.width  = Math.round(d.w * scale) + 'px';
+  stage.style.height = Math.round(d.h * scale) + 'px';
+}
+
+function scaleAll() {
+  slides.forEach((_, i) => scaleDevice(i));
+}
+
+/* ══════════════════════════════════════════════════════════
+   Keyboard
+══════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+  switch (e.key) {
+    case 'ArrowRight':
+    case 'ArrowDown':
+    case ' ':
+      e.preventDefault(); nextSlide(); break;
+
+    case 'ArrowLeft':
+    case 'ArrowUp':
+      e.preventDefault(); prevSlide(); break;
+
+    case 'Escape':
+    case 'Home':
+      goTo(0); break;
+
+    case 'End':
+      goTo(slides.length - 1); break;
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   Init
+══════════════════════════════════════════════════════════ */
+slideEls[0]?.classList.add('is-active');
+updateNav();
+scaleAll();
+
+window.addEventListener('resize', scaleAll);
+</script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>teaserCard — Teaser Cards (Combined)</title>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../../../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../../../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../../../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F3F7F5;
+      color: #211551;
+      min-height: 100vh;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 60px;
+    }
+
+    :root {
+      --brand:      #211551;
+      --brand-rgb:  33, 21, 81;
+      --canela:     'Canela', Georgia, serif;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease-panel: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── Card (isolated component — no section/carousel wrapper) ─── */
+    .card {
+      position: relative;
+      flex: 0 0 400px;
+      width: 400px;
+      height: 499px;
+      overflow: hidden;
+    }
+
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s var(--ease-panel);
+    }
+
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(var(--brand-rgb), 0.1), rgba(var(--brand-rgb), 0.1)),
+        linear-gradient(
+          to bottom,
+          transparent 50%,
+          rgba(0, 0, 0, 0.45) 75%,
+          rgba(0, 0, 0, 0.75) 95%
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 16px 28px 28px;
+      color: #fff;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .card__meta-wrap {
+      flex: 0 0 292px;
+      width: 292px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+      transition: transform 0.65s var(--ease-panel) 0s;
+    }
+
+    .card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-family: var(--engravers);
+      font-size: 12px;
+      line-height: 26px;
+      font-weight: 400;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      transition: transform 0.65s var(--ease-panel) 0.08s;
+    }
+
+    /* ─── Frost panel (ported from wds-teaser-card-mobile.html) ─── */
+    .card__blur {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      background: rgba(6, 5, 15, 0.68);
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 0.6s var(--ease-panel);
+    }
+
+    .card.panel-open .card__blur { opacity: 1; }
+
+    .card.is-closing .card__blur {
+      opacity: 0;
+      transition: opacity 0.65s var(--ease-panel) 0.28s;
+    }
+
+    .card.panel-open .card__title {
+      transform: translateY(-162px);
+      transition: transform 0.65s var(--ease-panel) 0s;
+    }
+
+    .card.is-closing .card__title {
+      transform: translateY(0);
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.36s;
+    }
+
+    .card.panel-open .card__meta {
+      transform: translateY(-162px);
+      transition: transform 0.65s var(--ease-panel) 0.08s;
+    }
+
+    .card.is-closing .card__meta {
+      transform: translateY(0);
+      transition: transform 0.9s var(--ease-panel) 0.27s;
+    }
+
+    .card__desc {
+      position: absolute;
+      left: 28px;
+      right: 84px;
+      max-width: 292px;
+      top: 325px;
+      opacity: 0;
+      transform: translateY(6px);
+      font-family: var(--inter);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 26px;
+      color: #d6d6d6;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+
+    .card__link {
+      position: absolute;
+      left: 28px;
+      bottom: 28px;
+      display: inline-block;
+      width: fit-content;
+      opacity: 0;
+      transform: translateY(4px);
+      font-family: var(--engravers);
+      font-size: 16px;
+      line-height: 26px;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      padding-bottom: 3px;
+      text-decoration: none;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
+    }
+
+    .card.panel-open .card__desc {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+      transition: opacity 0.5s ease 0.3s, transform 0.5s var(--ease-panel) 0.3s;
+    }
+
+    .card.panel-open .card__link {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+      transition: opacity 0.5s ease 0.38s, transform 0.5s var(--ease-panel) 0.38s;
+    }
+
+    .card.is-closing .card__desc {
+      opacity: 0;
+      transform: translateY(4px);
+      pointer-events: none;
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
+    }
+
+    .card.is-closing .card__link {
+      opacity: 0;
+      transform: translateY(3px);
+      pointer-events: none;
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease-panel) 0s;
+    }
+
+    .card__toggle {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 200;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 16px;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.3s;
+      align-self: flex-end;
+    }
+
+    .card__toggle .icon-plus,
+    .card__toggle .icon-close {
+      position: absolute;
+      transition: opacity 0.4s ease, transform 0.4s var(--ease-panel);
+    }
+
+    .card__toggle .icon-plus  { opacity: 1; transform: rotate(0deg); }
+    .card__toggle .icon-close { opacity: 0; transform: rotate(-45deg); }
+    .card.panel-open .card__toggle .icon-plus  { opacity: 0; transform: rotate(45deg); }
+    .card.panel-open .card__toggle .icon-close { opacity: 1; transform: rotate(0deg); }
+  </style>
+</head>
+<body>
+
+  <!-- Card 1 — Wellness & Leisure -->
+  <div class="card card--teaser" data-index="0">
+    <img class="card__img" src="../../../_assets/_imgs/teaserCard/image%20(7).png" alt="Wellness &amp; Leisure">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">Sunrise yoga on the terrace, followed by quiet moments of restoration overlooking the coast.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta-wrap">
+        <div class="card__title">Wellness &amp; Leisure</div>
+        <div class="card__meta">Wellness</div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info for Wellness &amp; Leisure">
+        <i class="ph ph-plus icon-plus"></i>
+        <i class="ph ph-x icon-close"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Card 2 — Culinary Artistry -->
+  <div class="card card--teaser" data-index="1">
+    <img class="card__img" src="../../../_assets/_imgs/teaserCard/image%20(8).png" alt="Culinary Artistry">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">A tasting menu built around seasonal ingredients, plated tableside by the chef's own hand.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta-wrap">
+        <div class="card__title">Culinary Artistry</div>
+        <div class="card__meta">Dining</div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info for Culinary Artistry">
+        <i class="ph ph-plus icon-plus"></i>
+        <i class="ph ph-x icon-close"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Card 3 — Private Sailing -->
+  <div class="card card--teaser" data-index="2">
+    <img class="card__img" src="../../../_assets/_imgs/teaserCard/image%20(9).png" alt="Private Sailing">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">An evening charter along the coastline, champagne in hand as the sun sets over the water.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta-wrap">
+        <div class="card__title">Private Sailing</div>
+        <div class="card__meta">Excursions</div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info for Private Sailing">
+        <i class="ph ph-plus icon-plus"></i>
+        <i class="ph ph-x icon-close"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Card 4 — Rooftop Fire Lounge -->
+  <div class="card card--teaser" data-index="3">
+    <img class="card__img" src="../../../_assets/_imgs/teaserCard/image%20(10).png" alt="Rooftop Fire Lounge">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">Fireside conversation and late pours on the rooftop, with the boardwalk lights below.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta-wrap">
+        <div class="card__title">Rooftop Fire Lounge</div>
+        <div class="card__meta">Leisure</div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info for Rooftop Fire Lounge">
+        <i class="ph ph-plus icon-plus"></i>
+        <i class="ph ph-x icon-close"></i>
+      </button>
+    </div>
+  </div>
+
+<script>
+  function closeTeaser(card) {
+    card.classList.add('is-closing');
+    card.classList.remove('panel-open');
+    setTimeout(() => card.classList.remove('is-closing'), 1800);
+  }
+
+  document.querySelectorAll('.card').forEach(card => {
+    const toggleBtn = card.querySelector('.card__toggle');
+    toggleBtn.addEventListener('click', () => {
+      if (card.classList.contains('panel-open')) {
+        closeTeaser(card);
+      } else {
+        document.querySelectorAll('.card.panel-open').forEach(c => {
+          if (c !== card) closeTeaser(c);
+        });
+        card.classList.remove('is-closing');
+        card.classList.add('panel-open');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

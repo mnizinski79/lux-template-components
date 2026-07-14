@@ -20,3 +20,10 @@ regent-brand-com/_assets/_mockups/
 regent-brand-com/_assets/_live/
 regent-brand-com/_HTML/
 regent-brand-com/.claude/
+
+# Duplicate portal files kept locally, superseded by 00_portal/
+01_regent-brand-com/_portal-v2/
+01_regent-brand-com/login.html
+01_regent-brand-com/middleware.js
+01_regent-brand-com/server.js
+01_regent-brand-com/vercel.json

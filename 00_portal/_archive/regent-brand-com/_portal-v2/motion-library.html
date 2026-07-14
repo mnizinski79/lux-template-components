@@ -13,166 +13,122 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Inter', sans-serif; background: #F1F1F1; color: #3D3D3A; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: rgba(255,255,255,0.85); }
 
   :root {
-    --canela:    'Cormorant Garamond', Georgia, serif;
-    --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+    --canela:     'Cormorant Garamond', Georgia, serif;
+    --engravers:  'Josefin Sans', 'Arial Narrow', sans-serif;
+    --inter:      'Inter', system-ui, sans-serif;
+    --mono:       'Roboto Mono', monospace;
+    --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-panel: cubic-bezier(0.16, 1, 0.3, 1);
+    --bg:         #0e0c14;
+    --panel:      #0d0b1b;
+    --border:     rgba(255,255,255,0.07);
   }
 
   /* ============================================================
-     SLIDE-STYLE SECTION HEADERS — same eyebrow/rule/headline/body
-     treatment as story.html, recolored for this page's light theme
+     SLIDE-STYLE SECTION HEADERS — ported from story.html
   ============================================================ */
   .s-eyebrow {
     font-family: var(--engravers);
     font-size: 9px;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: rgba(26,26,46,0.4);
+    color: rgba(255,255,255,0.28);
     margin-bottom: 18px;
   }
-  .s-num { font-family: var(--canela); font-size: 11px; font-style: italic; color: rgba(26,26,46,0.3); margin-right: 8px; }
-  .s-rule { width: 32px; height: 1px; background: rgba(26,26,46,0.18); margin-bottom: 28px; }
+  .s-num { font-family: var(--canela); font-size: 11px; font-style: italic; color: rgba(255,255,255,0.2); margin-right: 8px; }
+  .s-rule { width: 32px; height: 1px; background: rgba(255,255,255,0.15); margin-bottom: 28px; }
   .s-headline {
     font-family: var(--canela);
     font-size: clamp(28px, 2.6vw, 42px);
     font-weight: 300;
     font-style: italic;
-    color: #1A1A2E;
+    color: rgba(255,255,255,0.88);
     line-height: 1.12;
     margin-bottom: 18px;
   }
   .s-body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--inter);
     font-size: 14px;
     font-weight: 300;
-    color: #737269;
+    color: rgba(255,255,255,0.5);
     line-height: 1.78;
-    max-width: 540px;
+    max-width: 480px;
   }
-  .s-body strong { color: #1A1A2E; font-weight: 500; }
+  .s-body strong { color: rgba(255,255,255,0.78); font-weight: 400; }
 
-  /* ============================================================
-     PINNED SCROLL — each pattern's title bar sticks to the top of
-     the viewport while its content scrolls up from beneath it.
-     Once the section's content has fully passed, the bar releases
-     naturally (native CSS position:sticky, scoped to its own
-     section as the containing block) and the next bar takes over.
-     No JS needed for the pin itself.
-  ============================================================ */
-  .ml-pattern { position: relative; background: #fff; }
+  @keyframes aFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes aUp   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 
-  .ml-pattern-bar {
-    position: sticky;
-    top: 44px; /* clears the sticky .ml-nav above it */
-    z-index: 5;
-    background: #fff;
-    padding: 36px 64px;
-    border-bottom: 1px solid rgba(26,26,46,0.08);
-  }
-
-  .ml-pattern-content { background: #fff; padding-top: 8px; }
-  .ml-pattern-body { padding: 32px 64px 0; }
+  .ml-section-head .s-eyebrow, .ml-section-head .s-rule, .ml-section-head .s-headline, .ml-section-head .s-body { opacity: 0; }
+  .ml-section-head.revealed .s-eyebrow  { animation: aUp .55s .05s var(--ease) both; }
+  .ml-section-head.revealed .s-rule     { animation: aFade .5s .1s var(--ease) both; }
+  .ml-section-head.revealed .s-headline { animation: aUp .65s .12s var(--ease) both; }
+  .ml-section-head.revealed .s-body     { animation: aUp .65s .22s var(--ease) both; }
 
   /* ============================================================
      PAGE CHROME
   ============================================================ */
-  .ml-header {
-    background: #1A1A2E;
-    color: #fff;
-    padding: 56px 48px 48px;
-  }
-  /* header sits on dark navy, so its eyebrow/rule/headline/body need the
-     white-based variants — everywhere else on this page is light, so the
-     default .s-* colors (defined above) apply as-is */
-  .ml-header .s-eyebrow { color: rgba(255,255,255,0.4); }
-  .ml-header .s-rule { background: rgba(255,255,255,0.18); }
-  .ml-header .s-headline { color: rgba(255,255,255,0.92); }
-  .ml-header .s-body { color: rgba(255,255,255,0.6); max-width: 640px; }
-  .ml-header .s-body strong { color: rgba(255,255,255,0.9); }
+  .ml-header { padding: 72px 64px 48px; border-bottom: 1px solid var(--border); }
+  .ml-header .s-body { max-width: 560px; }
 
-  .ml-nav {
-    display: flex;
-    gap: 24px;
-    padding: 14px 48px;
-    background: #14142A;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .ml-nav a {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: rgba(255,255,255,0.55);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  .ml-nav a:hover { color: #fff; }
-  .ml-nav a.is-active { color: #AEA9E7; }
-
-  /* ============================================================
-     ANNOTATED ROW — same pattern as fvAnnotations wireframes
-  ============================================================ */
-  .annotated-row { display: grid; grid-template-columns: 1fr 360px; align-items: stretch; scroll-margin-top: 48px; }
+  .annotated-row { display: grid; grid-template-columns: 1fr 360px; align-items: stretch; }
   .section-wf {
     position: relative;
     padding: 56px 48px;
-    background: #fff;
+    background: var(--panel);
     min-height: 520px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 16px;
+    border-top: 1px solid var(--border);
   }
   .section-annot {
     position: sticky;
-    top: 190px; /* clears the sticky .ml-nav + pinned .ml-pattern-bar above it */
-    max-height: calc(100vh - 214px);
-    overflow-y: auto;
+    top: 0;
     padding: 24px 24px 24px 20px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background: #0d0b1b;
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    border-top: 1px solid var(--border);
     min-height: 520px;
   }
-  .section-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+  .ml-section-pad { padding: 56px 64px 0; }
+
+  .demo-hint {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.85);
-    margin-bottom: 4px;
+    color: rgba(255,255,255,0.28);
   }
 
+  .curve-box { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+  .curve-box svg { width: 100%; height: 100px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+  .curve-label { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.4); }
+
   /* ============================================================
-     DEMO CARD — abstract stand-in, driven entirely by the tokens below
+     DEMO CARD — Teaser Card Tap to Reveal
   ============================================================ */
   :root {
-    --ease-panel: cubic-bezier(0.16, 1, 0.3, 1);
-
-    /* how far title/meta slide up to clear the desc text —
-       must be ≥ (desc anchor + max desc height) − body bottom offset */
     --reveal-distance: 118px;
-
-    /* OPEN — title leads, everything else trails it */
     --open-title-delay: 0s;     --open-title-dur: 0.65s;
     --open-meta-delay:  0.08s;  --open-meta-dur:  0.65s;
     --open-desc-delay:  0.3s;   --open-desc-dur:  0.5s;
     --open-link-delay:  0.38s;  --open-link-dur:  0.5s;
-
-    /* CLOSE — desc/link drop first, title returns last + slowest */
     --close-desc-delay:  0s;     --close-desc-dur:  0.3s;
     --close-link-delay:  0s;     --close-link-dur:  0.3s;
-    --close-meta-delay:  0.27s;  --close-meta-dur:  0.9s;
+    --close-meta-delay:  0.18s;  --close-meta-dur:  0.65s;
     --close-title-delay: 0.36s;  --close-title-dur: 1.2s;
   }
-
   .demo-card {
     position: relative;
     width: 300px;
@@ -180,47 +136,27 @@
     border-radius: 4px;
     overflow: hidden;
     background: linear-gradient(160deg, #5B5470 0%, #2E2A40 100%);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
     cursor: pointer;
     user-select: none;
   }
-
   .demo-card__overlay {
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(rgba(33,21,81,0.1), rgba(33,21,81,0.1)),
-      linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.45) 75%, rgba(0,0,0,0.75) 95%);
+    background: linear-gradient(to bottom, transparent 38%, rgba(0,0,0,0.45) 62%, rgba(0,0,0,0.75) 100%);
     pointer-events: none;
   }
-
   .demo-card__body {
     position: absolute;
-    bottom: 24px;
-    left: 0;
-    right: 0;
+    bottom: 24px; left: 0; right: 0;
     padding: 0 16px 0 24px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     z-index: 2;
   }
-
-  .demo-block {
-    border-radius: 3px;
-    color: #fff;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-  }
-
   .demo-card__title {
-    height: 28px;
-    width: 200px;
+    height: 28px; width: 200px;
     background: rgba(255,255,255,0.92);
     color: #1A1A2E;
     font-weight: 700;
@@ -234,10 +170,8 @@
     transform: translateY(0);
     transition: transform var(--close-title-dur) var(--ease-panel) var(--close-title-delay);
   }
-
   .demo-card__meta {
-    height: 16px;
-    width: 140px;
+    height: 16px; width: 140px;
     margin-top: 8px;
     background: rgba(255,255,255,0.55);
     transition: transform var(--open-meta-dur) var(--ease-panel) var(--open-meta-delay);
@@ -250,13 +184,11 @@
     transform: translateY(0);
     transition: transform var(--close-meta-dur) var(--ease-panel) var(--close-meta-delay);
   }
-
   .demo-card__meta-col { display: flex; flex-direction: column; }
-
   .demo-card__desc {
     position: absolute;
     left: 24px;
-    right: 76px; /* clears the toggle's reserved column: 16px pad + 36px button + 14px margin + 10px gap */
+    right: 76px;
     max-width: 273px;
     bottom: 58px;
     height: 64px;
@@ -273,13 +205,10 @@
     transform: translateY(0);
     transition: opacity var(--open-desc-dur) ease var(--open-desc-delay), transform var(--open-desc-dur) var(--ease-panel) var(--open-desc-delay);
   }
-
   .demo-card__link {
     position: absolute;
-    left: 24px;
-    bottom: 24px;
-    height: 22px;
-    width: 80px;
+    left: 24px; bottom: 24px;
+    height: 22px; width: 80px;
     background: rgba(255,255,255,0.85);
     color: #1A1A2E;
     font-weight: 700;
@@ -293,21 +222,17 @@
     transform: translateY(0);
     transition: opacity var(--open-link-dur) ease var(--open-link-delay), transform var(--open-link-dur) var(--ease-panel) var(--open-link-delay);
   }
-
   .demo-card__toggle {
     flex-shrink: 0;
     position: relative;
     z-index: 3;
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border: 1px solid rgba(255,255,255,0.55);
     border-radius: 50%;
     background: transparent;
     color: #fff;
     font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     margin-left: 14px;
   }
   .demo-card__toggle .icon-plus, .demo-card__toggle .icon-close {
@@ -319,59 +244,33 @@
   .demo-card.open .demo-card__toggle .icon-plus { opacity: 0; transform: rotate(45deg); }
   .demo-card.open .demo-card__toggle .icon-close { opacity: 1; transform: rotate(0deg); }
 
-  .demo-hint {
-    text-align: center;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(0,0,0,0.4);
-  }
-
-  /* ============================================================
-     EASING CURVE PLOT
-  ============================================================ */
-  .curve-box { width: 100%; display: flex; flex-direction: column; gap: 6px; }
-  .curve-box svg { width: 100%; height: 100px; background: #0e0c14; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; }
-  .curve-label { font-family: 'Roboto Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.4); }
-
   /* ============================================================
      DESTINATION CARD — CLICK EXPAND, SOLID SWAP (DESKTOP)
-     ported from destinations-cards-teaser.html
   ============================================================ */
   .swap-card {
     position: relative;
-    width: 300px;
-    height: 375px;
+    width: 300px; height: 375px;
     border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
   }
   .swap-img {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: linear-gradient(160deg, #5B5470 0%, #2E2A40 100%);
     transition: opacity 0.3s ease;
   }
   .swap-overlay {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: linear-gradient(to bottom, transparent 35%, rgba(6,5,15,0.38) 62%, rgba(6,5,15,0.80) 100%);
     transition: opacity 0.3s ease;
   }
   .swap-card.is-expanded .swap-img,
   .swap-card.is-expanded .swap-overlay,
   .swap-card.is-expanded .swap-body { opacity: 0; pointer-events: none; }
-  .swap-body {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 0 16px 24px 24px;
-    color: #fff;
-  }
+  .swap-body { position: absolute; bottom: 0; left: 0; right: 0; padding: 0 16px 24px 24px; color: #fff; }
   .swap-title { height: 24px; width: 160px; background: rgba(255,255,255,0.92); border-radius: 2px; }
   .swap-plus-btn {
-    position: absolute;
-    bottom: 24px; right: 14px;
+    position: absolute; bottom: 24px; right: 14px;
     z-index: 3;
     width: 32px; height: 32px;
     border: 1px solid rgba(255,255,255,0.55);
@@ -384,19 +283,16 @@
   }
   .swap-card.is-expanded .swap-plus-btn { opacity: 0; pointer-events: none; }
   .swap-panel {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: #1F4456;
     z-index: 4;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    display: flex; flex-direction: column; justify-content: flex-end;
     padding: 32px 16px 24px 24px;
     color: #fff;
     opacity: 0;
     transform: translateY(12px);
     pointer-events: none;
-    transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
   }
   .swap-card.is-expanded .swap-panel { opacity: 1; transform: translateY(0); pointer-events: auto; }
   .swap-panel-title { height: 26px; width: 170px; background: rgba(255,255,255,0.95); border-radius: 2px; }
@@ -414,54 +310,40 @@
 
   /* ============================================================
      DESTINATION CARD — SCROLL REVEAL (MOBILE)
-     ported from destinations-cards-mobile.html
   ============================================================ */
   .scroll-viewport {
-    width: 280px;
-    height: 380px;
+    width: 280px; height: 380px;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
-    border: 1px solid #B8B7B5;
+    border: 1px solid var(--border);
     border-radius: 4px;
-    background: #fff;
+    background: var(--bg);
   }
   .scroll-spacer {
     height: 380px;
     scroll-snap-align: start;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Roboto Mono', monospace;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
     font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #B8B7B5;
+    color: rgba(255,255,255,0.25);
   }
-  .rev-card {
-    position: relative;
-    height: 380px;
-    scroll-snap-align: start;
-    overflow: hidden;
-  }
+  .rev-card { position: relative; height: 380px; scroll-snap-align: start; overflow: hidden; }
   .rev-img {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: linear-gradient(160deg, #5B5470 0%, #2E2A40 100%);
     transform: scale(1.08);
-    transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 1.4s var(--ease-panel);
   }
   .rev-card.revealed .rev-img { transform: scale(1.0); }
   .rev-overlay {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background: linear-gradient(to bottom, transparent 38%, rgba(6,5,15,0.45) 70%, rgba(6,5,15,0.85) 100%);
   }
   .rev-body {
-    position: absolute;
-    bottom: 24px; left: 24px; right: 16px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
+    position: absolute; bottom: 24px; left: 24px; right: 16px;
+    display: flex; align-items: flex-end; justify-content: space-between;
     color: #fff;
   }
   .rev-title {
@@ -470,7 +352,7 @@
     border-radius: 2px;
     opacity: 0;
     transform: translateY(14px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.8s var(--ease-panel), transform 0.65s var(--ease-panel);
   }
   .rev-card.revealed .rev-title { opacity: 1; transform: translateY(0); }
   .rev-details {
@@ -480,7 +362,7 @@
     border-radius: 2px;
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    transition: opacity 0.8s var(--ease-panel) 0.15s, transform 0.65s var(--ease-panel) 0.15s;
   }
   .rev-card.revealed .rev-details { opacity: 1; transform: translateY(0); }
   .rev-meta-col { display: flex; flex-direction: column; }
@@ -493,7 +375,7 @@
     margin-left: 14px;
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    transition: opacity 0.8s var(--ease-panel) 0.15s, transform 0.65s var(--ease-panel) 0.15s;
   }
   .rev-card.revealed .rev-toggle { opacity: 1; transform: translateY(0); }
   .rev-toggle::before {
@@ -523,170 +405,133 @@
   <div class="s-body">Live, tokenized reference for interaction patterns shared across Regent prototypes — not wired into any production file. Copy the values in each spec panel into a new prototype's CSS to reproduce the choreography exactly, instead of re-deriving timing from scratch each time.</div>
 </div>
 
-<nav class="ml-nav">
-  <a href="#teaser-reveal">Teaser Card — Tap to Reveal</a>
-  <a href="#click-expand">Destination Card — Click Expand (Desktop)</a>
-  <a href="#scroll-reveal">Destination Card — Scroll Reveal (Mobile)</a>
-</nav>
-
-<section class="ml-pattern" id="teaser-reveal">
-
-  <div class="ml-pattern-bar">
-    <div class="s-eyebrow"><span class="s-num">01</span>Mobile + Desktop · Tap / Click</div>
+<div class="ml-section-pad">
+  <div class="ml-section-head" data-reveal>
+    <div class="s-eyebrow"><span class="s-num">01</span>Mobile · Tap</div>
     <div class="s-rule"></div>
     <div class="s-headline">Teaser Card — Tap to Reveal</div>
+    <div class="s-body">Used in: <strong>wedding-amenities-teaser-mobile.html</strong> and <strong>destinations-cards-mobile.html</strong> — tapping the + button on a card. Title and meta slide up out of the way first, then description and link fade in below. Closing reverses it, with the title returning last and slowest.</div>
   </div>
+</div>
 
-  <div class="ml-pattern-content">
+<div class="annotated-row">
 
-    <div class="ml-pattern-body">
-      <div class="s-body">Used in: <strong>wedding-amenities-teaser-mobile.html</strong>, <strong>wedding-amenities-teaser.html</strong> (desktop), and <strong>destinations-cards-mobile.html</strong> — tapping/clicking the + button on a card. Title and meta slide up out of the way first, then description and link fade in below with an exact 16px gap. Closing reverses it, with meta and title settling back down nearly together — meta leads by a touch, title finishes last and slowest.</div>
-    </div>
-
-    <div class="annotated-row">
-
-      <div class="section-wf">
-        <div class="demo-hint">Click to toggle</div>
-        <div class="demo-card" id="demoCard">
-          <div class="demo-card__overlay"></div>
-          <div class="demo-card__desc"></div>
-          <div class="demo-card__link"></div>
-          <div class="demo-card__body">
-            <div class="demo-card__meta-col">
-              <div class="demo-card__title"></div>
-              <div class="demo-card__meta"></div>
-            </div>
-            <button class="demo-card__toggle" aria-label="Toggle">
-              <i class="ph ph-plus icon-plus"></i>
-              <i class="ph ph-x icon-close"></i>
-            </button>
-          </div>
+  <div class="section-wf">
+    <div class="demo-hint">Click to toggle</div>
+    <div class="demo-card" id="demoCard">
+      <div class="demo-card__overlay"></div>
+      <div class="demo-card__desc"></div>
+      <div class="demo-card__link"></div>
+      <div class="demo-card__body">
+        <div class="demo-card__meta-col">
+          <div class="demo-card__title"></div>
+          <div class="demo-card__meta"></div>
         </div>
+        <button class="demo-card__toggle" aria-label="Toggle">
+          <i class="ph ph-plus icon-plus"></i>
+          <i class="ph ph-x icon-close"></i>
+        </button>
       </div>
-
-      <div class="section-annot">
-        <div id="a-teaser-reveal"></div>
-      </div>
-
     </div>
-
   </div>
 
-</section>
+  <div class="section-annot">
+    <div id="a-teaser-reveal"></div>
+  </div>
 
-<section class="ml-pattern" id="click-expand">
+</div>
 
-  <div class="ml-pattern-bar">
+<div class="ml-section-pad">
+  <div class="ml-section-head" data-reveal>
     <div class="s-eyebrow"><span class="s-num">02</span>Desktop · Click</div>
     <div class="s-rule"></div>
     <div class="s-headline">Destination Card — Click Expand</div>
+    <div class="s-body">Used in: <strong>destinations-cards-teaser.html</strong> — clicking + on a teaser-style card. The whole card cross-fades to a solid color info panel, single-stage, no internal stagger.</div>
   </div>
+</div>
 
-  <div class="ml-pattern-content">
+<div class="annotated-row">
 
-    <div class="ml-pattern-body">
-      <div class="s-body">Used in: <strong>destinations-cards-teaser.html</strong> — clicking + on a teaser-style card. The whole card cross-fades to a solid color info panel, single-stage, no internal stagger.</div>
-    </div>
-
-    <div class="annotated-row">
-
-      <div class="section-wf">
-        <div class="demo-hint">Click + to expand</div>
-        <div class="swap-card" id="swapCard">
-          <div class="swap-img"></div>
-          <div class="swap-overlay"></div>
-          <div class="swap-body">
-            <div class="swap-title"></div>
-          </div>
-          <button class="swap-plus-btn" id="swapPlusBtn" aria-label="Learn more">
-            <i class="ph ph-plus"></i>
+  <div class="section-wf">
+    <div class="demo-hint">Click + to expand</div>
+    <div class="swap-card" id="swapCard">
+      <div class="swap-img"></div>
+      <div class="swap-overlay"></div>
+      <div class="swap-body">
+        <div class="swap-title"></div>
+      </div>
+      <button class="swap-plus-btn" id="swapPlusBtn" aria-label="Learn more">
+        <i class="ph ph-plus"></i>
+      </button>
+      <div class="swap-panel">
+        <div class="swap-panel-title"></div>
+        <div class="swap-panel-desc"></div>
+        <div class="swap-panel-footer">
+          <div class="swap-panel-cta"></div>
+          <button class="swap-close-btn" id="swapCloseBtn" aria-label="Close">
+            <i class="ph ph-x"></i>
           </button>
-          <div class="swap-panel">
-            <div class="swap-panel-title"></div>
-            <div class="swap-panel-desc"></div>
-            <div class="swap-panel-footer">
-              <div class="swap-panel-cta"></div>
-              <button class="swap-close-btn" id="swapCloseBtn" aria-label="Close">
-                <i class="ph ph-x"></i>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
-
-      <div class="section-annot">
-        <div id="a-click-expand"></div>
-      </div>
-
     </div>
-
   </div>
 
-</section>
+  <div class="section-annot">
+    <div id="a-click-expand"></div>
+  </div>
 
-<section class="ml-pattern" id="scroll-reveal">
+</div>
 
-  <div class="ml-pattern-bar">
+<div class="ml-section-pad">
+  <div class="ml-section-head" data-reveal>
     <div class="s-eyebrow"><span class="s-num">03</span>Mobile · Scroll</div>
     <div class="s-rule"></div>
     <div class="s-headline">Destination Card — Scroll Reveal</div>
+    <div class="s-body">Used in: <strong>destinations-cards-mobile.html</strong> — each card's entrance as it scrolls into view in the vertical snap-scroll carousel. Image scale-in, staggered text, and a pulse-ring affordance on the toggle.</div>
   </div>
+</div>
 
-  <div class="ml-pattern-content">
+<div class="annotated-row">
 
-    <div class="ml-pattern-body">
-      <div class="s-body">Used in: <strong>destinations-cards-mobile.html</strong> — each card's entrance as it scrolls into view in the vertical snap-scroll carousel. Image scale-in, staggered text, and a pulse-ring affordance on the toggle.</div>
-    </div>
-
-    <div class="annotated-row">
-
-      <div class="section-wf">
-        <div class="demo-hint">Scroll the frame</div>
-        <div class="scroll-viewport" id="scrollViewport">
-          <div class="scroll-spacer">Scroll down ▾</div>
-          <div class="rev-card" id="revCard">
-            <div class="rev-img"></div>
-            <div class="rev-overlay"></div>
-            <div class="rev-body">
-              <div class="rev-meta-col">
-                <div class="rev-title"></div>
-                <div class="rev-details"></div>
-              </div>
-              <div class="rev-toggle"></div>
-            </div>
+  <div class="section-wf">
+    <div class="demo-hint">Scroll the frame</div>
+    <div class="scroll-viewport" id="scrollViewport">
+      <div class="scroll-spacer">Scroll down ▾</div>
+      <div class="rev-card" id="revCard">
+        <div class="rev-img"></div>
+        <div class="rev-overlay"></div>
+        <div class="rev-body">
+          <div class="rev-meta-col">
+            <div class="rev-title"></div>
+            <div class="rev-details"></div>
           </div>
-          <div class="scroll-spacer">Scroll back up ▴</div>
+          <div class="rev-toggle"></div>
         </div>
       </div>
-
-      <div class="section-annot">
-        <div id="a-scroll-reveal"></div>
-      </div>
-
+      <div class="scroll-spacer">Scroll back up ▴</div>
     </div>
-
   </div>
 
-</section>
+  <div class="section-annot">
+    <div id="a-scroll-reveal"></div>
+  </div>
+
+</div>
+
+<div style="height: 64px;"></div>
 
 <script>
-  // ── Highlight the nav link for whichever section's bar is pinned ──
-  const navLinks = Array.from(document.querySelectorAll('.ml-nav a'));
-  const navLinkById = new Map(navLinks.map(a => [a.getAttribute('href').slice(1), a]));
-  const navObserver = new IntersectionObserver((entries) => {
+  // ── Section header scroll-reveal (mirrors story.html's slide entrance) ──
+  const headObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const id = entry.target.closest('.ml-pattern').id;
-      navLinks.forEach(a => a.classList.remove('is-active'));
-      const link = navLinkById.get(id);
-      if (link) link.classList.add('is-active');
+      if (entry.isIntersecting) entry.target.classList.add('revealed');
     });
-  }, { rootMargin: '-44px 0px -70% 0px', threshold: 0 });
-  document.querySelectorAll('.ml-pattern-bar').forEach(bar => navObserver.observe(bar));
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-reveal]').forEach(el => headObserver.observe(el));
 
+  // ── Teaser Card — Tap to Reveal ──────────────────────────────────────────
   const demoCard = document.getElementById('demoCard');
   let closeTimer = null;
-
   demoCard.addEventListener('click', () => {
     if (demoCard.classList.contains('open')) {
       demoCard.classList.add('closing');
@@ -709,7 +554,7 @@
     swapCard.classList.remove('is-expanded');
   });
 
-  // ── Scroll Reveal ────────────────────────────────────────────────────────
+  // ── Scroll Reveal ─────────────────────────────────────────────────────────
   // Single trigger, 300ms after intersecting — image and text both key off
   // the same .revealed class; the image just has a longer transition (1.4s)
   // so it visibly keeps settling after the text has already finished.
@@ -731,8 +576,7 @@
 
 <script type="text/babel">
 
-// ─── AnnotationCard (ported from fvAnnotations/reference.html) ────────────────
-function AnnotationCard({ index="00", title="Pattern", rows=[], meta=[] }) {
+function AnnotationCard({ index="00", title="Pattern", rows=[] }) {
   return (
     <div style={{ width:"100%", borderRadius:12, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.1)", overflow:"hidden", fontFamily:"Inter,sans-serif" }}>
       <div style={{ padding:"12px 14px 10px", display:"flex", alignItems:"center", gap:10 }}>
@@ -748,19 +592,11 @@ function AnnotationCard({ index="00", title="Pattern", rows=[], meta=[] }) {
             <span style={{ fontSize:11, color:"rgba(255,255,255,0.7)", fontFamily:"'Roboto Mono',monospace" }}>{r.value}</span>
           </div>
         ))}
-        {rows.length>0 && meta.length>0 && <div style={{ height:1, background:"rgba(255,255,255,0.08)", margin:"2px 0" }}/>}
-        {meta.map((r,i)=>(
-          <div key={i} style={{ display:"flex", gap:8, alignItems:"baseline" }}>
-            <span style={{ fontSize:11, fontWeight:500, color:"rgba(255,255,255,0.35)", minWidth:80 }}>{r.key}</span>
-            <span style={{ fontSize:11, color:"rgba(255,255,255,0.7)", fontFamily:"'Roboto Mono',monospace" }}>{r.value}</span>
-          </div>
-        ))}
       </div>
     </div>
   );
 }
 
-// ─── StickyNote (ported from fvAnnotations/reference.html) ────────────────────
 const STICKY_STYLES = {
   Observation:{ bg:"rgba(126,119,215,0.08)", border:"rgba(126,119,215,0.35)", pillBg:"rgba(126,119,215,0.2)", pillColor:"rgba(200,195,245,0.95)", textColor:"rgba(200,195,245,0.85)" },
   Decision:   { bg:"rgba(201,98,61,0.08)",  border:"rgba(201,98,61,0.35)",  pillBg:"rgba(201,98,61,0.2)",  pillColor:"rgba(228,160,130,0.95)", textColor:"rgba(228,160,130,0.85)" },
@@ -779,9 +615,7 @@ function StickyNote({ type="Observation", children }) {
   );
 }
 
-// ─── Easing curve plot ─────────────────────────────────────────────────────────
 function CurvePlot({ label="cubic-bezier(0.16, 1, 0.3, 1)" }) {
-  // control points scaled into a 100x100 box, y flipped (SVG y grows downward)
   const p1x=16, p1y=100, p2x=30, p2y=0;
   return (
     <div className="curve-box">
@@ -797,12 +631,8 @@ function CurvePlot({ label="cubic-bezier(0.16, 1, 0.3, 1)" }) {
   );
 }
 
-// ─── Mounts ─────────────────────────────────────────────────────────────────────
 const mounts = {
   "a-teaser-reveal": <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-    <div className="section-title">Teaser Card — Tap to Reveal</div>
-    <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", lineHeight:1.5 }}>Used in: wedding-amenities-teaser-mobile.html, wedding-amenities-teaser.html (desktop), and destinations-cards-mobile.html — tapping/clicking the + button on a card.</div>
-
     <CurvePlot/>
 
     <AnnotationCard index="01" title="Open Sequence" rows={[
@@ -815,35 +645,25 @@ const mounts = {
     <AnnotationCard index="02" title="Close Sequence" rows={[
       {key:"desc",value:"0s delay · 0.3s"},
       {key:"link",value:"0s delay · 0.3s"},
-      {key:"meta",value:"+0.27s · 0.9s"},
-      {key:"title",value:"+0.36s · 1.2s (slight trail)"},
+      {key:"meta",value:"+0.18s · 0.65s"},
+      {key:"title",value:"+0.36s · 1.2s (slow)"},
     ]}/>
 
     <AnnotationCard index="03" title="Tokens" rows={[
       {key:"--ease-panel",value:"cubic-bezier(.16,1,.3,1)"},
-      {key:"--reveal-distance",value:"mobile 120px · desktop 162px"},
-      {key:"meta→desc gap",value:"16px (exact, top-anchored)"},
-      {key:"desc max-height",value:"3 lines (line-clamp)"},
-    ]}/>
-
-    <AnnotationCard index="04" title="Overlay" rows={[
-      {key:"wash",value:"rgba(var(--brand-rgb), 0.1) — #211551"},
-      {key:"gradient",value:"transparent 50% → .45 @75% → .75 @95%"},
+      {key:"--reveal-distance",value:"118px"},
     ]}/>
 
     <StickyNote type="Observation">
-      --reveal-distance is per-card, not a universal constant — it must clear the desc text fully (≥ desc anchor + max desc height − body bottom-offset). Desktop's larger card/type needs 162px; mobile's smaller card needs 120px. Recalculate for any new card size rather than reusing either number.
+      Title/meta must slide up far enough to clear the desc text fully — distance needs to be ≥ (desc bottom-anchor + max desc height) − body bottom-offset, or the header overlaps the body copy. Recalculate per card size; don't reuse 118px blindly on a differently-sized card.
     </StickyNote>
 
     <StickyNote type="Decision">
-      Ported from destinations-cards-mobile.html into wedding-amenities-teaser-mobile.html on Jun 23, then into the desktop teaser too — title leads on open, body copy trails. On close, meta and title now move within 0.09s of each other (0.27s vs 0.36s delay) and finish 0.39s apart (0.9s vs 1.2s duration) — a deliberate in-between: less staggered than the original gap (meta finished 0.73s before title), but title still visibly trails meta rather than landing in perfect sync. Desktop uses a top-anchored desc box (not bottom-anchored) so the 16px gap holds regardless of copy length; mobile's anchors were recalibrated to match. Meta line simplified to a single word (no separator); overlay wash switched from a raw Figma hex to the --brand token. This is now the canonical teaser-reveal choreography for Regent prototypes.
+      Ported from destinations-cards-mobile.html into wedding-amenities-teaser-mobile.html on Jun 23 — title leads, body copy trails, close reverses with title returning last and slowest. This is now the canonical teaser-reveal choreography for Regent prototypes.
     </StickyNote>
   </div>,
 
   "a-click-expand": <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-    <div className="section-title">Destination Card — Click Expand (Desktop)</div>
-    <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", lineHeight:1.5 }}>Used in: destinations-cards-teaser.html — clicking + on a teaser-style card.</div>
-
     <AnnotationCard index="01" title="Open (click +)" rows={[
       {key:"image/overlay/body",value:"fade out, 0.3s ease"},
       {key:"panel",value:"fade + slide in, 0.55s"},
@@ -866,9 +686,6 @@ const mounts = {
   </div>,
 
   "a-scroll-reveal": <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-    <div className="section-title">Destination Card — Scroll Reveal (Mobile)</div>
-    <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", lineHeight:1.5 }}>Used in: destinations-cards-mobile.html — each card's entrance as it scrolls into view in the vertical snap-scroll carousel.</div>
-
     <AnnotationCard index="01" title="Trigger" rows={[
       {key:"observer",value:"IntersectionObserver, threshold 0.5"},
       {key:"delay",value:"300ms after intersecting"},

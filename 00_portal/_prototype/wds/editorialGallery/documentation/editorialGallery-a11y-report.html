@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>editorialGallery Accessibility Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  @font-face {
+    font-family: 'Canela';
+    src: url('../../../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+    font-weight: 100 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Engravers Gothic';
+    src: url('../../../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'Engravers Gothic';
+    src: url('../../../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+    font-weight: 700;
+  }
+
+  :root {
+    --paper:    #0E0E1A;
+    --panel:    #17151F;
+    --ink:      #F2F0F7;
+    --ink-soft: #A8A2BE;
+    --ink-faint:#6E6884;
+    --line:     rgba(255,255,255,0.1);
+    --fail:     #E88080;
+    --fail-bg:  rgba(232,128,128,0.12);
+    --pass:     #6FCB8F;
+    --pass-bg:  rgba(111,203,143,0.12);
+    --canela:   'Canela', Georgia, serif;
+    --engravers:'Engravers Gothic', 'Arial Narrow', sans-serif;
+    --inter:    'Inter', system-ui, -apple-system, sans-serif;
+    --mono:     'Roboto Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--inter);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 72px 32px 120px;
+  }
+
+  .prose { max-width: 640px; }
+
+  /* ─── Masthead ─────────────────────────────── */
+  .doc-title {
+    font-family: var(--inter);
+    font-size: clamp(32px, 3.2vw, 46px);
+    font-weight: 300;
+    font-style: normal;
+    color: rgba(255,255,255,0.95);
+    line-height: 1.14;
+    margin: 0 0 20px;
+  }
+  .doc-title__code {
+    font-family: 'Roboto Mono', monospace;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.62em;
+    color: rgba(255,255,255,0.85);
+  }
+
+  h1 {
+    font-family: var(--canela);
+    font-weight: 300;
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--ink-soft);
+    margin: 0 0 20px;
+    text-wrap: balance;
+    max-width: 720px;
+  }
+
+  .dek {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 620px;
+    margin: 0 0 8px;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+  .meta-row b { color: var(--ink); font-weight: 600; }
+
+  .file-pill-row { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+  .file-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px 5px 10px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.15);
+    text-decoration: none;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.65);
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+  .file-pill:hover {
+    border-color: rgba(174,169,231,0.6);
+    background: rgba(174,169,231,0.1);
+    color: #fff;
+  }
+  .file-pill__icon { flex-shrink: 0; opacity: 0.6; font-size: 11px; }
+  .file-pill__tag {
+    font-size: 9px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--engravers);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pass);
+    background: var(--pass-bg);
+    padding: 6px 14px 6px 12px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+  .status-pill i { font-size: 14px; line-height: 1; }
+
+  /* ─── Executive summary ─────────────────────────────── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .stat { background: var(--panel); padding: 22px 20px; }
+  .stat .num {
+    display: block;
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat.pass .num { color: var(--pass); }
+  .stat .label { font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; }
+
+  /* ─── Table of contents ─────────────────────────────── */
+  .toc { list-style: none; margin: 32px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .toc li { border-top: 1px solid var(--line); }
+  .toc li:last-child { border-bottom: 1px solid var(--line); }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px;
+    padding: 13px 2px; color: var(--ink); text-decoration: none; font-size: 14.5px;
+  }
+  .toc a:hover { color: var(--ink-soft); }
+  .toc a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .toc .toc-num { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .toc .toc-status {
+    margin-left: auto; font-family: var(--engravers); font-size: 9.5px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* ─── Section scaffolding ─────────────────────────────── */
+  section { margin-top: 96px; scroll-margin-top: 32px; }
+  .section-num { display: block; font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-bottom: 10px; }
+  section > h2 { font-family: var(--canela); font-weight: 300; font-size: 28px; letter-spacing: -0.005em; margin: 0 0 12px; }
+  section > .section-dek { color: var(--ink-soft); max-width: 620px; margin: 0 0 40px; }
+
+  /* ─── Live demo (real component markup, scaled) ─────────────────────────────── */
+  .field {
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 38%, rgba(255,255,255,0.08), transparent 70%),
+      radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1.2px),
+      linear-gradient(165deg, #36363D 0%, #232328 100%);
+    background-size: auto, 22px 22px, auto;
+    border-radius: 4px;
+    padding: 48px 28px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .stage-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.32);
+  }
+
+  /* ─── real editorialGallery card CSS, scaled to a single demo card ─── */
+  .eg-brand-rgb { --brand-rgb: 33, 21, 81; }
+  .eg-card {
+    position: relative;
+    width: 320px;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  .eg-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .eg-card .overlay {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(var(--brand-rgb), 0.1), rgba(var(--brand-rgb), 0.1)),
+      linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.45) 75%, rgba(0,0,0,0.75) 95%);
+    transition: background 0.7s ease;
+  }
+  .eg-card.is-open .overlay {
+    background:
+      linear-gradient(rgba(var(--brand-rgb), 0.1), rgba(var(--brand-rgb), 0.1)),
+      linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.85) 100%);
+  }
+  .eg-card .body {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 0 20px 24px; color: #fff;
+    transition: padding-bottom 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+  .eg-card.is-open .body { padding-bottom: 34px; }
+  .eg-card .title {
+    font-family: var(--canela); font-weight: 300; font-size: 19px; line-height: 1.15;
+  }
+  .eg-card .details {
+    display: flex; align-items: center; gap: 6px; margin-top: 5px;
+    font-family: var(--engravers); font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.72);
+  }
+  .eg-card .dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.5); }
+  .eg-card .reveal {
+    display: grid; grid-template-rows: 0fr; opacity: 0;
+    transition: grid-template-rows 0.5s cubic-bezier(0.4,0,0.2,1) 0.18s, opacity 0.3s ease 0.25s;
+  }
+  .eg-card.is-open .reveal { grid-template-rows: 1fr; opacity: 1; }
+  .eg-card .reveal-inner { overflow: hidden; }
+  .eg-card .desc {
+    font-family: var(--inter); font-size: 12px; font-weight: 300; line-height: 1.6;
+    color: rgba(255,255,255,0.7); margin-top: 10px;
+  }
+  .eg-card .cta {
+    display: inline-flex; margin-top: 14px;
+    font-family: var(--engravers); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #fff; border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 2px;
+  }
+  .stage-hint { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); }
+
+  .swatch-row { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .swatches { display: flex; gap: 10px; }
+  .swatch {
+    width: 46px; height: 57px; border-radius: 2px; overflow: hidden; cursor: pointer;
+    border: 2px solid transparent; opacity: 0.5; transition: opacity 0.15s ease, border-color 0.15s ease;
+    padding: 0; background: none;
+  }
+  .swatch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .swatch:hover { opacity: 0.8; }
+  .swatch.active { opacity: 1; border-color: var(--ink); }
+  .swatch:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* ─── Measurement table ─────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th {
+    text-align: left; font-family: var(--engravers); font-size: 10.5px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-faint); font-weight: 400;
+    padding: 0 12px 12px 0; border-bottom: 1px solid var(--line);
+  }
+  td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:first-child, th:first-child { padding-left: 0; }
+  .pill {
+    display: inline-block; font-family: var(--engravers); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+  }
+  .pill.pass { background: var(--pass-bg); color: var(--pass); }
+  .pill.na { background: rgba(255,255,255,0.07); color: var(--ink-soft); }
+  .ratio-num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ─── Dev handoff requirement callout ─────────────────────────────── */
+  .req-box {
+    background: rgba(232,184,128,0.08);
+    border: 1px solid rgba(232,184,128,0.3);
+    border-radius: 3px;
+    padding: 20px 22px;
+  }
+  .req-box .req-hd {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--engravers); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #E8B880; margin-bottom: 10px;
+  }
+  .req-box ul { margin: 12px 0 0; padding-left: 18px; color: var(--ink-soft); }
+  .req-box li { margin-bottom: 6px; }
+  .req-box p { color: var(--ink-soft); margin: 0; }
+
+  /* ─── Tint comparison ─────────────────────────────── */
+  .tint-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .tint-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 16px; }
+  .tint-panel img { width: 100%; display: block; border-radius: 2px; }
+  .tint-panel .tint-label {
+    font-family: var(--engravers); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 10px;
+  }
+  .tint-shift {
+    margin-top: 24px; display: flex; gap: 32px; flex-wrap: wrap;
+  }
+  .tint-shift-item { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
+  .tint-shift-item b { color: var(--ink); }
+
+  /* ─── Changelog-style note ─────────────────────────────── */
+  .change { display: grid; grid-template-columns: 28px 1fr; gap: 16px; padding: 28px 0; border-top: 1px solid var(--line); }
+  .change:last-child { border-bottom: 1px solid var(--line); }
+  .change .glyph { font-family: var(--canela); font-size: 20px; color: var(--ink-faint); padding-top: 2px; }
+  .change h3 { font-family: var(--inter); font-size: 16px; font-weight: 600; margin: 0 0 6px; }
+  .change p { margin: 0; color: var(--ink-soft); max-width: 620px; }
+
+  /* ─── Footer note ─────────────────────────────── */
+  .footnote { margin-top: 96px; padding-top: 32px; border-top: 1px solid var(--line); color: var(--ink-soft); max-width: 640px; }
+  .footnote .eyebrow {
+    font-family: var(--engravers); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-soft); margin: 0 0 10px; display: block;
+  }
+
+  @media (max-width: 720px) {
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .tint-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <p class="doc-title">wds · <span class="doc-title__code">editorialGallery</span> - Accessibility Report</p>
+    <div class="status-pill"><i class="ph-fill ph-check-circle"></i>Audited — passes AA, no changes required</div>
+    <h1>Every supplied photo clears AA with margin to spare — including the greenest, most saturated photo in the set.</h1>
+    <p class="dek">This audit verified whether editorialGallery's overlay needed the same frost-opacity adjustment applied to teaserCard. It doesn't have an equivalent frost/blur panel — its overlay is a plain gradient plus brand wash, already aligned to that same design recipe. This audit measured that existing recipe against real renders of all 4 supplied photos, in both default and hover-reveal states, and separately checked for any visible tint effect on green-heavy imagery.</p>
+    <div class="meta-row">
+      <span class="file-pill-row">
+        <a class="file-pill" href="../final/wds-editorial-gallery-desktop.html" target="_blank" rel="noopener noreferrer">
+          <i class="ph ph-file-html file-pill__icon"></i>wds-editorial-gallery-desktop.html<span class="file-pill__tag">Desktop</span>
+        </a>
+      </span>
+      <span>Scope: <b>Desktop (mobile out of scope)</b></span>
+      <span>Target: <b>WCAG 2.1 AA</b></span>
+    </div>
+  </header>
+
+  <section id="summary">
+    <span class="section-num">01</span>
+    <h2>Summary</h2>
+    <p class="section-dek">Measured against real Playwright-rendered screenshots of the component (not synthetic CSS math) — background pixels sampled directly behind each text line, then alpha-blended with the actual text color per the WCAG contrast formula.</p>
+
+    <div class="summary-grid">
+      <div class="stat pass">
+        <span class="num">4 / 4</span>
+        <span class="label">supplied photos pass AA (4.5:1) in both default and hover states</span>
+      </div>
+      <div class="stat pass">
+        <span class="num">6.17:1</span>
+        <span class="label">worst-case ratio across all 27 measured text/photo/state combinations — 37% above the 4.5:1 floor</span>
+      </div>
+      <div class="stat">
+        <span class="num">0</span>
+        <span class="label">CSS values changed — the existing overlay recipe already clears the bar</span>
+      </div>
+      <div class="stat">
+        <span class="num">~7pt</span>
+        <span class="label">RGB shift from the purple brand-wash on green foliage — present, but not visually distinct at 10% opacity</span>
+      </div>
+    </div>
+
+    <ol class="toc">
+      <li><a href="#component"><span class="toc-num">01</span> Why there's no "0.68" to port over <span class="toc-status">Context</span></a></li>
+      <li><a href="#live-demo"><span class="toc-num">02</span> Live component — all 4 photos <span class="toc-status">Interactive</span></a></li>
+      <li><a href="#measurements"><span class="toc-num">03</span> Contrast measurements</a></li>
+      <li><a href="#tint-check"><span class="toc-num">04</span> Purple-wash tint check</a></li>
+      <li><a href="#verdict"><span class="toc-num">05</span> Compliance verdict</a></li>
+      <li><a href="#dev-requirement"><span class="toc-num">06</span> Dev handoff requirement <span class="toc-status">Open</span></a></li>
+      <li><a href="#methodology-note"><span class="toc-num">07</span> Methodology</a></li>
+      <li><a href="#imagery-note"><span class="toc-num">08</span> Sample imagery</a></li>
+    </ol>
+  </section>
+
+  <section id="component">
+    <span class="section-num">01</span>
+    <h2>Why there's no "0.68" to port over</h2>
+    <p class="section-dek">teaserCard's fix raised a <code>backdrop-filter: blur()</code> scrim's opacity from 0.45 to 0.68 — that value belongs to a frosted-glass disclosure panel. editorialGallery doesn't have one: its card is a plain gradient overlay (brand wash at flat 10% + a black gradient that deepens toward the bottom), with no blur anywhere. That overlay is already aligned to match the wdsCard/teaserCard family recipe — so "align to 0.68" doesn't map onto a real value here. This audit instead verified the recipe editorialGallery already has.</p>
+  </section>
+
+  <section id="live-demo">
+    <span class="section-num">02</span>
+    <h2>Live component — all 4 supplied photos</h2>
+    <p class="section-dek">Real component markup and CSS, not a mockup. Hover the card to see the reveal state (description + CTA); switch photos below to check contrast and tint by eye across the full set.</p>
+
+    <div class="field">
+      <div class="stage eg-brand-rgb">
+        <span class="stage-label" id="stageLabel">CANNES, FRENCH RIVIERA</span>
+        <div class="eg-card" id="demoCard">
+          <img id="demoImg" src="../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="">
+          <div class="overlay"></div>
+          <div class="body">
+            <div class="title" id="demoTitle">Cannes, French Riviera</div>
+            <div class="details"><span id="demoLoc">France</span><span class="dot"></span><span id="demoRegion">Europe</span></div>
+            <div class="reveal">
+              <div class="reveal-inner">
+                <p class="desc" id="demoDesc">Sunlit promenades, private beaches, and the enduring glamour of the Côte d'Azur — rediscovered at your own pace.</p>
+                <span class="cta">Explore</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="stage-hint">hover to reveal</span>
+      </div>
+
+      <div class="swatch-row">
+        <span class="stage-label">select photo</span>
+        <div class="swatches" id="swatches">
+          <button class="swatch active" data-i="0"><img src="../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Cannes"></button>
+          <button class="swatch" data-i="1"><img src="../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali"></button>
+          <button class="swatch" data-i="2"><img src="../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Bali Highlands"></button>
+          <button class="swatch" data-i="3"><img src="../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Bali Coastline — greenest of the set"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="measurements">
+    <span class="section-num">03</span>
+    <h2>Contrast measurements</h2>
+    <p class="section-dek">Sampled from real screenshots: background color captured a few pixels above each text line (same gradient, no glyph contamination), then blended with the text's actual opacity per WCAG's alpha-compositing convention. Bali Coastline is the greenest, lightest photo in the set — it holds the same margin as the rest.</p>
+    <table id="measureTable">
+      <thead><tr><th>Photo</th><th>State</th><th>Text element</th><th>Contrast</th><th>Result</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="tint-check">
+    <span class="section-num">04</span>
+    <h2>Purple-wash tint check</h2>
+    <p class="section-dek">The overlay's flat 10% brand wash (<code>rgba(33, 21, 81, 0.1)</code>) sits across the entire card, not just the bottom scrim — so it touches bright foliage too, not only the text zone. Sampled a palm-frond patch from Bali Coastline (the greenest photo) with the wash applied, then mathematically reversed it to estimate the same patch without any wash, for a direct comparison.</p>
+
+    <div class="tint-grid">
+      <div class="tint-panel">
+        <div class="tint-label">Current — 10% brand wash applied</div>
+        <img src="editorialGallery-tint-with-wash.png" alt="Bali Coastline foliage with the current 10% brand wash overlay">
+      </div>
+      <div class="tint-panel">
+        <div class="tint-label">Simulated — no wash</div>
+        <img src="editorialGallery-tint-without-wash.png" alt="Same foliage with the brand wash mathematically removed, for comparison">
+      </div>
+    </div>
+
+    <div class="tint-shift">
+      <span class="tint-shift-item">Red: <b>−6.4</b></span>
+      <span class="tint-shift-item">Green: <b>−7.8</b></span>
+      <span class="tint-shift-item">Blue: <b>+1.2</b></span>
+      <span class="tint-shift-item">Verdict: <b>subtle cooling, not a visible purple cast</b></span>
+    </div>
+  </section>
+
+  <section id="verdict">
+    <span class="section-num">05</span>
+    <h2>Compliance verdict</h2>
+    <table>
+      <thead><tr><th>Area</th><th>State</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Title text (all 4 photos)</td><td>Default + hover</td><td><span class="pill pass">Pass</span> — 9.5–19.9:1</td></tr>
+        <tr><td>Details text (all 4 photos)</td><td>Default + hover</td><td><span class="pill pass">Pass</span> — 6.2–10.1:1</td></tr>
+        <tr><td>Description text (all 4 photos)</td><td>Hover</td><td><span class="pill pass">Pass</span> — 7.0–9.3:1</td></tr>
+        <tr><td>"Explore" CTA (all 4 photos)</td><td>Hover</td><td><span class="pill pass">Pass</span> — 18.5–19.6:1</td></tr>
+        <tr><td>Purple brand-wash tint</td><td>Static, all zones</td><td><span class="pill na">Not a WCAG criterion</span> — measured shift is subtle, no visible clash on the greenest sample</td></tr>
+        <tr><td>Frost/blur panel (n/a)</td><td>—</td><td><span class="pill na">Not applicable</span> — component has no frost/blur state to align to teaserCard's 0.68 value</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="dev-requirement">
+    <span class="section-num">06</span>
+    <h2>Dev handoff requirement — not demonstrated in this prototype</h2>
+    <p class="section-dek">This file is a visual/interaction reference, not shippable code — production will be rebuilt in the real component library. But the interaction model itself has a gap that needs to carry forward regardless of what implements it: right now the reveal (description + "Explore") only triggers on mouse hover. There's no keyboard path to it at all.</p>
+    <div class="req-box">
+      <div class="req-hd"><i class="ph-fill ph-warning"></i>Required in the production build</div>
+      <p>Content that appears on hover must also appear on keyboard focus, and must be operable without a mouse (WCAG 2.1 SC 1.4.13 and 2.1.1). The production implementation must include:</p>
+      <ul>
+        <li>Reveal triggers on keyboard focus, same as on hover</li>
+        <li>The hidden "Explore" link doesn't sit in the tab order while collapsed, and becomes reachable once revealed</li>
+        <li>Expanded/collapsed state is announced to screen readers (e.g. <code>aria-expanded</code> on a real toggle control)</li>
+      </ul>
+    </div>
+  </section>
+
+  <p class="footnote" id="methodology-note">
+    <span class="eyebrow">07 · Methodology</span>
+    Component rendered headlessly (Playwright/Chromium) at production dimensions for all 4 photos currently in the prototype, in both default and hover-revealed states. Background color sampled directly from those renders a few pixels above each text line; text color computed as the real alpha-blend of white at its CSS opacity over that sampled background, then scored with the standard WCAG relative-luminance contrast formula. This is ground-truth pixel data, not an approximated recipe — stronger evidence than a CSS-math estimate. Mobile view is out of scope for this audit.
+  </p>
+
+  <p class="footnote" id="imagery-note">
+    <span class="eyebrow">08 · Sample imagery</span>
+    The 4 photos used in this report are from the design exploration process, not confirmed final production imagery. Because contrast depends on the specific brightness and color of each photo behind the text, this recipe should be re-verified against final photography once selected, particularly for any image notably brighter or more saturated than the samples tested here.
+  </p>
+
+</div>
+
+<script>
+  const PHOTOS = [
+    {
+      label: 'CANNES, FRENCH RIVIERA',
+      img: '../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg',
+      title: 'Cannes, French Riviera', loc: 'France', region: 'Europe',
+      desc: "Sunlit promenades, private beaches, and the enduring glamour of the Côte d'Azur — rediscovered at your own pace.",
+    },
+    {
+      label: 'BALI, INDONESIA',
+      img: '../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg',
+      title: 'Bali, Indonesia', loc: 'Indonesia', region: 'Asia Pacific',
+      desc: 'Ancient temples, terraced rice fields, and an ocean that invites you to stay forever.',
+    },
+    {
+      label: 'BALI HIGHLANDS',
+      img: '../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg',
+      title: 'Bali Highlands', loc: 'Indonesia', region: 'Asia Pacific',
+      desc: 'Mist-wrapped valleys and emerald pools — where the mountain meets ceremony.',
+    },
+    {
+      label: 'BALI COASTLINE — GREENEST OF THE SET',
+      img: '../../../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg',
+      title: 'Bali Coastline', loc: 'Indonesia', region: 'Asia Pacific',
+      desc: 'Cliffside villas suspended above the Indian Ocean — privacy at its most dramatic.',
+    },
+  ];
+
+  function applyPhoto(i) {
+    const p = PHOTOS[i];
+    document.getElementById('demoImg').src = p.img;
+    document.getElementById('demoTitle').textContent = p.title;
+    document.getElementById('demoLoc').textContent = p.loc;
+    document.getElementById('demoRegion').textContent = p.region;
+    document.getElementById('demoDesc').textContent = p.desc;
+    document.getElementById('stageLabel').textContent = p.label;
+  }
+
+  document.querySelectorAll('.swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      applyPhoto(parseInt(btn.dataset.i, 10));
+    });
+  });
+
+  const demoCard = document.getElementById('demoCard');
+  demoCard.addEventListener('mouseenter', () => demoCard.classList.add('is-open'));
+  demoCard.addEventListener('mouseleave', () => demoCard.classList.remove('is-open'));
+
+  // Measured contrast data — real Playwright-rendered screenshots, background sampled
+  // behind each text line, alpha-blended with actual text opacity per WCAG formula.
+  const MEASUREMENTS = [
+    ['Cannes','Default','Title (20px, solid white)',19.16],
+    ['Cannes','Default','Details (8.5px, 72% white)',9.54],
+    ['Cannes','Hover','Title (20px, solid white)',10.70],
+    ['Cannes','Hover','Details (8.5px, 72% white)',6.97],
+    ['Cannes','Hover','Desc line 1 (13px, 70% white)',7.03],
+    ['Cannes','Hover','Desc line 2 (13px, 70% white)',7.34],
+    ['Cannes','Hover','CTA "Explore" (8.5px, solid)',19.25],
+    ['Bali','Default','Title (20px, solid white)',19.87],
+    ['Bali','Default','Details (8.5px, 72% white)',10.14],
+    ['Bali','Hover','Title (20px, solid white)',12.75],
+    ['Bali','Hover','Details (8.5px, 72% white)',7.70],
+    ['Bali','Hover','Desc line 1 (13px, 70% white)',8.17],
+    ['Bali','Hover','Desc line 2 (13px, 70% white)',8.68],
+    ['Bali','Hover','CTA "Explore" (8.5px, solid)',19.64],
+    ['Bali Highlands','Default','Title (20px, solid white)',19.37],
+    ['Bali Highlands','Default','Details (8.5px, 72% white)',6.99],
+    ['Bali Highlands','Hover','Title (20px, solid white)',10.89],
+    ['Bali Highlands','Hover','Details (8.5px, 72% white)',8.21],
+    ['Bali Highlands','Hover','Desc line 1 (13px, 70% white)',8.54],
+    ['Bali Highlands','Hover','Desc line 2 (13px, 70% white)',8.77],
+    ['Bali Highlands','Hover','CTA "Explore" (8.5px, solid)',19.50],
+    ['Bali Coastline','Default','Title (20px, solid white)',18.55],
+    ['Bali Coastline','Default','Details (8.5px, 72% white)',9.94],
+    ['Bali Coastline','Hover','Title (20px, solid white)',9.50],
+    ['Bali Coastline','Hover','Details (8.5px, 72% white)',6.17],
+    ['Bali Coastline','Hover','Desc line 1 (13px, 70% white)',7.52],
+    ['Bali Coastline','Hover','Desc line 2 (13px, 70% white)',9.30],
+    ['Bali Coastline','Hover','CTA "Explore" (8.5px, solid)',18.52],
+  ];
+
+  const tbody = document.querySelector('#measureTable tbody');
+  tbody.innerHTML = MEASUREMENTS.map(([photo, state, el, ratio]) => `
+    <tr>
+      <td>${photo}</td>
+      <td>${state}</td>
+      <td>${el}</td>
+      <td class="ratio-num">${ratio.toFixed(2)}:1</td>
+      <td><span class="pill pass">Pass</span></td>
+    </tr>`).join('');
+</script>
+
+</body>
+</html>

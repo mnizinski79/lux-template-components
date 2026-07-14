@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent Hotels & Resorts</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 700;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      /* ── Wilson design tokens: Regent (Desktop) ──────────────
+         Source: tokens/Regent.json + tokens/base-tokens.json   */
+
+      /* color/bg/primary → #fff */
+      --color-background-primary:       #fff;
+      /* color/bg/secondary → #f5f5f5 */
+      --color-background-secondary:     #f5f5f5;
+      /* color/bg/accent-primary → #F3F7F5 */
+      --color-bg-accent-primary:        #F3F7F5;
+      /* color/text/primary → #121212 */
+      --color-text-primary:             #121212;
+      /* color/text/secondary → #4a4a4a */
+      --color-text-secondary:           #4A4A4A;
+      /* color/text/brand → Regent blue-purple */
+      --color-text-brand:               #211551;
+      /* border/radius/none → 0  (Regent = sharp corners) */
+      --theme-light-border-radius:      0;
+      /* space/0 */
+      --space-none:                     0;
+      /* space/16 */
+      --spacing-desktop-small:          16px;
+      /* space/12 */
+      --spacing-gap-sm:                 12px;
+      /* space/28 */
+      --space-md:                       28px;
+      /* space/40 */
+      --space-lg:                       40px;
+
+      /* title/small */
+      --font-family-title-small:        'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --font-size-title-small:          14px;
+      --font-line-height-title-small:   24px;
+      --font-letter-spacing-title-small: 1px;
+
+      /* body/default/medium */
+      --font-family-body-medium:        Inter, system-ui, sans-serif;
+      --font-size-body-medium:          16px;
+      --font-line-height-body-medium:   26px;
+      --font-letter-spacing-body-medium: 0.5px;
+
+      /* ── Regent brand palette ─────────────────────────────── */
+      --brand:      #211551;
+      --teal:       #1F4456;
+      --coral:      #C7370F;
+      --bg:         #FAF8F5;
+      --bg-bali:    #C4CDD4;
+      --bg-footer:  #0F3B4A;
+      --text-1:     #211551;
+      --text-2:     #4A4A4A;
+      --text-3:     #8a8277;
+      --border:     rgba(33,21,81,0.14);
+      --canela:     'Canela', Georgia, serif;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease-lux:   cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out:   cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-in:    cubic-bezier(0.55, 0, 1, 0.45);
+      --gutter:     120px;
+      --card-gap:   4px;
+      --dur:        0.55s;
+    }
+
+    body {
+      font-family: var(--inter);
+      background: var(--color-background-primary, #fff);
+      color: var(--text-1);
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────── */
+    .s-hero {
+      position: relative;
+      width: 100%;
+      height: 810px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      background-color: #1a2a35;
+      overflow: hidden;
+    }
+
+    .hero__bg video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      pointer-events: none;
+    }
+
+    .hero__bg video::-webkit-media-controls,
+    .hero__bg video::-webkit-media-controls-overlay-play-button,
+    .hero__bg video::-webkit-media-controls-panel,
+    .hero__bg video::-webkit-media-controls-start-playback-button { display: none !important; }
+
+    .hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(18,18,18,0) 40%,
+        rgba(18,18,18,0.45) 75%,
+        rgba(18,18,18,0.72) 100%
+      );
+      z-index: 1;
+    }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: #121212;
+      opacity: 0.88;
+      z-index: 2;
+      animation: fadeOut 1.6s var(--ease-lux) 0.1s forwards;
+    }
+
+    @keyframes fadeOut { to { opacity: 0; pointer-events: none; } }
+
+    /* NAV */
+    .nav {
+      position: relative;
+      z-index: 3;
+      padding: 20px var(--gutter) 0;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-lux) 0.5s forwards;
+    }
+
+    .nav__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+    }
+
+    .nav__side {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .nav__side--right { justify-content: flex-end; }
+
+    .nav__btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      background: none;
+      border: none;
+      padding: 4px 0;
+      cursor: pointer;
+    }
+
+    .nav__btn span {
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+
+    .nav__btn:hover span { border-bottom-color: rgba(255,255,255,0.5); }
+
+    .nav__btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: white;
+      fill: none;
+      stroke-width: 1.5;
+      flex-shrink: 0;
+    }
+
+    /* fill-based icons (e.g. One Rewards) */
+    .nav__btn svg.icon-fill {
+      fill: white;
+      stroke: none;
+      stroke-width: 0;
+    }
+
+    .nav__logo { text-align: center; flex-shrink: 0; }
+
+    .nav__logo svg {
+      display: block;
+      height: 22px;
+      width: auto;
+    }
+
+    .nav__sub {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 16px;
+    }
+
+    .nav__link {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 12px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+
+    .nav__link:hover { border-bottom-color: rgba(255,255,255,0.7); }
+
+    /* HERO CONTENT — h1 bottom sits 82px above the booking bar visual top */
+    .hero__content {
+      position: relative;
+      z-index: 3;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 var(--gutter);
+      padding-bottom: 132px; /* 82px gap + 50px bar overlap */
+      gap: 12px;
+    }
+
+    /* HERO CONTROLS — pause button lower-left */
+    .hero__controls {
+      position: absolute;
+      bottom: 35px;
+      left: 35px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg, 40px);
+      pointer-events: none;
+    }
+
+    .hero__pause-btn {
+      pointer-events: all;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease-lux) 1.5s forwards;
+      transition: opacity 0.2s ease;
+      line-height: 0;
+    }
+
+    .hero__pause-btn:hover { opacity: 0.7; }
+
+    .hero__h1 {
+      color: #fff;
+      font-family: var(--canela);
+      font-size: clamp(44px, 5vw, 68px);
+      font-weight: 300;
+      line-height: 1.1;
+      text-align: center;
+      max-width: 860px;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      animation: fadeUp 1s var(--ease-lux) 1.1s forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* BOOKING BAR — token refs: Regent.json + base-tokens.json */
+    .booking-sticky-outer {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      margin-top: -50px;
+      pointer-events: none;
+      /* grid stack: s-booking and sticky-nav occupy same cell */
+      display: grid;
+      background: transparent;
+      box-shadow: none;
+      transition:
+        background 0.55s var(--ease-lux),
+        box-shadow  0.55s var(--ease-lux);
+    }
+
+    .booking-sticky-outer.is-stuck {
+      background: var(--color-background-primary, #fff);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+      pointer-events: all;
+    }
+
+    /* Both children stack in the same grid cell */
+    .s-booking,
+    .sticky-nav { grid-row: 1; grid-column: 1; }
+    /* Prevent grid from stretching s-booking to full viewport width */
+    .s-booking { justify-self: center; width: 1200px; }
+
+    /* Booking fields — drop shadow when sticky (outer provides it) */
+    .booking-sticky-outer.is-stuck .s-booking {
+      box-shadow: none;
+    }
+
+    /* Sticky nav — hidden always; booking bar is the sticky state */
+    .sticky-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 84px;
+      padding: 0 var(--gutter);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(6px);
+      pointer-events: none;
+      /* visibility delays until after opacity fades out (exit) */
+      transition: opacity 0.3s var(--ease-lux), transform 0.3s var(--ease-lux), visibility 0s 0.3s;
+    }
+
+    /* sticky-nav intentionally not shown in stuck state — booking bar is used instead */
+
+    .sticky-nav__logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .sticky-nav__logo svg {
+      display: block;
+      height: 18px;
+      width: auto;
+    }
+
+    .sticky-nav__links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .sticky-nav__link {
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-text-brand, #211551);
+      text-decoration: none;
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .sticky-nav__link:hover { border-bottom-color: rgba(33,21,81,0.35); }
+
+    .sticky-nav__cta {
+      display: flex;
+      align-items: center;
+      padding: 13px 24px;
+      background: #002d38;
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: background 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .sticky-nav__cta:hover { background: #003d4d; }
+
+    .s-booking {
+      position: relative;
+      z-index: 10;
+      width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      pointer-events: all;
+      border-radius: var(--theme-light-border-radius, 0);
+      background: var(--color-background-primary, #fff);
+      box-shadow:
+        0 191px 53px 0 rgba(194,194,194,0.00),
+        0 122px 49px 0 rgba(194,194,194,0.01),
+        0  69px 41px 0 rgba(194,194,194,0.05),
+        0  31px 31px 0 rgba(194,194,194,0.09),
+        0   8px 17px 0 rgba(194,194,194,0.10);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      height: 102px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp 0.8s var(--ease-lux) 1.7s forwards;
+      transition: box-shadow 0.3s ease;
+    }
+
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    .booking__inner {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-gap-sm, 12px);
+      width: 100%;
+      padding: 0 33px;
+    }
+
+    .booking__field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+      align-self: stretch;
+      justify-content: center;
+      padding-left: var(--spacing-desktop-small, 16px);
+    }
+
+    .booking__label {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-title-small, 'Engravers Gothic', 'Arial Narrow', sans-serif);
+      font-size: var(--font-size-title-small, 14px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: var(--font-letter-spacing-title-small, 1px);
+      text-transform: uppercase;
+    }
+
+    .booking__value {
+      overflow: hidden;
+      color: var(--color-text-secondary, #4A4A4A);
+      text-overflow: ellipsis;
+      font-family: var(--font-family-body-medium, Inter, system-ui, sans-serif);
+      font-size: var(--font-size-body-medium, 16px);
+      font-style: normal;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: var(--font-letter-spacing-body-medium, 0.5px);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .booking__value svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--color-text-secondary, #4a4a4a);
+      fill: none;
+      stroke-width: 1.5;
+      flex-shrink: 0;
+    }
+
+    .booking__divider {
+      width: 1px;
+      height: 50px;
+      background: #d6e3dc;
+      flex-shrink: 0;
+    }
+
+    .booking__chevron {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-2);
+      fill: none;
+      stroke-width: 1.5;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .booking__cta {
+      background: #003b49;
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 1.75px;
+      text-transform: uppercase;
+      border: none;
+      padding: 16px 40px;
+      min-width: 200px;
+      height: 56px;
+      line-height: 22px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+      margin-left: 32px;
+    }
+
+    .booking__cta:hover { background: #002d38; }
+
+    /* ─── EDITORIAL ─────────────────────────────────────────── */
+    /* ─── EDITORIAL (Image Left) ───────────────────────────── */
+    .editorial-bg {
+      background: #F3F7F5;           /* color/background/accent-primary */
+    }
+
+    .s-editorial {
+      width: 100%;
+      padding: 144px 0;
+    }
+
+    .editorial__container {
+      display: flex;
+      width: 1200px;
+      max-width: 1200px;
+      margin: 0 auto;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .editorial__img-wrap {
+      display: flex;
+      width: 600px;
+      height: 749.19px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .editorial__img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .editorial__inner {
+      display: flex;
+      padding: 0 var(--spacing-desktop-xlarge, 60px) 0 var(--spacing-xxlarge, 80px);
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: var(--spacing-large, 40px);
+      flex: 1 0 0;
+      align-self: stretch;
+    }
+
+    .editorial__h2 {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-heading-2, 'Canela'), Georgia, serif;
+      font-size: var(--font-size-heading-2, 44px);
+      font-style: normal;
+      font-weight: var(--font-weight-heading-2, 300);
+      line-height: var(--font-line-height-heading-2, 60px);
+      letter-spacing: var(--font-letter-spacing-heading-2, 0);
+    }
+
+    .editorial__body-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-medium, 28px);
+      width: 100%;
+    }
+
+    .editorial__body {
+      color: var(--color-text-secondary, #4A4A4A);
+      font-family: var(--font-family-body-medium, 'Inter'), system-ui, sans-serif;
+      font-size: var(--font-size-body-medium, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--font-line-height-body-medium, 26px);
+      letter-spacing: var(--font-letter-spacing-body-medium, 0.5px);
+    }
+
+    .editorial__link-wrap {
+      padding-top: var(--spacing-xsmall, 8px);
+    }
+
+    .editorial__link {
+      display: inline-flex;
+      align-items: center;
+      overflow: hidden;
+      color: var(--color-text-primary, #121212);
+      text-overflow: ellipsis;
+      font-family: var(--font-family-link-medium, 'Engravers Gothic'), 'Arial Narrow', sans-serif;
+      font-size: var(--font-size-link-medium, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--font-line-height-link-medium, 26px);
+      letter-spacing: var(--font-letter-spacing-link-medium, 1.25px);
+      text-transform: uppercase;
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-text-tertiary, #616161);
+      padding-bottom: 2px;
+      transition: border-color 0.25s ease;
+    }
+
+    .editorial__link:hover { border-color: var(--color-text-primary, #121212); }
+
+    /* ─── PRESENTS CAROUSEL ─────────────────────────────────── */
+    .s-presents {
+      background: #fff;
+      padding: 80px 0 0;
+    }
+
+    .presents__inner {
+      width: 1200px;
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .presents__header {
+      margin-bottom: 40px;
+    }
+
+    .presents__heading {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-heading-2, 'Canela'), Georgia, serif;
+      font-size: var(--font-size-heading-2, 44px);
+      font-style: normal;
+      font-weight: var(--font-weight-heading-2, 300);
+      line-height: var(--font-line-height-heading-2, 60px);
+      letter-spacing: var(--font-letter-spacing-heading-2, 0);
+    }
+
+    .presents__track-wrap {
+      /* clips at presents__inner right edge */
+    }
+
+    .presents__track {
+      display: flex;
+      gap: 40px;
+      transition: transform 0.55s var(--ease-lux);
+      width: max-content;
+    }
+
+    .presents__card {
+      position: relative;
+      flex: 0 0 392px;
+      width: 392px;
+      height: 489.47px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .presents__card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .presents__card-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0,59,73,0.1) 0%, rgba(0,59,73,0.1) 100%),
+        linear-gradient(180deg,
+          rgba(18,18,18,0) 63.19%,
+          rgba(18,18,18,0.038) 66.87%,
+          rgba(18,18,18,0.113) 70.31%,
+          rgba(18,18,18,0.188) 73.15%,
+          rgba(18,18,18,0.565) 81.59%,
+          rgba(18,18,18,0.675) 87.29%,
+          rgba(18,18,18,0.75) 94.48%);
+      transition: opacity 0.3s var(--ease-lux);
+    }
+
+    .presents__card-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      padding: 40px 16px 28px 28px;
+      transition: opacity 0.3s var(--ease-lux);
+    }
+
+    .presents__card-text { flex: 1; }
+
+    .presents__card-title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 44px;
+      letter-spacing: 0;
+      color: #fff;
+    }
+
+    .presents__card-caption {
+      color: var(--color-text-inverse-secondary, #D6D6D6);
+      font-family: var(--font-family-title-small, 'Engravers Gothic'), 'Arial Narrow', sans-serif;
+      font-size: var(--font-size-title-small, 14px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--font-line-height-title-small, 24px);
+      letter-spacing: var(--font-letter-spacing-title-small, 1px);
+      text-transform: uppercase;
+    }
+
+    .presents__card-btn {
+      width: 48px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      padding: 0 8px;
+    }
+
+    /* Expanded state */
+    .presents__card-expanded {
+      position: absolute;
+      inset: 0;
+      background: #003b49;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s var(--ease-lux);
+    }
+
+    .presents__card.is-expanded .presents__card-expanded {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .presents__card.is-expanded .presents__card-overlay,
+    .presents__card.is-expanded .presents__card-content {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .presents__card-expanded-inner {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      padding: 40px 16px 28px 28px;
+    }
+
+    .presents__card-expanded-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .presents__card-body {
+      color: var(--color-text-inverse-secondary, #D6D6D6);
+      font-family: var(--font-family-body-medium, 'Inter'), system-ui, sans-serif;
+      font-size: var(--font-size-body-medium, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--font-line-height-body-medium, 26px);
+      letter-spacing: var(--font-letter-spacing-body-medium, 0.5px);
+    }
+
+    .presents__card-link-wrap {
+      padding: 10px 0;              /* spacing/desktop/medium top & bottom */
+    }
+
+    .presents__card-cta {
+      font-family: var(--engravers);
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 26px;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      padding-bottom: 2px;
+      display: inline-block;
+      align-self: flex-start;
+    }
+
+    /* Empty/teal card */
+    .presents__card--empty {
+      background: #003b49;
+    }
+
+    /* Controls */
+    .presents__controls {
+      display: flex;
+      justify-content: flex-end;
+      padding: 40px 0 80px;
+    }
+
+    .presents__controls-inner {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 664px;
+    }
+
+    .presents__arrow {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--brand);
+      padding: 4px;
+      flex-shrink: 0;
+      opacity: 0.9;
+      transition: opacity 0.2s ease;
+    }
+
+    .presents__arrow:hover { opacity: 1; }
+    .presents__arrow:disabled { opacity: 0.25; cursor: default; }
+
+    .presents__progress-track {
+      flex: 1;
+      height: 1px;
+      background: rgba(33,21,81,0.2);
+      position: relative;
+    }
+
+    .presents__progress-fill {
+      height: 2px;
+      background: var(--brand);
+      position: absolute;
+      top: -0.5px;
+      left: 0;
+      transition: width 0.4s var(--ease-lux);
+    }
+
+    /* ─── TWO-COLUMN ────────────────────────────────────────── */
+    .s-two-col {
+      padding: 0 var(--gutter);
+      background: var(--color-background-primary, #fff);
+      overflow: hidden;
+    }
+
+    .two-col {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+    }
+
+    .two-col__left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .two-col__right {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .two-col__text {
+      padding: 80px 0 60px;
+    }
+
+    .two-col__h2 {
+      font-family: var(--canela);
+      font-size: clamp(36px, 3.2vw, 48px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+
+    .two-col__body {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-2);
+      max-width: 400px;
+      margin-bottom: 24px;
+    }
+
+    .two-col__link {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33,21,81,0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .two-col__link:hover { border-color: var(--brand); }
+
+    .two-col__img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .two-col__right .two-col__img {
+      margin-top: 0;
+    }
+
+    .two-col__right .two-col__text {
+      padding-top: 48px;
+    }
+
+    /* ─── DESTINATIONS CAROUSEL ─────────────────────────────── */
+    /* ─── DESTINATIONS (hover-expand cards) ─────────────────── */
+    .s-destinations {
+      padding: 200px 0 80px;
+      background: var(--color-background-primary, #fff);
+    }
+
+    .dest-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-lg, 40px);
+      width: 1200px;
+      margin: 0 auto;
+      padding: 0 0 48px;
+    }
+
+    .dest-header h2 {
+      font-family: var(--canela);
+      /* font/size/heading-2 */
+      font-size: 44px;
+      font-weight: 300;
+      /* font/line-height/heading-2 */
+      line-height: 60px;
+      color: var(--brand);
+      flex: 1 0 0;
+      letter-spacing: 0;
+      /* spacing/desktop/xlarge → 60px */
+      padding-right: 60px;
+    }
+
+    .dest-header__body {
+      width: 477px;
+      flex-shrink: 0;
+      padding-top: 8px;
+    }
+
+    .dest-header p {
+      font-family: var(--inter);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 26px;
+      letter-spacing: 0.5px;
+      color: var(--text-2);
+      text-align: left;
+    }
+
+    .dest-header__link {
+      display: inline-block;
+      margin-top: 20px;
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-text-brand, #211551);
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-text-brand, #211551);
+      padding-bottom: 3px;
+      transition: opacity 0.25s ease;
+    }
+
+    .dest-header__link:hover { opacity: 0.6; }
+
+    .dest-track {
+      display: flex;
+      gap: 3px;
+      height: 750px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .dest-card {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      overflow: hidden;
+      cursor: pointer;
+      transition: flex 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dest-track.has-hover .dest-card { flex: 1 1 0; }
+
+    .dest-track.has-hover .dest-card.is-hovered {
+      flex: 0 0 1066px;
+      max-width: 1066px;
+    }
+
+    .dest-card .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left center;
+    }
+
+    .dest-card .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 35%, rgba(6,5,15,0.38) 62%, rgba(6,5,15,0.80) 100%);
+      transition: background 0.7s ease;
+    }
+
+    .dest-card.is-hovered .card__overlay {
+      background: linear-gradient(to bottom, transparent 18%, rgba(6,5,15,0.48) 58%, rgba(6,5,15,0.90) 100%);
+    }
+
+    .dest-card .card__body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0 28px 32px;
+      color: #fff;
+      transition: opacity 0.3s ease, padding-bottom 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dest-track.has-hover .dest-card:not(.is-hovered) .card__body { opacity: 0; }
+    .dest-card.is-hovered .card__body { padding: 0 28px 48px; }
+
+    .dest-card .card__title-sm {
+      font-family: var(--canela);
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dest-card .card__details {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 5px;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      white-space: nowrap;
+    }
+
+    .dest-card .dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      flex-shrink: 0;
+    }
+
+    .dest-card .card__reveal {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition:
+        grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.18s,
+        opacity            0.3s ease 0.25s;
+    }
+
+    .dest-card.is-hovered .card__reveal {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .dest-card .card__reveal-inner { overflow: hidden; }
+
+    .dest-card .card__desc {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.7);
+      margin-top: 12px;
+      max-width: 360px;
+    }
+
+    .dest-card .card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      padding-bottom: 3px;
+      transition: gap 0.25s ease, border-color 0.25s ease;
+    }
+
+    .dest-card .card__cta:hover {
+      gap: 14px;
+      border-color: rgba(255,255,255,0.9);
+    }
+
+    /* ─── NEWEST DESTINATION ────────────────────────────────── */
+    .s-newest {
+      background: #fff;
+      padding: 80px 0;
+    }
+
+    .newest__inner {
+      width: 1200px;
+      height: 773.41px;
+      margin: 0 auto;
+      background: #F3F7F5;           /* color/background/accent-primary */
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      padding: 80px;
+      gap: 80px;
+      box-sizing: border-box;
+    }
+
+    .newest__left {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      flex-shrink: 0;
+    }
+
+    .newest__img-wrap {
+      width: 440px;
+      height: 549.41px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .newest__img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .newest__nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .newest__arrow {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--brand);
+      padding: 4px;
+      flex-shrink: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .newest__arrow:hover { opacity: 0.7; }
+
+    .newest__progress-track {
+      flex: 1;
+      height: 1px;
+      background: rgba(33,21,81,0.2);
+      position: relative;
+      width: 200px;
+    }
+
+    .newest__progress-fill {
+      height: 2px;
+      background: var(--brand);
+      position: absolute;
+      top: -0.5px;
+      left: 0;
+      width: 33%;
+    }
+
+    .newest__right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 28px;
+    }
+
+    .newest__h1 {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-heading-2, 'Canela'), Georgia, serif;
+      font-size: var(--font-size-heading-2, 44px);
+      font-style: normal;
+      font-weight: var(--font-weight-heading-2, 300);
+      line-height: var(--font-line-height-heading-2, 60px);
+      letter-spacing: var(--font-letter-spacing-heading-2, 0);
+    }
+
+    .newest__location {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-title-small, 'Engravers Gothic'), 'Arial Narrow', sans-serif;
+      font-size: var(--font-size-title-small, 14px);
+      font-weight: 400;
+      line-height: var(--font-line-height-title-small, 24px);
+      letter-spacing: var(--font-letter-spacing-title-small, 1px);
+      text-transform: uppercase;
+    }
+
+    .newest__body {
+      color: var(--color-text-secondary, #4A4A4A);
+      font-family: var(--font-family-body-medium, 'Inter'), system-ui, sans-serif;
+      font-size: var(--font-size-body-medium, 16px);
+      font-weight: 400;
+      line-height: var(--font-line-height-body-medium, 26px);
+      letter-spacing: var(--font-letter-spacing-body-medium, 0.5px);
+    }
+
+    .newest__btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 200px;
+      padding: 16px 24px;
+      border: 1px solid var(--color-text-brand, #211551);
+      background: none;
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-title-small, 'Engravers Gothic'), 'Arial Narrow', sans-serif;
+      font-size: var(--font-size-title-small, 14px);
+      font-weight: 400;
+      letter-spacing: var(--font-letter-spacing-title-small, 1px);
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .newest__btn:hover {
+      background: var(--color-text-brand, #211551);
+      color: #fff;
+    }
+
+    /* ─── EVENTS ────────────────────────────────────────────── */
+    .s-events {
+      background: #fff;
+      padding: 120px 0;
+    }
+
+    .events-layout {
+      display: grid;
+      grid-template-columns: 720px 1fr;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .events-image-panel {
+      position: relative;
+      height: 650px;
+      overflow: hidden;
+      background: #d6cfc6;
+    }
+
+    .event-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 1.4s ease, transform 2.8s var(--ease-out);
+    }
+
+    .event-img.is-active { opacity: 1; transform: scale(1); }
+    .event-img.is-leaving { opacity: 0; transform: scale(1); transition: opacity 1s ease; }
+
+    .events-content {
+      display: flex;
+      flex-direction: column;
+      padding: 48px 120px 48px 64px;
+      height: 650px;
+      overflow: hidden;
+    }
+
+    .events-section-h2 {
+      font-family: var(--canela);
+      font-size: 44px;
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .events-spacer { flex: 1; }
+
+    .accordion { display: flex; flex-direction: column; }
+
+    .acc-item { border-top: 1px solid var(--border); }
+    .acc-item:first-child { border-top: none; }
+
+    .acc-trigger {
+      width: 100%;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .acc-title-group { display: flex; flex-direction: column; gap: 4px; }
+
+    .acc-title {
+      font-family: var(--canela);
+      font-size: 34px;
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+    }
+
+    .acc-subtitle {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .acc-plus {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      color: var(--brand);
+      transition: opacity 0.5s ease;
+    }
+
+    .acc-item.is-active .acc-plus { opacity: 0; pointer-events: none; }
+
+    .acc-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 1.1s var(--ease-out); }
+    .acc-item.is-active .acc-body { grid-template-rows: 1fr; }
+    .acc-body-inner { overflow: hidden; }
+
+    .acc-content {
+      padding-bottom: 28px;
+      opacity: 0;
+      transition: opacity 0.72s ease 0.34s;
+    }
+
+    .acc-item.is-active .acc-content { opacity: 1; }
+    .acc-item.is-closing .acc-content { opacity: 0; transition: opacity 0.3s ease 0s; }
+
+    .acc-desc {
+      font-family: var(--inter);
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--text-2);
+      max-width: 460px;
+      margin-bottom: 20px;
+    }
+
+    .acc-cta {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(33,21,81,0.4);
+      padding-bottom: 3px;
+      transition: border-color 0.25s ease;
+    }
+
+    .acc-cta:hover { border-color: var(--brand); }
+
+    /* ─── WHAT MAKES EACH STAY UNIQUE ───────────────────────── */
+    .s-unique {
+      background: #fff;
+      padding: 52px 0;
+    }
+
+    .unique__inner {
+      width: 1200px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .unique__h2 {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-heading-2, 'Canela'), Georgia, serif;
+      font-size: var(--font-size-heading-2, 44px);
+      font-style: normal;
+      font-weight: var(--font-weight-heading-2, 300);
+      line-height: var(--font-line-height-heading-2, 60px);
+      letter-spacing: var(--font-letter-spacing-heading-2, 0);
+    }
+
+    .unique__grid {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    .unique__card {
+      flex: 1 0 0;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .unique__card-img-wrap {
+      aspect-ratio: 370 / 277.51;
+      overflow: hidden;
+      width: 100%;
+      position: relative;
+    }
+
+    .unique__card-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .unique__card-body-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-top: 28px;
+    }
+
+    .unique__card-title {
+      color: var(--color-text-brand, #211551);
+      font-family: var(--font-family-heading-2, 'Canela'), Georgia, serif;
+      font-size: 24px;
+      font-weight: 300;
+      line-height: 32px;
+      letter-spacing: 0;
+    }
+
+    .unique__card-body {
+      color: var(--color-text-secondary, #4A4A4A);
+      font-family: var(--font-family-body-medium, 'Inter'), system-ui, sans-serif;
+      font-size: var(--font-size-body-medium, 16px);
+      font-weight: 400;
+      line-height: var(--font-line-height-body-medium, 26px);
+      letter-spacing: var(--font-letter-spacing-body-medium, 0.5px);
+    }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    .s-footer {
+      background: var(--bg-footer);
+    }
+
+    .footer-breadcrumb {
+      background: #F0EEE8;
+      padding: 8px 32px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-breadcrumb a {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: #666;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-breadcrumb svg { width: 14px; height: 14px; stroke: #666; fill: none; stroke-width: 1.5; }
+
+    .footer-main {
+      padding: 48px var(--gutter) 40px;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 40px;
+    }
+
+    .footer-logo {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .footer-logo-word {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 4px;
+    }
+
+    .footer-logo-sub {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--engravers);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .footer-social {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .footer-social-label {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .footer-social-icons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-social-icons a {
+      color: #fff;
+      text-decoration: none;
+      font-family: var(--inter);
+      font-size: 18px;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+
+    .footer-social-icons a:hover { opacity: 1; }
+
+    .footer-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 40px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 32px;
+    }
+
+    .footer-col-title {
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .footer-col ul a {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-col ul a:hover { color: #fff; }
+
+    .footer-col-icon-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .footer-col-icon-item svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.5); fill: none; stroke-width: 1.5; }
+
+    .footer-apps { display: flex; flex-direction: column; gap: 10px; }
+
+    .footer-app-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      padding: 8px 14px;
+      text-decoration: none;
+      width: 148px;
+    }
+
+    .footer-app-badge svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+
+    .footer-app-badge-text { display: flex; flex-direction: column; }
+    .footer-app-badge-sub { font-family: var(--inter); font-size: 9px; font-weight: 300; color: rgba(255,255,255,0.7); letter-spacing: 0.3px; }
+    .footer-app-badge-name { font-family: var(--inter); font-size: 13px; font-weight: 400; color: #fff; }
+
+    .footer-app-note {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.45);
+      margin-top: 4px;
+    }
+
+    .footer-bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 24px;
+    }
+
+    .footer-rewards {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-rewards-logo {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 12px;
+    }
+
+    .footer-best-price {
+      color: rgba(255,255,255,0.7);
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .footer-legal-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .footer-legal-links a {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-legal-links a:hover { color: rgba(255,255,255,0.85); }
+
+    .footer-legal-note {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      max-width: 800px;
+    }
+
+    .footer-copyright {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+  1. HERO
+═══════════════════════════════════════════════ -->
+<section class="s-hero">
+  <div class="hero__bg">
+    <video autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback>
+      <source src="../_assets/_imgs/regent-hero-video-final.mov" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero__gradient"></div>
+  <div class="hero__overlay"></div>
+
+  <nav class="nav">
+    <div class="nav__top">
+      <div class="nav__side">
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>English (US)</span>
+        </a>
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+          <span>1 888 123 4567</span>
+        </a>
+      </div>
+
+      <div class="nav__logo">
+        <svg preserveAspectRatio="xMidYMid meet" overflow="visible" viewBox="0 0 103.394 20.082" fill="none" xmlns="http://www.w3.org/2000/svg" style="--fill-0: white">
+          <path d="M45.3623 0C47.3152 0.0168337 49.2486 0.395144 51.0645 1.11621L51.5674 5.4668H51.2842C50.4223 2.70558 47.9187 0.614258 45.3594 0.614258C40.4933 0.614367 38.6572 5.18819 38.6572 9.7627C38.6573 14.3371 40.2149 19.4677 45.3594 19.4678C47.279 19.4678 48.5301 19.1334 49.4482 18.7432V12.6631C49.4482 11.0707 48.0577 10.8477 46.9727 10.8477V10.3174H52.2285L52.2314 19.8047H51.7285C51.645 19.47 51.3108 19.2754 50.8936 19.2754C49.896 19.2754 47.81 20.082 45.3623 20.082C39.3047 20.0819 35.6847 15.5361 35.6846 9.7627C35.6846 4.26847 39.5781 0.000128684 45.3623 0ZM85.4629 15.0859H85.4902V4.85059C85.4901 1.86557 83.433 1.05254 83.0156 0.75V0.276367H102.625L103.394 4.96191H103.092C102.841 4.34875 101.423 0.889648 98.3359 0.889648H95.8887V16.8965C95.8888 18.7649 97.9467 19.3222 98.3633 19.3223V19.7969H90.6318V19.3223C91.0492 19.3223 93.1083 18.7651 93.1084 16.8965V0.886719H90.3262C87.3176 0.886853 86.1328 3.38222 86.1025 4.85059V20.0791H85.6299L73.8096 4.4873H73.7549V15.2256C73.7551 18.2104 75.8122 19.0236 76.2295 19.3262V19.7998H70.667V19.3262C71.0843 19.0196 73.1424 18.2104 73.1426 15.2256V5.12891C73.1424 2.28407 70.5275 0.861941 70.083 0.75V0.276367H74.2275L85.4629 15.0859ZM8.59277 0.276367C12.0692 0.276367 15.1572 1.86556 15.1572 5.74219C15.1572 8.94821 12.4031 10.3724 10.0117 10.7637L15.6025 16.7598C18.0029 19.3739 19.2287 19.3457 19.9932 19.3281C20.0524 19.3268 20.1091 19.3262 20.1631 19.3262C21.4149 19.2706 22.082 18.4886 22.082 16.6201V3.45605C22.082 1.5873 20.0238 0.75 19.6064 0.75V0.276367H32.3682L33.1465 4.96191H32.8447C32.5943 4.34875 31.1761 0.889648 28.0889 0.889648H24.8633V9.45215H26.8379C29.4734 9.45215 29.7349 8.53633 30.0684 7.36523C30.1252 7.16556 30.1836 6.95829 30.2568 6.74707H30.5586V12.7715H30.2568C30.1835 12.5599 30.1253 12.3523 30.0684 12.1523C29.7352 10.9815 29.4738 10.0654 26.8379 10.0654H24.8633V19.1865H29.7578C32.8446 19.1863 34.2631 15.7279 34.5137 15.1143L34.8203 15.1113L34.04 19.7969H20.1631C19.7963 19.7906 19.4458 19.7884 19.1104 19.7861C16.4702 19.7684 14.7463 19.7562 13.043 17.8994C11.9481 16.7034 11.0592 15.7055 10.3184 14.874C7.69081 11.9251 6.92571 11.067 5.4502 10.8711H5.25684V16.6201C5.25696 18.4887 7.31412 19.3262 7.73145 19.3262V19.7998H0V19.3262C0.417323 19.3262 2.47448 18.4887 2.47461 16.6201V3.45605C2.47461 1.5873 0.417335 0.75 0 0.75V0.276367H8.59277ZM68.1357 4.96191H67.834C67.5836 4.34875 66.1654 0.889648 63.0781 0.889648H59.8525V9.45215H61.8262C64.9112 9.45215 64.7425 8.19713 65.2451 6.74707H65.5469V12.7715H65.2451C64.7424 11.3213 64.9133 10.0654 61.8262 10.0654H59.8516V19.1865H64.7461C67.8329 19.1862 69.2505 15.7276 69.501 15.1143H69.8076L69.0283 19.7998H54.5947V19.3262C55.5681 19.3262 57.0693 18.4888 57.0693 16.6201V3.45605C57.0693 1.5873 55.0121 0.75 54.5947 0.75V0.276367H67.3574L68.1357 4.96191ZM100.846 18.8389H100.248V19.7998H99.9648L99.9688 18.8389H99.3652V18.6367H100.846V18.8389ZM101.812 19.2666L102.361 18.6367H102.606V19.7998H102.325V19.0469L101.814 19.627L101.302 19.0469V19.7998H101.021V18.6367H101.269L101.812 19.2666ZM5.25684 10.2617H8.59375C10.7115 10.2616 12.3203 8.36487 12.3203 5.65918C12.3201 2.9537 10.7053 0.889832 8.59375 0.889648H5.25684V10.2617Z" fill="var(--fill-0, black)"/>
+        </svg>
+      </div>
+
+      <div class="nav__side nav__side--right">
+        <a class="nav__btn" href="#">
+          <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.25 15V9C2.25 8.60217 2.40804 8.22064 2.68934 7.93934C2.97064 7.65804 3.35218 7.5 3.75 7.5M3.75 7.5H14.25M3.75 7.5V4.5C3.75 4.10218 3.90804 3.72064 4.18934 3.43934C4.47064 3.15804 4.85218 3 5.25 3H12.75C13.1478 3 13.5294 3.15804 13.8107 3.43934C14.092 3.72064 14.25 4.10218 14.25 4.5V7.5M14.25 7.5C14.6478 7.5 15.0294 7.65804 15.3107 7.93934C15.592 8.22064 15.75 8.60217 15.75 9V15M2.25 13.5H15.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>My stays</span>
+        </a>
+        <a class="nav__btn" href="#"><span>Join for free</span></a>
+        <a class="nav__btn" href="#">
+          <svg class="icon-fill" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M15.333 0C16.8058 0 18 1.19423 18 2.66699V15.333C18 16.8058 16.8058 18 15.333 18H12.7129L12.7012 0.134766H11.9531V0.268555C11.9531 2.7874 11.7244 5.16664 10.667 6.84082L10.6631 2.54688H9.91504V2.68066C9.91486 3.72588 9.33201 5.38347 8.4502 6.79785C7.95858 7.58619 7.44155 8.20119 6.93652 8.61719C6.42999 9.03438 5.94569 9.24316 5.51758 9.24316H5.38477V9.99023H5.51758C7.45514 9.99023 8.87808 9.50624 9.9209 8.72852L9.92773 16.2832H10.6748L10.668 8.05566C11.2477 7.42895 11.6613 6.6939 11.957 5.91797L11.9658 18H2.66699C1.19423 18 0 16.8058 0 15.333V2.66699C0 1.19423 1.19423 0 2.66699 0H15.333ZM9.91992 7.76172C9.33419 8.32713 8.58056 8.75604 7.61133 9.00293C8.54577 8.14496 9.36607 6.84144 9.91895 5.56934L9.91992 7.76172Z"/></svg>
+          <span>Sign In</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="nav__sub">
+      <a class="nav__link" href="#">Hotel &amp; Resorts</a>
+      <a class="nav__link" href="#">Residences</a>
+      <a class="nav__link" href="#">Regent Spa &amp; Wellness</a>
+      <a class="nav__link" href="#">Dining</a>
+      <a class="nav__link" href="#">Meetings &amp; Events</a>
+      <a class="nav__link" href="#">Experience</a>
+      <a class="nav__link" href="#">Offers</a>
+    </div>
+  </nav>
+
+  <div class="hero__content">
+    <h1 class="hero__h1">Regent Hotels &amp; Resorts</h1>
+  </div>
+
+  <!-- Pause / play control — lower left -->
+  <div class="hero__controls">
+    <button class="hero__pause-btn" id="videoPauseBtn" aria-label="Pause video">
+      <!-- pause icon (default state) -->
+      <svg id="iconPause" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <path d="M16.6667 25V15M23.3333 25V15M36.6667 20C36.6667 29.2047 29.2047 36.6666 20 36.6666C10.7953 36.6666 3.33334 29.2047 3.33334 20C3.33334 10.7952 10.7953 3.33331 20 3.33331C29.2047 3.33331 36.6667 10.7952 36.6667 20Z" stroke="#F7F7F7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <!-- play icon (paused state) -->
+      <svg id="iconPlay" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none" style="display:none">
+        <path d="M15 12.5L28.3333 20L15 27.5V12.5Z M36.6667 20C36.6667 29.2047 29.2047 36.6666 20 36.6666C10.7953 36.6666 3.33334 29.2047 3.33334 20C3.33334 10.7952 10.7953 3.33331 20 3.33331C29.2047 3.33331 36.6667 10.7952 36.6667 20Z" stroke="#F7F7F7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+</section>
+
+<div class="editorial-bg">
+
+<!-- ═══════════════════════════════════════════════
+  BOOKING BAR — straddles hero / editorial boundary, sticks on scroll
+═══════════════════════════════════════════════ -->
+<div class="booking-sticky-outer">
+
+  <!-- Stuck state: full nav header matching Figma 18376:33503 -->
+  <div class="sticky-nav">
+    <a class="sticky-nav__logo" href="#">
+      <svg preserveAspectRatio="xMidYMid meet" overflow="visible" viewBox="0 0 103.394 20.082" fill="none" xmlns="http://www.w3.org/2000/svg" style="--fill-0: #211551">
+        <path d="M45.3623 0C47.3152 0.0168337 49.2486 0.395144 51.0645 1.11621L51.5674 5.4668H51.2842C50.4223 2.70558 47.9187 0.614258 45.3594 0.614258C40.4933 0.614367 38.6572 5.18819 38.6572 9.7627C38.6573 14.3371 40.2149 19.4677 45.3594 19.4678C47.279 19.4678 48.5301 19.1334 49.4482 18.7432V12.6631C49.4482 11.0707 48.0577 10.8477 46.9727 10.8477V10.3174H52.2285L52.2314 19.8047H51.7285C51.645 19.47 51.3108 19.2754 50.8936 19.2754C49.896 19.2754 47.81 20.082 45.3623 20.082C39.3047 20.0819 35.6847 15.5361 35.6846 9.7627C35.6846 4.26847 39.5781 0.000128684 45.3623 0ZM85.4629 15.0859H85.4902V4.85059C85.4901 1.86557 83.433 1.05254 83.0156 0.75V0.276367H102.625L103.394 4.96191H103.092C102.841 4.34875 101.423 0.889648 98.3359 0.889648H95.8887V16.8965C95.8888 18.7649 97.9467 19.3222 98.3633 19.3223V19.7969H90.6318V19.3223C91.0492 19.3223 93.1083 18.7651 93.1084 16.8965V0.886719H90.3262C87.3176 0.886853 86.1328 3.38222 86.1025 4.85059V20.0791H85.6299L73.8096 4.4873H73.7549V15.2256C73.7551 18.2104 75.8122 19.0236 76.2295 19.3262V19.7998H70.667V19.3262C71.0843 19.0196 73.1424 18.2104 73.1426 15.2256V5.12891C73.1424 2.28407 70.5275 0.861941 70.083 0.75V0.276367H74.2275L85.4629 15.0859ZM8.59277 0.276367C12.0692 0.276367 15.1572 1.86556 15.1572 5.74219C15.1572 8.94821 12.4031 10.3724 10.0117 10.7637L15.6025 16.7598C18.0029 19.3739 19.2287 19.3457 19.9932 19.3281C20.0524 19.3268 20.1091 19.3262 20.1631 19.3262C21.4149 19.2706 22.082 18.4886 22.082 16.6201V3.45605C22.082 1.5873 20.0238 0.75 19.6064 0.75V0.276367H32.3682L33.1465 4.96191H32.8447C32.5943 4.34875 31.1761 0.889648 28.0889 0.889648H24.8633V9.45215H26.8379C29.4734 9.45215 29.7349 8.53633 30.0684 7.36523C30.1252 7.16556 30.1836 6.95829 30.2568 6.74707H30.5586V12.7715H30.2568C30.1835 12.5599 30.1253 12.3523 30.0684 12.1523C29.7352 10.9815 29.4738 10.0654 26.8379 10.0654H24.8633V19.1865H29.7578C32.8446 19.1863 34.2631 15.7279 34.5137 15.1143L34.8203 15.1113L34.04 19.7969H20.1631C19.7963 19.7906 19.4458 19.7884 19.1104 19.7861C16.4702 19.7684 14.7463 19.7562 13.043 17.8994C11.9481 16.7034 11.0592 15.7055 10.3184 14.874C7.69081 11.9251 6.92571 11.067 5.4502 10.8711H5.25684V16.6201C5.25696 18.4887 7.31412 19.3262 7.73145 19.3262V19.7998H0V19.3262C0.417323 19.3262 2.47448 18.4887 2.47461 16.6201V3.45605C2.47461 1.5873 0.417335 0.75 0 0.75V0.276367H8.59277ZM68.1357 4.96191H67.834C67.5836 4.34875 66.1654 0.889648 63.0781 0.889648H59.8525V9.45215H61.8262C64.9112 9.45215 64.7425 8.19713 65.2451 6.74707H65.5469V12.7715H65.2451C64.7424 11.3213 64.9133 10.0654 61.8262 10.0654H59.8516V19.1865H64.7461C67.8329 19.1862 69.2505 15.7276 69.501 15.1143H69.8076L69.0283 19.7998H54.5947V19.3262C55.5681 19.3262 57.0693 18.4888 57.0693 16.6201V3.45605C57.0693 1.5873 55.0121 0.75 54.5947 0.75V0.276367H67.3574L68.1357 4.96191ZM100.846 18.8389H100.248V19.7998H99.9648L99.9688 18.8389H99.3652V18.6367H100.846V18.8389ZM101.812 19.2666L102.361 18.6367H102.606V19.7998H102.325V19.0469L101.814 19.627L101.302 19.0469V19.7998H101.021V18.6367H101.269L101.812 19.2666ZM5.25684 10.2617H8.59375C10.7115 10.2616 12.3203 8.36487 12.3203 5.65918C12.3201 2.9537 10.7053 0.889832 8.59375 0.889648H5.25684V10.2617Z" fill="var(--fill-0, black)"/>
+      </svg>
+    </a>
+    <nav class="sticky-nav__links">
+      <a class="sticky-nav__link" href="#">Hotel &amp; Resorts</a>
+      <a class="sticky-nav__link" href="#">Residences</a>
+      <a class="sticky-nav__link" href="#">Regent Spa &amp; Wellness</a>
+      <a class="sticky-nav__link" href="#">Dining</a>
+      <a class="sticky-nav__link" href="#">Meetings &amp; Events</a>
+      <a class="sticky-nav__link" href="#">Experience</a>
+      <a class="sticky-nav__link" href="#">Offers</a>
+    </nav>
+    <a class="sticky-nav__cta" href="#">Book Now</a>
+  </div>
+
+<div class="s-booking">
+  <div class="booking__inner">
+    <div class="booking__field">
+      <span class="booking__label">1 Night</span>
+      <div class="booking__value">
+        <span>08/12/25 – 08/13/25</span>
+        <!-- lucide/calendar — trailing icon -->
+        <svg class="booking__chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+    </div>
+
+    <div class="booking__divider"></div>
+
+    <div class="booking__field">
+      <span class="booking__label">Rooms &amp; Guests</span>
+      <div class="booking__value">
+        1 room, 1 guest
+        <!-- lucide/chevron-down -->
+        <svg class="booking__chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+
+    <div class="booking__divider"></div>
+
+    <div class="booking__field">
+      <span class="booking__label">Special Rates</span>
+      <div class="booking__value">
+        Best Available
+        <!-- lucide/chevron-down -->
+        <svg class="booking__chevron" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </div>
+
+    <button class="booking__cta">Reserve</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  2. EDITORIAL
+═══════════════════════════════════════════════ -->
+<section class="s-editorial">
+  <div class="editorial__container">
+    <div class="editorial__img-wrap">
+      <img src="https://www.figma.com/api/mcp/asset/b7cef1a4-1889-45b6-b66f-4f018a05bdfb" alt="Regent hotel guest on balcony overlooking the ocean">
+    </div>
+    <div class="editorial__inner">
+      <h2 class="editorial__h2">Hand-selected hotels &amp; resorts in the world's best locales</h2>
+      <div class="editorial__body-group">
+        <p class="editorial__body">Revel in a world where design inspires and culinary journeys excite. Our intuitive hospitality takes care of every detail, allowing you the freedom to uncover unexpected moments and uplifting experiences.</p>
+        <div class="editorial__link-wrap">
+          <a href="#" class="editorial__link">Step into the story</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /editorial-bg -->
+
+<!-- ═══════════════════════════════════════════════
+  3. DESTINATION CAROUSEL
+═══════════════════════════════════════════════ -->
+<section class="s-destinations">
+  <div class="dest-header">
+    <h2>Awakened senses, fresh perspectives</h2>
+    <div class="dest-header__body">
+      <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+      <a class="dest-header__link" href="#">Destinations</a>
+    </div>
+  </div>
+
+  <div class="dest-track" id="destTrack">
+
+    <div class="dest-card">
+      <img class="card__img" src="../_assets/_imgs/Orla-Exterior-Patio-11880x664.webp" alt="Santa Monica Beach">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Santa Monica Beach</div>
+        <div class="card__details"><span>Santa Monica Beach</span><span class="dot"></span><span>USA</span></div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">Sun-drenched terraces and Pacific horizons — where California's effortless energy meets Regent's refined touch.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-card">
+      <img class="card__img" src="../_assets/_imgs/regent-bali-canggu-main-pool-golden-hour.avif" alt="Bali, Indonesia">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Bali, Indonesia</div>
+        <div class="card__details"><span>Canggu Beach</span><span class="dot"></span><span>Asia Pacific</span></div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">Ancient temples, terraced rice fields, and an ocean that invites you to stay forever.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-card">
+      <img class="card__img" src="../_assets/_imgs/regent-bali-orient-pearl-towerview.jpeg" alt="Shanghai on the Bund">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Shanghai on the Bund</div>
+        <div class="card__details"><span>Shanghai on the Bund</span><span class="dot"></span><span>China</span></div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">The Bund's iconic skyline, reimagined through Regent's lens — where old Shanghai grandeur meets contemporary luxury.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-card">
+      <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Cannes, France">
+      <div class="card__overlay"></div>
+      <div class="card__body">
+        <div class="card__title-sm">Cannes, France</div>
+        <div class="card__details"><span>Cannes</span><span class="dot"></span><span>French Riviera</span></div>
+        <div class="card__reveal">
+          <div class="card__reveal-inner">
+            <p class="card__desc">Sunlit promenades, private beaches, and the enduring glamour of the Côte d'Azur — rediscovered at your own pace.</p>
+            <a href="#" class="card__cta">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  4. REGENT PRESENTS — Card Carousel
+═══════════════════════════════════════════════ -->
+<section class="s-presents">
+  <div class="presents__inner">
+    <div class="presents__header">
+      <h2 class="presents__heading">An invitation to the extraordinary</h2>
+    </div>
+
+  <div class="presents__track-wrap">
+    <div class="presents__track" id="presentsTrack">
+
+      <!-- Card 1: Carlton Cannes -->
+      <div class="presents__card">
+        <img class="presents__card-img" src="https://www.figma.com/api/mcp/asset/f25bfc6f-371b-4070-b42b-1eece0ca99dc" alt="Carlton Cannes">
+        <div class="presents__card-overlay"></div>
+        <div class="presents__card-content">
+          <div class="presents__card-text">
+            <div class="presents__card-title">Carlton Cannes</div>
+            <div class="presents__card-caption">Cannes · French Riviera</div>
+          </div>
+          <button class="presents__card-btn" aria-label="Expand">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/>
+            </svg>
+          </button>
+        </div>
+        <div class="presents__card-expanded">
+          <div class="presents__card-expanded-inner">
+            <div class="presents__card-expanded-text">
+              <div>
+                <div class="presents__card-title">Carlton Cannes</div>
+                <div class="presents__card-caption">Cannes · French Riviera</div>
+              </div>
+              <p class="presents__card-body">Perched on La Croisette, the Carlton Cannes invites you into an era of timeless glamour — where the Côte d'Azur's legendary light meets Regent's intuitive hospitality.</p>
+              <div class="presents__card-link-wrap"><a href="#" class="presents__card-cta">Discover More</a></div>
+            </div>
+            <button class="presents__card-btn" aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <line x1="1" y1="1" x2="15" y2="15"/><line x1="15" y1="1" x2="1" y2="15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Phu Quoc -->
+      <div class="presents__card">
+        <img class="presents__card-img" src="https://www.figma.com/api/mcp/asset/96e177d0-933c-4f5b-b2fb-e9781937a956" alt="Phu Quoc">
+        <div class="presents__card-overlay"></div>
+        <div class="presents__card-content">
+          <div class="presents__card-text">
+            <div class="presents__card-title">Phu Quoc</div>
+            <div class="presents__card-caption">Dec 31 – Jan 1, 2026</div>
+          </div>
+          <button class="presents__card-btn" aria-label="Expand">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/>
+            </svg>
+          </button>
+        </div>
+        <div class="presents__card-expanded">
+          <div class="presents__card-expanded-inner">
+            <div class="presents__card-expanded-text">
+              <div>
+                <div class="presents__card-title">Phu Quoc</div>
+                <div class="presents__card-caption">Dec 31 – Jan 1, 2026</div>
+              </div>
+              <p class="presents__card-body">Take your seat at A Spectrum of Contrasts for an exclusive celebration of Vietnamese culinary artistry. Immerse in light and shadow, flavor and sensation, movement and stillness, where every instant transforms into an unforgettable dining experience.</p>
+              <div class="presents__card-link-wrap"><a href="#" class="presents__card-cta">Discover More</a></div>
+            </div>
+            <button class="presents__card-btn" aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <line x1="1" y1="1" x2="15" y2="15"/><line x1="15" y1="1" x2="1" y2="15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Phu Quoc expanded -->
+      <div class="presents__card presents__card--empty is-expanded">
+        <img class="presents__card-img" src="https://www.figma.com/api/mcp/asset/4e80f57a-8863-463c-a98e-fb790db79153" alt="Phu Quoc">
+        <div class="presents__card-overlay"></div>
+        <div class="presents__card-content">
+          <div class="presents__card-text">
+            <div class="presents__card-title">Phu Quoc</div>
+            <div class="presents__card-caption">Dec 31 – Jan 1, 2026</div>
+          </div>
+          <button class="presents__card-btn" aria-label="Expand">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/>
+            </svg>
+          </button>
+        </div>
+        <div class="presents__card-expanded">
+          <div class="presents__card-expanded-inner">
+            <div class="presents__card-expanded-text">
+              <div>
+                <div class="presents__card-title">Phu Quoc</div>
+                <div class="presents__card-caption">Dec 31 – Jan 1, 2026</div>
+              </div>
+              <p class="presents__card-body">Take your seat at A Spectrum of Contrasts for an exclusive celebration of Vietnamese culinary artistry. Immerse in light and shadow, flavor and sensation, movement and stillness, where every instant transforms into an unforgettable dining experience.</p>
+              <div class="presents__card-link-wrap"><a href="#" class="presents__card-cta">Discover More</a></div>
+            </div>
+            <button class="presents__card-btn" aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <line x1="1" y1="1" x2="15" y2="15"/><line x1="15" y1="1" x2="1" y2="15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Sweet July Beverage Lounge -->
+      <div class="presents__card">
+        <img class="presents__card-img" src="https://www.figma.com/api/mcp/asset/13b1ab08-6b59-4efa-852f-e44fdfb3a169" alt="Sweet July Beverage Lounge">
+        <div class="presents__card-overlay"></div>
+        <div class="presents__card-content">
+          <div class="presents__card-text">
+            <div class="presents__card-title">Sweet July Beverage Lounge</div>
+            <div class="presents__card-caption">Nov – Dec 2025 · Fri – Sun</div>
+          </div>
+          <button class="presents__card-btn" aria-label="Expand">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/>
+            </svg>
+          </button>
+        </div>
+        <div class="presents__card-expanded">
+          <div class="presents__card-expanded-inner">
+            <div class="presents__card-expanded-text">
+              <div>
+                <div class="presents__card-title">Sweet July Beverage Lounge</div>
+                <div class="presents__card-caption">Nov – Dec 2025 · Fri – Sun</div>
+              </div>
+              <p class="presents__card-body">A seasonal pop-up celebrating craft beverages and artful pairings — intimate, curated, and utterly Regent in spirit.</p>
+              <div class="presents__card-link-wrap"><a href="#" class="presents__card-cta">Discover More</a></div>
+            </div>
+            <button class="presents__card-btn" aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <line x1="1" y1="1" x2="15" y2="15"/><line x1="15" y1="1" x2="1" y2="15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Regent Spa -->
+      <div class="presents__card">
+        <img class="presents__card-img" src="../_assets/_imgs/rg-brand-refresh-offers-lp-offer-2col-tile-phu-quoc-1180x664.jpeg" alt="Regent Spa">
+        <div class="presents__card-overlay"></div>
+        <div class="presents__card-content">
+          <div class="presents__card-text">
+            <div class="presents__card-title">Regent Spa Ritual</div>
+            <div class="presents__card-caption">Ongoing · All properties</div>
+          </div>
+          <button class="presents__card-btn" aria-label="Expand">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="8" y1="1" x2="8" y2="15"/><line x1="1" y1="8" x2="15" y2="8"/>
+            </svg>
+          </button>
+        </div>
+        <div class="presents__card-expanded">
+          <div class="presents__card-expanded-inner">
+            <div class="presents__card-expanded-text">
+              <div>
+                <div class="presents__card-title">Regent Spa Ritual</div>
+                <div class="presents__card-caption">Ongoing · All properties</div>
+              </div>
+              <p class="presents__card-body">A signature wellness journey exclusive to Regent — restorative treatments drawn from local traditions, reimagined for the modern traveller seeking deep renewal.</p>
+              <div class="presents__card-link-wrap"><a href="#" class="presents__card-cta">Discover More</a></div>
+            </div>
+            <button class="presents__card-btn" aria-label="Close">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <line x1="1" y1="1" x2="15" y2="15"/><line x1="15" y1="1" x2="1" y2="15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /presentsTrack -->
+  </div><!-- /track-wrap -->
+
+    <div class="presents__controls">
+      <div class="presents__controls-inner">
+        <button class="presents__arrow" id="presentsPrev" aria-label="Previous">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </button>
+        <div class="presents__progress-track">
+          <div class="presents__progress-fill" id="presentsProgress"></div>
+        </div>
+        <button class="presents__arrow" id="presentsNext" aria-label="Next">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div><!-- /presents__inner -->
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  5. OUR NEWEST DESTINATION
+═══════════════════════════════════════════════ -->
+<section class="s-newest">
+  <div class="newest__inner">
+
+    <!-- Left: image + nav -->
+    <div class="newest__left">
+      <div class="newest__img-wrap">
+        <img class="newest__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Regent Bali Canggu">
+      </div>
+      <div class="newest__nav">
+        <button class="newest__arrow" aria-label="Previous">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </button>
+        <div class="newest__progress-track">
+          <div class="newest__progress-fill"></div>
+        </div>
+        <button class="newest__arrow" aria-label="Next">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: text -->
+    <div class="newest__right">
+      <h2 class="newest__h1">Our Newest Destination</h2>
+      <p class="newest__location">Bali Canggu, Indonesia &nbsp;•&nbsp; Now Open</p>
+      <p class="newest__body">Step through the doorway into Bali's timeless soul where heritage and nature entwine. Here, a symphony of the ocean's rhythmic dance transports you into a tranquil revelry. Refined indulgences beckon you to unwind in one of our oceanside or garden havens.<br><br>That definitive moment is yours to write as you journey through layers of gastronomical flavors, art form and the temple rituals of Bali.</p>
+      <a href="#" class="newest__btn">Explore</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  6. WHAT MAKES EACH STAY TRULY UNIQUE
+═══════════════════════════════════════════════ -->
+<section class="s-unique">
+  <div class="unique__inner">
+
+    <h2 class="unique__h2">What makes each stay truly unique</h2>
+
+    <div class="unique__grid">
+
+      <div class="unique__card">
+        <div class="unique__card-img-wrap">
+          <img class="unique__card-img" src="https://www.figma.com/api/mcp/asset/a38429f2-6b75-4105-b4b4-c0e5bbb1ec63" alt="Personal Havens">
+        </div>
+        <div class="unique__card-body-wrap">
+          <h3 class="unique__card-title">Personal Havens</h3>
+          <p class="unique__card-body">Whether you seek serenity or stimulation, our curated spaces turn suites, poolside cabanas, and breathtaking views into unforgettable experiences.</p>
+        </div>
+      </div>
+
+      <div class="unique__card">
+        <div class="unique__card-img-wrap">
+          <img class="unique__card-img" src="https://www.figma.com/api/mcp/asset/c917fe95-8f68-46aa-9041-dd6392279177" alt="Regent Experience Agent">
+        </div>
+        <div class="unique__card-body-wrap">
+          <h3 class="unique__card-title">Regent Experience Agent</h3>
+          <p class="unique__card-body">From arrival to departure, your personal agent orchestrates every aspect of your stay with effortless precision.</p>
+        </div>
+      </div>
+
+      <div class="unique__card">
+        <div class="unique__card-img-wrap">
+          <img class="unique__card-img" src="https://www.figma.com/api/mcp/asset/7dea0ec3-403d-4b7c-be98-4d10663b1802" alt="With Compliments">
+        </div>
+        <div class="unique__card-body-wrap">
+          <h3 class="unique__card-title">With Compliments</h3>
+          <p class="unique__card-body">It's all in the details. From laundry to garment pressing, and a mini-bar stocked with your favorites, we ensure you want for nothing.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+  7. FOOTER
+═══════════════════════════════════════════════ -->
+<footer class="s-footer">
+  <div class="footer-breadcrumb">
+    <a href="#">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      IHG
+    </a>
+  </div>
+
+  <div class="footer-main">
+    <div class="footer-top">
+      <div class="footer-logo">
+        <span class="footer-logo-word">IHG</span>
+        <span class="footer-logo-sub">Hotels &amp; Resorts</span>
+      </div>
+      <div class="footer-social">
+        <span class="footer-social-label">Follow us on</span>
+        <div class="footer-social-icons">
+          <a href="#" aria-label="Facebook">&#xFB;</a>
+          <a href="#" aria-label="TikTok">&#x54;&#x54;</a>
+          <a href="#" aria-label="YouTube">&#x25B6;</a>
+          <a href="#" aria-label="Instagram">&#x25A1;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-cols">
+      <div class="footer-col">
+        <p class="footer-col-title">Help &amp; Support</p>
+        <ul>
+          <li><a href="#">
+            <span class="footer-col-icon-item">
+              <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+              1 888 123 4567
+            </span>
+          </a></li>
+          <li><a href="#">
+            <span class="footer-col-icon-item">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Chat with us
+            </span>
+          </a></li>
+          <li><a href="#">
+            <span class="footer-col-icon-item">
+              <svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+              Customer care
+            </span>
+          </a></li>
+        </ul>
+        <p class="footer-col-title" style="margin-top:28px;">Resources</p>
+        <ul>
+          <li><a href="#">Feedback</a></li>
+          <li><a href="#">Travel Advisories</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">IHG</p>
+        <ul>
+          <li><a href="#">About IHG Hotels &amp; Resorts</a></li>
+          <li><a href="#">Explore Hotels</a></li>
+          <li><a href="#">About Our Brands</a></li>
+          <li><a href="#">IHG Careers</a></li>
+          <li><a href="#">Hotel Development</a></li>
+          <li><a href="#">IHG One Rewards</a></li>
+          <li><a href="#">IHG Corporate</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">&nbsp;</p>
+        <ul>
+          <li><a href="#">IHG Agent Portal</a></li>
+          <li><a href="#">Travel Professionals</a></li>
+          <li><a href="#">Affiliate Program</a></li>
+          <li><a href="#">IHG Business Rewards</a></li>
+          <li><a href="#">IHG Army Hotels</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Commitment to Clean</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">&nbsp;</p>
+        <div class="footer-apps">
+          <a href="#" class="footer-app-badge">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="footer-app-badge-text">
+              <span class="footer-app-badge-sub">Download on the</span>
+              <span class="footer-app-badge-name">App Store</span>
+            </div>
+          </a>
+          <a href="#" class="footer-app-badge">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.18 23.76c.3.17.64.22.99.12l12.12-6.98-2.54-2.54-10.57 9.4zM.49 2.28A1.5 1.5 0 0 0 0 3.46v17.08c0 .48.18.9.49 1.18l.07.06 9.57-9.57v-.22L.56 2.22l-.07.06zM20.49 10.34l-2.6-1.5-2.85 2.85 2.85 2.85 2.62-1.51c.75-.43.75-1.13-.02-1.69zm-19.31 13.42l10.57-9.4-2.54-2.54-10.57 9.4z" fill="#fff"/></svg>
+            <div class="footer-app-badge-text">
+              <span class="footer-app-badge-sub">Get it on</span>
+              <span class="footer-app-badge-name">Google Play</span>
+            </div>
+          </a>
+          <p class="footer-app-note">Get the IHG® App Today</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="footer-rewards">
+        <span class="footer-rewards-logo">IHG &nbsp;|&nbsp; ONE REWARDS</span>
+      </div>
+      <span class="footer-best-price">Best Price Guarantee</span>
+    </div>
+
+    <div class="footer-legal-links">
+      <a href="#">Terms of Use</a>
+      <a href="#">Privacy &amp; Cookie Center</a>
+      <a href="#">Do Not Sell or Share My Personal Information</a>
+      <a href="#">AdChoices</a>
+      <a href="#">Member Terms &amp; Conditions</a>
+    </div>
+    <p class="footer-legal-note">To ensure that we give you the best experience on our website, we use machine translation for portions of the content featured on this page.</p>
+    <p class="footer-copyright">©2025 IHG. All Rights Reserved. Most hotels are independently owned and operated.</p>
+  </div>
+</footer>
+
+<script>
+
+  // ── Lock s-booking end-state so animation never restarts ─
+  const sBooking = document.querySelector('.s-booking');
+  sBooking.addEventListener('animationend', () => {
+    sBooking.style.opacity   = '1';
+    sBooking.style.transform = 'translateY(0)';
+    sBooking.style.animation = 'none';
+  }, { once: true });
+
+  // ── Booking bar: detect sticky stuck state ───────────────
+  const bookingOuter = document.querySelector('.booking-sticky-outer');
+  let prevStuck = false;
+  window.addEventListener('scroll', () => {
+    const stuck = bookingOuter.getBoundingClientRect().top <= 0;
+    if (stuck === prevStuck) return;
+    prevStuck = stuck;
+    bookingOuter.classList.add('ready');       // enable s-booking transition after first scroll
+    bookingOuter.classList.toggle('is-stuck', stuck);
+  }, { passive: true });
+
+  // ── Hero video pause/play ──────────────────────────────────
+  const heroVideo    = document.querySelector('.hero__bg video');
+  const pauseBtn     = document.getElementById('videoPauseBtn');
+  const iconPause    = document.getElementById('iconPause');
+  const iconPlay     = document.getElementById('iconPlay');
+
+  pauseBtn.addEventListener('click', () => {
+    if (heroVideo.paused) {
+      heroVideo.play();
+      iconPause.style.display = '';
+      iconPlay.style.display  = 'none';
+      pauseBtn.setAttribute('aria-label', 'Pause video');
+    } else {
+      heroVideo.pause();
+      iconPause.style.display = 'none';
+      iconPlay.style.display  = '';
+      pauseBtn.setAttribute('aria-label', 'Play video');
+    }
+  });
+
+  // ── Destinations hover-expand ─────────────────────────────
+  const destTrack = document.getElementById('destTrack');
+  const destCards = destTrack.querySelectorAll('.dest-card');
+
+  destCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      destTrack.classList.add('has-hover');
+      card.classList.add('is-hovered');
+    });
+    card.addEventListener('mouseleave', () => {
+      destTrack.classList.remove('has-hover');
+      card.classList.remove('is-hovered');
+    });
+  });
+
+  // ── Events Accordion ─────────────────────────────────────
+  const accItems  = Array.from(document.querySelectorAll('.acc-item'));
+  const evtImages = Array.from(document.querySelectorAll('.event-img'));
+  let activeIdx   = 0;
+  let switching   = false;
+
+  function switchTo(idx) {
+    if (idx === activeIdx || switching) return;
+    switching = true;
+    const prev = activeIdx;
+    activeIdx  = idx;
+
+    accItems[prev].classList.add('is-closing');
+    requestAnimationFrame(() => {
+      accItems[prev].classList.remove('is-active');
+      accItems[idx].classList.add('is-active');
+      setTimeout(() => accItems[prev].classList.remove('is-closing'), 400);
+    });
+
+    evtImages[prev].classList.remove('is-active');
+    evtImages[prev].classList.add('is-leaving');
+    setTimeout(() => evtImages[prev].classList.remove('is-leaving'), 600);
+    evtImages[idx].classList.add('is-active');
+
+    setTimeout(() => { switching = false; }, 800);
+  }
+
+  accItems.forEach((item, i) => {
+    item.querySelector('.acc-trigger').addEventListener('click', () => switchTo(i));
+  });
+
+  accItems[0].classList.add('is-active');
+  evtImages[0].classList.add('is-active');
+
+  /* ── Regent Presents carousel ──────────────────────────── */
+  (function () {
+    const track      = document.getElementById('presentsTrack');
+    const cards      = Array.from(track.querySelectorAll('.presents__card'));
+    const prevBtn    = document.getElementById('presentsPrev');
+    const nextBtn    = document.getElementById('presentsNext');
+    const progress   = document.getElementById('presentsProgress');
+    const CARD_W     = 392;
+    const GAP        = 40;
+    const STEP       = CARD_W + GAP;
+    const VISIBLE    = 3;
+    const MAX_INDEX  = cards.length - VISIBLE;
+    let   index      = 0;
+
+    function updateCarousel() {
+      track.style.transform = `translateX(-${index * STEP}px)`;
+      const pct = MAX_INDEX > 0 ? (index / MAX_INDEX) * 100 : 0;
+      progress.style.width = Math.max(pct, 20) + '%';
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index >= MAX_INDEX;
+    }
+
+    prevBtn.addEventListener('click', () => { if (index > 0) { index--; updateCarousel(); } });
+    nextBtn.addEventListener('click', () => { if (index < MAX_INDEX) { index++; updateCarousel(); } });
+
+    /* expand / collapse */
+    cards.forEach(card => {
+      card.querySelector('.presents__card-content .presents__card-btn')
+          .addEventListener('click', e => { e.stopPropagation(); card.classList.add('is-expanded'); });
+      card.querySelector('.presents__card-expanded .presents__card-btn')
+          .addEventListener('click', e => { e.stopPropagation(); card.classList.remove('is-expanded'); });
+    });
+
+    updateCarousel();
+  })();
+</script>
+
+</body>
+</html>
