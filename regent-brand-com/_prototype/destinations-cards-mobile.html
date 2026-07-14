@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en" data-shell-mode="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Regent — Destinations (Mobile)</title>
+  
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 100 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 600 900;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; background: #f0ede8; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #f0ede8; }
+
+    /* ═══════════════════════════════════════════════════════════
+       COMPONENT: Mobile Header
+       ═══════════════════════════════════════════════════════════ */
+    .mobile-header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      transition: background 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .mobile-header.is-transparent {
+      background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.38) 0%,
+        rgba(8,8,8,0.30) 25%,
+        rgba(20,20,20,0.20) 50%,
+        rgba(30,30,30,0.10) 75%,
+        rgba(0,0,0,0) 100%
+      );
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      --fill-0:   white;
+      --stroke-0: #F7F7F7;
+    }
+
+    .mobile-header.is-solid {
+      background: #ffffff;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+      --fill-0:   #121212;
+      --stroke-0: #121212;
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      height: 72px;
+    }
+
+    .nav-bar__center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+    }
+
+    .icon-btn {
+      width: 40px; height: 40px;
+      padding: 8px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       COMPONENT: Sticky CTA Bar
+       ═══════════════════════════════════════════════════════════ */
+    .sticky-cta {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: #ffffff;
+      border-top: 1px solid #d6d6d6;
+      padding: 12px 24px 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      isolation: isolate;
+      will-change: transform;
+      transition: opacity 0.55s ease, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sticky-cta.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 56px;
+      background: #1f4456;
+      color: #ffffff;
+      font-family: 'Engravers Gothic', 'Arial Narrow', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s ease;
+    }
+
+    .cta-btn:active { background: #163240; }
+
+    .scroll-root {
+      width: 100%;
+      height: 100%;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      background: #f0ede8;
+      /* hide native scrollbar — renders inside iframe, steals ~15px from width */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .scroll-root::-webkit-scrollbar { display: none; }
+
+    :root {
+      --brand:     #211551;
+      --canela:    'Canela', Georgia, serif;
+      --engravers: 'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .section-header {
+      scroll-snap-align: start;
+      height: 72svh;
+      background: #fff;
+      padding: 84px 28px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .section-header h2 {
+      font-family: var(--canela);
+      font-size: 48px;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--brand);
+      letter-spacing: -0.01em;
+      margin-bottom: 28px;
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: #4a4a4a;
+      max-width: 100%;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 28px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #aaa;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scroll-hint::after {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: #aaa;
+    }
+
+    /* ─── Card ───────────────────────────────────────────── */
+    .card {
+      scroll-snap-align: start;
+      height: 100svh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ─── Image ──────────────────────────────────────────── */
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.08);
+      transition: transform 1.4s var(--ease);
+    }
+
+    .card.revealed .card__img {
+      transform: scale(1.0);
+    }
+
+    /* ─── Base gradient ──────────────────────────────────── */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 35%,
+        rgba(6, 5, 15, 0.28) 60%,
+        rgba(6, 5, 15, 0.72) 100%
+      );
+    }
+
+    /* ─── Blur layer ─────────────────────────────────────── */
+    .card__blur {
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      background: rgba(6, 5, 15, 0.45);
+      opacity: 0;
+      /* open: blur comes in quickly */
+      transition: opacity 0.6s var(--ease);
+    }
+
+    .card.panel-open .card__blur {
+      opacity: 1;
+    }
+
+    /* close: blur waits for desc to exit, then fades with the title */
+    .card.is-closing .card__blur {
+      opacity: 0;
+      transition: opacity 0.65s var(--ease) 0.28s;
+    }
+
+    /* ─── Card body — sits at bottom ────────────────────── */
+    .card__body {
+      position: absolute;
+      bottom: 100px;
+      left: 0;
+      right: 0;
+      padding: 0 28px 24px;
+      color: #fff;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .card__meta { flex: 1; }
+
+    /* ─── Title ──────────────────────────────────────────── */
+    .card__title {
+      font-family: var(--canela);
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 44px;
+      letter-spacing: 0.01em;
+      margin-bottom: 8px;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.8s var(--ease), transform 0.65s var(--ease);
+    }
+
+    .card.revealed .card__title { opacity: 1; transform: translateY(0); }
+
+    /* open: title moves first */
+    .card.panel-open .card__title {
+      transform: translateY(-100px);
+      transition: opacity 0.8s var(--ease), transform 0.65s var(--ease) 0s;
+    }
+
+    /* close: title drifts back slowly, last to arrive */
+    .card.is-closing .card__title {
+      transform: translateY(0);
+      transition: opacity 0.8s var(--ease), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.36s;
+    }
+
+    /* ─── Details ────────────────────────────────────────── */
+    .card__details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.8s var(--ease) 0.15s, transform 0.65s var(--ease) 0.15s;
+    }
+
+    .card.revealed .card__details { opacity: 1; transform: translateY(0); }
+
+    /* open: details follow title */
+    .card.panel-open .card__details {
+      transform: translateY(-100px);
+      transition: opacity 0.8s var(--ease), transform 0.65s var(--ease) 0.08s;
+    }
+
+    /* close: details return second to last */
+    .card.is-closing .card__details {
+      transform: translateY(0);
+      transition: opacity 0.8s var(--ease), transform 0.65s var(--ease) 0.18s;
+    }
+
+    .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      flex-shrink: 0;
+    }
+
+    /* ─── Desc + link — fade in after title clears ───────── */
+    .card__desc {
+      position: absolute;
+      left: 28px;
+      right: 80px;
+      bottom: 130px;
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.75);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.45s ease 0s, transform 0.45s var(--ease) 0s;
+      pointer-events: none;
+    }
+
+    .card__link {
+      position: absolute;
+      left: 28px;
+      bottom: 102px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      padding-bottom: 3px;
+      text-decoration: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.45s ease 0.08s, transform 0.45s var(--ease) 0.08s;
+      pointer-events: none;
+    }
+
+    /* open: desc + link appear after title has moved */
+    .card.panel-open .card__desc {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+      transition: opacity 0.5s ease 0.3s, transform 0.5s var(--ease) 0.3s;
+    }
+
+    .card.panel-open .card__link {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+      transition: opacity 0.5s ease 0.38s, transform 0.5s var(--ease) 0.38s;
+    }
+
+    /* close: desc + link disappear first */
+    .card.is-closing .card__desc {
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease) 0s;
+      pointer-events: none;
+    }
+
+    .card.is-closing .card__link {
+      opacity: 0;
+      transform: translateY(3px);
+      transition: opacity 0.3s ease 0s, transform 0.3s var(--ease) 0s;
+      pointer-events: none;
+    }
+
+    /* ─── Toggle button ──────────────────────────────────── */
+    .card__toggle {
+      flex-shrink: 0;
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 200;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 20px;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.3s;
+      align-self: flex-end;
+    }
+
+    .card__toggle .icon-plus,
+    .card__toggle .icon-close {
+      position: absolute;
+      transition: opacity 0.4s ease, transform 0.4s var(--ease);
+    }
+
+    .card__toggle .icon-plus  { opacity: 1; transform: rotate(0deg); }
+    .card__toggle .icon-close { opacity: 0; transform: rotate(-45deg); }
+    .card.panel-open .card__toggle .icon-plus  { opacity: 0; transform: rotate(45deg); }
+    .card.panel-open .card__toggle .icon-close { opacity: 1; transform: rotate(0deg); }
+
+    /* pulse ring */
+    .card__toggle::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.35);
+      opacity: 0;
+    }
+
+    .card.revealed .card__toggle::before {
+      animation: pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) 1.2s 2;
+    }
+
+    @keyframes pulse {
+      0%   { opacity: 0;   transform: scale(0.85); }
+      30%  { opacity: 0.7; }
+      100% { opacity: 0;   transform: scale(1.4); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Mobile Header ── -->
+  <header class="mobile-header is-solid" id="mobileHeader">
+    <div class="nav-bar">
+
+      <button class="icon-btn" aria-label="Open menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4" y1="6"  x2="20" y2="6"  stroke="var(--stroke-0,#121212)" stroke-width="1" stroke-linecap="round"/>
+          <line x1="4" y1="12" x2="20" y2="12" stroke="var(--stroke-0,#121212)" stroke-width="1" stroke-linecap="round"/>
+          <line x1="4" y1="18" x2="20" y2="18" stroke="var(--stroke-0,#121212)" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="nav-bar__center" aria-label="Regent Hotels and Resorts">
+        <div style="width:87px;">
+          <div style="position:relative;width:87px;aspect-ratio:156/50;">
+            <div style="position:absolute;top:0;left:0;right:0;bottom:38.71%;">
+              <div style="position:absolute;inset:0.99% 0.29%;">
+                <svg preserveAspectRatio="none" style="display:block;width:100%;height:100%;" viewBox="0 0 86.4922 16.752" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M37.9473 0C39.581 0.0140422 41.1987 0.33014 42.7178 0.931641L43.1377 4.56055H42.9004C42.1795 2.25733 40.0862 0.512862 37.9453 0.512695C33.8745 0.512695 32.3379 4.32766 32.3379 8.14355C32.338 11.9594 33.6416 16.2393 37.9453 16.2393C39.5509 16.2392 40.5973 15.9603 41.3652 15.6348V10.5625C41.3651 9.23434 40.2016 9.04883 39.2939 9.04883V8.60547H43.6914L43.6934 16.5205H43.2725C43.2026 16.2412 42.9233 16.0791 42.5742 16.0791C41.7396 16.0792 39.9947 16.752 37.9473 16.752C32.8799 16.7518 29.8517 12.9595 29.8516 8.14355C29.8516 3.56053 33.1086 0.000129369 37.9473 0ZM71.4932 12.584H71.5156V4.0459C71.5154 1.55613 69.7944 0.878337 69.4453 0.625977V0.230469H85.8496L86.4922 4.13867H86.2402C86.0306 3.62676 84.8441 0.742188 82.2617 0.742188H80.2148V14.0938C80.2148 15.6526 81.9369 16.1182 82.2852 16.1182V16.5137H75.8174V16.1182C76.1668 16.1181 77.8887 15.6524 77.8887 14.0938V0.739258H75.5615C73.0448 0.739258 72.0538 2.82099 72.0283 4.0459V16.749H71.6328L61.7451 3.74316H61.6982V12.7002C61.6982 15.1901 63.4193 15.8687 63.7686 16.1211V16.5156H59.1162V16.1211C59.4653 15.8654 61.1865 15.1903 61.1865 12.7002V4.27832C61.1864 1.90527 58.9988 0.719353 58.627 0.625977V0.230469H62.0938L71.4932 12.584ZM7.18848 0.230469C10.0967 0.230478 12.6797 1.5563 12.6797 4.79004C12.6796 7.46429 10.3755 8.65212 8.375 8.97852L13.0518 13.9805C15.2154 16.33 16.2388 16.1211 16.8672 16.1211C17.9144 16.0748 18.4717 15.422 18.4717 13.8633V2.88281C18.4716 1.32406 16.7505 0.625977 16.4014 0.625977V0.230469H27.0771L27.7285 4.13867H27.4756C27.2658 3.62635 26.0799 0.742461 23.498 0.742188H20.7988V7.88477H22.4512C25.0321 7.88476 24.8909 6.83761 25.3115 5.62793H25.5635V10.6533H25.3115C24.891 9.44366 25.0329 8.39649 22.4512 8.39648H20.7988V16.0049H24.8936C27.4759 16.0047 28.6625 13.1191 28.8721 12.6074L29.1279 12.6055L28.4766 16.5137H16.8672C14.1451 16.4674 12.517 16.6768 10.9111 14.9316C6.74698 10.3957 6.14195 9.27783 4.55957 9.06836H4.39746V13.8633C4.39753 15.422 6.11866 16.1211 6.46777 16.1211V16.5166H0V16.1211C0.34911 16.1211 2.07025 15.422 2.07031 13.8633V2.88281C2.07024 1.32406 0.349109 0.625977 0 0.625977V0.230469H7.18848ZM85.1699 16.0713L85.6289 15.5459H85.835V16.5166H85.5986V15.8877L85.1719 16.3721L84.7422 15.8877V16.5166H84.5078V15.5459H84.7148L85.1699 16.0713ZM56.998 4.13867H56.7461C56.5366 3.6272 55.3501 0.742282 52.7676 0.742188H50.0684V7.88477H51.7197C54.3006 7.88477 54.1595 6.83757 54.5801 5.62793H54.833V10.6533H54.5801C54.1595 9.44369 54.3022 8.39648 51.7197 8.39648H50.0684V16.0049H54.1621C56.7447 16.0049 57.9312 13.1189 58.1406 12.6074H58.3975L57.7451 16.5156H45.6709V16.1211C46.4852 16.121 47.7412 15.422 47.7412 13.8633V2.88281C47.7412 1.32431 46.0205 0.626241 45.6709 0.625977V0.230469H56.3467L56.998 4.13867ZM84.3613 15.7148H83.8613V16.5156H83.624L83.6279 15.7148H83.123V15.5459H84.3613V15.7148ZM4.39746 8.55957H7.18848C8.96012 8.55957 10.3066 6.97772 10.3066 4.7207C10.3065 2.46382 8.955 0.742188 7.18848 0.742188H4.39746V8.55957Z" fill="var(--fill-0,#121212)"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="icon-btn" aria-label="Sign in">
+        <svg width="16" height="18" viewBox="0 0 17 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.5 10.5C11.2614 10.5 13.5 8.26142 13.5 5.5C13.5 2.73858 11.2614 0.5 8.5 0.5C5.73858 0.5 3.5 2.73858 3.5 5.5C3.5 8.26142 5.73858 10.5 8.5 10.5ZM8.5 10.5C10.6217 10.5 12.6566 11.3429 14.1569 12.8431C15.6571 14.3434 16.5 16.3783 16.5 18.5M8.5 10.5C6.37827 10.5 4.34344 11.3429 2.84315 12.8431C1.34285 14.3434 0.5 16.3783 0.5 18.5" stroke="var(--stroke-0,#121212)" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- Sticky CTA Bar -->
+  <div class="sticky-cta" id="stickyCta">
+    <button class="cta-btn">Reserve</button>
+  </div>
+
+<div class="scroll-root">
+
+  <div class="section-header">
+    <h2>The world, hand-selected</h2>
+    <p>Explore our destinations where modern luxury meets unexpected delight, inviting you to savor life anew.</p>
+    <div class="scroll-hint">Scroll</div>
+  </div>
+
+  <div class="card">
+    <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-cannes-1180x664.jpeg" alt="Santa Monica Beach">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">Sunlit promenades, private beaches, and the enduring glamour of the California coast — rediscovered at your own pace.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta">
+        <div class="card__title">Santa Monica Beach</div>
+        <div class="card__details"><span>Detail</span><span class="dot"></span><span>Detail</span></div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info">
+        <span class="icon-plus">+</span>
+        <span class="icon-close">×</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-a-1180x664-1.jpeg" alt="Bali">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">Ancient temples, terraced rice fields, and an ocean that quietly invites you to stay — and never leave.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta">
+        <div class="card__title">Bali, Indonesia</div>
+        <div class="card__details"><span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span></div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info">
+        <span class="icon-plus">+</span>
+        <span class="icon-close">×</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-c-1180x664-1.jpeg" alt="Bali Highlands">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">Mist-wrapped valleys and emerald pools — where the mountain meets ceremony and the landscape stills the mind.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta">
+        <div class="card__title">Bali Highlands</div>
+        <div class="card__details"><span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span></div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info">
+        <span class="icon-plus">+</span>
+        <span class="icon-close">×</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <img class="card__img" src="../_assets/_imgs/rg-brand-refresh-homepg-prop-carousel-bali-d-1180x664-1.jpeg" alt="Bali Coastline">
+    <div class="card__overlay"></div>
+    <div class="card__blur"></div>
+    <p class="card__desc">Cliffside villas suspended above the Indian Ocean — privacy at its most dramatic, where the sun falls into the horizon.</p>
+    <a href="#" class="card__link">Explore</a>
+    <div class="card__body">
+      <div class="card__meta">
+        <div class="card__title">Bali Coastline</div>
+        <div class="card__details"><span>Indonesia</span><span class="dot"></span><span>Asia Pacific</span></div>
+      </div>
+      <button class="card__toggle" aria-label="Toggle info">
+        <span class="icon-plus">+</span>
+        <span class="icon-close">×</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ── Nav: solid over white section-header, transparent over image cards ── */
+  const header     = document.getElementById('mobileHeader');
+  const cta        = document.getElementById('stickyCta');
+  const scrollRoot = document.querySelector('.scroll-root');
+  const sectionHdr = document.querySelector('.section-header');
+
+  let lastScrollTop = 0;
+  let pastIntro = false;
+
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      pastIntro = !entry.isIntersecting;
+    });
+  }, { root: scrollRoot, threshold: 0.1 });
+
+  navObserver.observe(sectionHdr);
+
+  scrollRoot.addEventListener('scroll', () => {
+    const scrollTop     = scrollRoot.scrollTop;
+    const scrollingDown = scrollTop > lastScrollTop;
+
+    if (scrollingDown && pastIntro) {
+      cta.classList.add('is-visible');
+    } else if (!scrollingDown) {
+      cta.classList.remove('is-visible');
+    }
+
+    lastScrollTop = scrollTop;
+  }, { passive: true });
+
+  document.querySelectorAll('.card__toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.card');
+      if (card.classList.contains('panel-open')) {
+        // closing: add is-closing first so exit transitions fire,
+        // then remove both after the longest exit duration (title: 0.32s delay + 0.65s = ~1s)
+        card.classList.add('is-closing');
+        card.classList.remove('panel-open');
+        setTimeout(() => card.classList.remove('is-closing'), 1800);
+      } else {
+        card.classList.remove('is-closing');
+        card.classList.add('panel-open');
+      }
+    });
+  });
+
+  const cards = document.querySelectorAll('.card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const img = entry.target.querySelector('.card__img');
+      if (entry.isIntersecting) {
+        img.classList.add('revealed');
+        setTimeout(() => entry.target.classList.add('revealed'), 300);
+      } else {
+        img.classList.remove('revealed');
+        entry.target.classList.remove('revealed', 'panel-open');
+      }
+    });
+  }, { root: scrollRoot, threshold: 0.5 });
+
+  cards.forEach(card => observer.observe(card));
+</script>
+
+</body>
+</html>

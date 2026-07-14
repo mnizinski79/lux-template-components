@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — Footer Component</title>
+
+  <style>
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 700;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --bg-footer:  #0F3B4A;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --gutter:     120px;
+    }
+
+    body { background: #e8e6e0; }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    .s-footer { background: var(--bg-footer); }
+
+    .footer-breadcrumb {
+      background: #F0EEE8;
+      padding: 8px 32px;
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-breadcrumb a {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: #666;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-breadcrumb svg { width: 14px; height: 14px; stroke: #666; fill: none; stroke-width: 1.5; }
+
+    .footer-main { padding: 48px var(--gutter) 40px; }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 40px;
+    }
+
+    .footer-logo { display: flex; flex-direction: column; gap: 2px; }
+
+    .footer-logo-word {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 4px;
+    }
+
+    .footer-logo-sub {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--engravers);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .footer-social { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+
+    .footer-social-label {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    .footer-social-icons { display: flex; gap: 20px; align-items: center; }
+
+    .footer-social-icons a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+
+    .footer-social-icons a:hover { opacity: 1; }
+    .footer-social-icons svg { width: 20px; height: 20px; fill: currentColor; }
+
+    .footer-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 40px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 32px;
+    }
+
+    .footer-col-title {
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .footer-col ul a {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-col ul a:hover { color: #fff; }
+
+    .footer-col-icon-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .footer-col-icon-item svg {
+      width: 14px;
+      height: 14px;
+      stroke: rgba(255,255,255,0.5);
+      fill: none;
+      stroke-width: 1.5;
+      flex-shrink: 0;
+    }
+
+    .footer-apps { display: flex; flex-direction: column; gap: 10px; }
+
+    .footer-app-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      padding: 8px 14px;
+      text-decoration: none;
+      width: 148px;
+      transition: border-color 0.2s ease;
+    }
+
+    .footer-app-badge:hover { border-color: rgba(255,255,255,0.5); }
+    .footer-app-badge svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+    .footer-app-badge-text { display: flex; flex-direction: column; }
+    .footer-app-badge-sub { font-family: var(--inter); font-size: 9px; font-weight: 300; color: rgba(255,255,255,0.7); letter-spacing: 0.3px; }
+    .footer-app-badge-name { font-family: var(--inter); font-size: 13px; font-weight: 400; color: #fff; }
+    .footer-app-note { font-family: var(--inter); font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.45); margin-top: 4px; }
+
+    .footer-bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 24px;
+    }
+
+    .footer-rewards-logo {
+      color: #fff;
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 12px;
+    }
+
+    .footer-best-price {
+      color: rgba(255,255,255,0.7);
+      font-family: var(--engravers);
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .footer-legal-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .footer-legal-links a {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-legal-links a:hover { color: rgba(255,255,255,0.85); }
+
+    .footer-legal-note {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      max-width: 800px;
+    }
+
+    .footer-copyright {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+    }
+  </style>
+</head>
+<body>
+
+<footer class="s-footer">
+
+  <!-- Breadcrumb -->
+  <div class="footer-breadcrumb">
+    <a href="#">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      IHG
+    </a>
+  </div>
+
+  <div class="footer-main">
+
+    <!-- Logo + Social -->
+    <div class="footer-top">
+      <div class="footer-logo">
+        <span class="footer-logo-word">IHG</span>
+        <span class="footer-logo-sub">Hotels &amp; Resorts</span>
+      </div>
+      <div class="footer-social">
+        <span class="footer-social-label">Follow us on</span>
+        <div class="footer-social-icons">
+          <!-- Facebook -->
+          <a href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <!-- TikTok -->
+          <a href="#" aria-label="TikTok">
+            <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.19 8.19 0 0 0 4.79 1.52V6.76a4.85 4.85 0 0 1-1.02-.07z"/></svg>
+          </a>
+          <!-- YouTube -->
+          <a href="#" aria-label="YouTube">
+            <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#0F3B4A"/></svg>
+          </a>
+          <!-- Instagram -->
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="#0F3B4A"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="#0F3B4A" stroke-width="2"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links Grid + Apps -->
+    <div class="footer-cols">
+
+      <div class="footer-col">
+        <p class="footer-col-title">Help &amp; Support</p>
+        <ul>
+          <li>
+            <a href="#">
+              <span class="footer-col-icon-item">
+                <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+                1 888 123 4567
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="footer-col-icon-item">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Chat with us
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="footer-col-icon-item">
+                <svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+                Customer care
+              </span>
+            </a>
+          </li>
+        </ul>
+        <p class="footer-col-title" style="margin-top:28px;">Resources</p>
+        <ul>
+          <li><a href="#">Feedback</a></li>
+          <li><a href="#">Travel Advisories</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title">IHG</p>
+        <ul>
+          <li><a href="#">About IHG Hotels &amp; Resorts</a></li>
+          <li><a href="#">Explore Hotels</a></li>
+          <li><a href="#">About Our Brands</a></li>
+          <li><a href="#">IHG Careers</a></li>
+          <li><a href="#">Hotel Development</a></li>
+          <li><a href="#">IHG One Rewards</a></li>
+          <li><a href="#">IHG Corporate</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title" style="visibility:hidden;">IHG</p>
+        <ul>
+          <li><a href="#">IHG Agent Portal</a></li>
+          <li><a href="#">Travel Professionals</a></li>
+          <li><a href="#">Affiliate Program</a></li>
+          <li><a href="#">IHG Business Rewards</a></li>
+          <li><a href="#">IHG Army Hotels</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Commitment to Clean</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <p class="footer-col-title" style="visibility:hidden;">App</p>
+        <div class="footer-apps">
+          <a href="#" class="footer-app-badge">
+            <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <div class="footer-app-badge-text">
+              <span class="footer-app-badge-sub">Download on the</span>
+              <span class="footer-app-badge-name">App Store</span>
+            </div>
+          </a>
+          <a href="#" class="footer-app-badge">
+            <svg viewBox="0 0 24 24"><path d="M3.18 23.76c.3.17.64.22.99.12l12.12-6.98-2.54-2.54-10.57 9.4zM.49 2.28A1.5 1.5 0 0 0 0 3.46v17.08c0 .48.18.9.49 1.18l.07.06 9.57-9.57v-.22L.56 2.22l-.07.06zM20.49 10.34l-2.6-1.5-2.85 2.85 2.85 2.85 2.62-1.51c.75-.43.75-1.13-.02-1.69zm-19.31 13.42l10.57-9.4-2.54-2.54-10.57 9.4z"/></svg>
+            <div class="footer-app-badge-text">
+              <span class="footer-app-badge-sub">Get it on</span>
+              <span class="footer-app-badge-name">Google Play</span>
+            </div>
+          </a>
+          <p class="footer-app-note">Get the IHG® App Today</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Rewards + Best Price -->
+    <div class="footer-bottom-bar">
+      <span class="footer-rewards-logo">IHG &nbsp;|&nbsp; ONE REWARDS</span>
+      <span class="footer-best-price">Best Price &nbsp; Guarantee</span>
+    </div>
+
+    <!-- Legal -->
+    <div class="footer-legal-links">
+      <a href="#">Terms of Use</a>
+      <a href="#">Privacy &amp; Cookie Center</a>
+      <a href="#">Do Not Sell or Share My Personal Information</a>
+      <a href="#">AdChoices</a>
+      <a href="#">Member Terms &amp; Conditions</a>
+    </div>
+    <p class="footer-legal-note">To ensure that we give you the best experience on our website, we use machine translation for portions of the content featured on this page.</p>
+    <p class="footer-copyright">©2025 IHG. All Rights Reserved. Most hotels are independently owned and operated.</p>
+
+  </div>
+</footer>
+
+</body>
+</html>

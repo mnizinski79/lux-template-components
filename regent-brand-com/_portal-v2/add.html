@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Prototype — Regent Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Josefin+Sans:wght@300;400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --brand:    #211551;
+      --bg:       #0b0917;
+      --card:     #110e1e;
+      --border:   rgba(255,255,255,0.08);
+      --input-bg: rgba(255,255,255,0.04);
+      --canela:   'Cormorant Garamond', Georgia, serif;
+      --eng:      'Josefin Sans', sans-serif;
+      --inter:    'Inter', system-ui, sans-serif;
+      --text:     rgba(255,255,255,0.82);
+      --muted:    rgba(255,255,255,0.38);
+      --green:    rgba(74,188,118,0.9);
+      --amber:    rgba(240,192,80,0.9);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--inter);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11,9,23,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 54px;
+    }
+    .nav__logo img { display:block; height:18px; opacity:0.72; filter:brightness(0) invert(1); }
+    .nav__title {
+      font-family: var(--eng); font-size: 9px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .nav__back {
+      font-family: var(--eng); font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted); text-decoration: none;
+      padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border);
+      transition: color 0.12s, border-color 0.12s;
+    }
+    .nav__back:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+
+    /* ── Mode banner ── */
+    .mode-banner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 40px; font-size: 12px; font-weight: 300;
+      border-bottom: 1px solid var(--border);
+    }
+    .mode-banner.local  { background: rgba(74,188,118,0.06); color: rgba(74,188,118,0.8); }
+    .mode-banner.static { background: rgba(240,192,80,0.06); color: rgba(240,192,80,0.75); }
+    .mode-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .mode-banner.local  .mode-dot { background: var(--green); }
+    .mode-banner.static .mode-dot { background: var(--amber); }
+
+    /* ── Layout ── */
+    .page { max-width: 720px; margin: 0 auto; padding: 0 32px 100px; }
+
+    .hero { padding: 64px 0 48px; }
+    .hero__eyebrow {
+      font-family: var(--eng); font-size: 9px; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+    }
+    .hero__title {
+      font-family: var(--canela); font-size: 48px; font-weight: 300;
+      font-style: italic; line-height: 1.05; color: rgba(255,255,255,0.88);
+      margin-bottom: 14px;
+    }
+    .hero__sub {
+      font-size: 14px; font-weight: 300; line-height: 1.7; color: var(--muted);
+    }
+
+    /* ── Form sections ── */
+    .form-section {
+      margin-bottom: 48px;
+      padding-top: 36px;
+      border-top: 1px solid var(--border);
+    }
+    .form-section__title {
+      font-family: var(--eng); font-size: 9px; letter-spacing: 0.26em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 24px;
+    }
+
+    /* ── Field ── */
+    .field { margin-bottom: 20px; }
+    .field__label {
+      display: block; font-family: var(--eng); font-size: 8.5px;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-bottom: 8px;
+    }
+    .field__hint {
+      font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.25);
+      margin-top: 6px; line-height: 1.5;
+    }
+
+    input[type="text"], input[type="url"], textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-family: var(--inter); font-size: 13px; font-weight: 300;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    input[type="text"]:focus, input[type="url"]:focus, textarea:focus {
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.06);
+    }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
+    textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+
+    /* ── Pill radio / checkbox group ── */
+    .pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .pill-option { position: relative; }
+    .pill-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .pill-option label {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 100px;
+      border: 1px solid var(--border);
+      font-family: var(--eng); font-size: 9px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      cursor: pointer; transition: all 0.12s; white-space: nowrap;
+      background: transparent;
+    }
+    .pill-option input:checked + label {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.22);
+      color: rgba(255,255,255,0.9);
+    }
+    .pill-option label:hover { border-color: rgba(255,255,255,0.16); color: rgba(255,255,255,0.7); }
+
+    .pill-option--review   input:checked + label { background: rgba(74,188,118,0.1);  border-color: rgba(74,188,118,0.3);  color: var(--green); }
+    .pill-option--amber    input:checked + label { background: rgba(240,192,80,0.1);  border-color: rgba(240,192,80,0.3);  color: var(--amber); }
+    .pill-option--approved input:checked + label { background: rgba(74,188,118,0.1);  border-color: rgba(74,188,118,0.3);  color: var(--green); }
+
+    /* ── Section cards ── */
+    .section-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .section-card { position: relative; }
+    .section-card input { position: absolute; opacity: 0; pointer-events: none; }
+    .section-card label {
+      display: block; padding: 18px 20px;
+      background: var(--input-bg); border: 1px solid var(--border);
+      border-radius: 10px; cursor: pointer; transition: all 0.12s;
+    }
+    .section-card input:checked + label {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .section-card label:hover { border-color: rgba(255,255,255,0.14); }
+    .section-card__title {
+      font-family: var(--eng); font-size: 9.5px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px;
+    }
+    .section-card__desc {
+      font-size: 12px; font-weight: 300; line-height: 1.55; color: var(--muted);
+    }
+    .section-card--review input:checked + label .section-card__title { color: var(--green); }
+    .section-card--review input:checked + label { border-color: rgba(74,188,118,0.25); background: rgba(74,188,118,0.05); }
+
+    /* ── File drop zone ── */
+    .dropzone {
+      border: 1px dashed rgba(255,255,255,0.14);
+      border-radius: 10px;
+      padding: 36px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--input-bg);
+      position: relative;
+    }
+    .dropzone:hover, .dropzone.over {
+      border-color: rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.05);
+    }
+    .dropzone.has-file {
+      border-color: rgba(74,188,118,0.3);
+      background: rgba(74,188,118,0.04);
+    }
+    .dropzone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .dropzone__icon {
+      width: 36px; height: 36px; margin: 0 auto 12px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .dropzone__icon svg { width: 16px; height: 16px; color: var(--muted); }
+    .dropzone__label {
+      font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.5);
+    }
+    .dropzone__label strong { color: rgba(255,255,255,0.72); font-weight: 400; }
+    .dropzone__hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
+    .dropzone__filename {
+      font-family: 'Menlo', monospace; font-size: 12px;
+      color: var(--green); margin-top: 8px;
+    }
+
+    /* ── Notes ── */
+    .notes-list { display: flex; flex-direction: column; gap: 10px; }
+    .note-row {
+      display: grid; grid-template-columns: 100px 1fr 36px; gap: 8px; align-items: start;
+    }
+    .note-row input[type="text"] { border-radius: 8px; }
+    .note-remove {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+      transition: all 0.12s; margin-top: 1px;
+    }
+    .note-remove:hover { background: rgba(255,80,80,0.1); border-color: rgba(255,80,80,0.25); color: rgba(255,120,120,0.8); }
+    .note-remove svg { width: 12px; height: 12px; }
+    .btn-add-note {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 10px; padding: 8px 14px; border-radius: 8px;
+      background: transparent; border: 1px solid var(--border);
+      font-family: var(--eng); font-size: 8.5px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted); cursor: pointer;
+      transition: all 0.12s;
+    }
+    .btn-add-note:hover { border-color: rgba(255,255,255,0.18); color: var(--text); }
+    .btn-add-note svg { width: 11px; height: 11px; }
+
+    /* ── Device URLs ── */
+    .device-urls { display: flex; flex-direction: column; gap: 10px; }
+    .device-url-row { display: grid; grid-template-columns: 90px 1fr; gap: 10px; align-items: center; }
+    .device-url-tag {
+      font-family: var(--eng); font-size: 8px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted); text-align: right;
+    }
+    .device-url-row.inactive { opacity: 0.3; pointer-events: none; }
+
+    /* ── Submit ── */
+    .submit-zone {
+      padding-top: 32px; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    .btn-submit {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px 24px; border-radius: 10px;
+      background: var(--brand); border: 1px solid rgba(255,255,255,0.15);
+      font-family: var(--eng); font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: #fff; cursor: pointer;
+      transition: background 0.12s, box-shadow 0.12s;
+      box-shadow: 0 4px 24px rgba(33,21,81,0.5);
+    }
+    .btn-submit:hover { background: #2e1e6e; box-shadow: 0 8px 32px rgba(33,21,81,0.65); }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-submit svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .btn-download {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 14px 24px; border-radius: 10px;
+      background: transparent; border: 1px solid var(--border);
+      font-family: var(--eng); font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted); cursor: pointer;
+      transition: all 0.12s;
+    }
+    .btn-download:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    /* ── Result states ── */
+    .result {
+      display: none; padding: 20px; border-radius: 10px;
+      margin-top: 14px;
+    }
+    .result.success {
+      display: block; background: rgba(74,188,118,0.07);
+      border: 1px solid rgba(74,188,118,0.2);
+    }
+    .result.error {
+      display: block; background: rgba(255,80,80,0.07);
+      border: 1px solid rgba(255,80,80,0.2);
+    }
+    .result__title {
+      font-family: var(--eng); font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .result.success .result__title { color: var(--green); }
+    .result.error   .result__title { color: rgba(255,120,120,0.9); }
+    .result__body {
+      font-size: 12.5px; font-weight: 300; line-height: 1.65; color: var(--muted);
+    }
+
+    /* ── Copy snippet ── */
+    .snippet-wrap { margin-top: 16px; position: relative; }
+    .snippet-label {
+      font-family: var(--eng); font-size: 8px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .snippet {
+      background: #0d0a18; border: 1px solid var(--border); border-radius: 8px;
+      padding: 16px; font-family: 'Menlo', monospace; font-size: 11px;
+      line-height: 1.7; color: rgba(255,255,255,0.45); max-height: 220px;
+      overflow-y: auto; white-space: pre; position: relative;
+    }
+    .btn-copy {
+      position: absolute; top: 8px; right: 8px;
+      font-family: var(--eng); font-size: 7.5px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted); cursor: pointer;
+      padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border);
+      background: #0d0a18; transition: all 0.12s;
+    }
+    .btn-copy:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-copy.copied { color: var(--green); border-color: rgba(74,188,118,0.3); }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav__logo">
+      <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha" alt="IHG">
+    </div>
+    <span class="nav__title">Add Prototype</span>
+    <a href="portal-v3.html" class="nav__back">← Back to Portal</a>
+  </nav>
+
+  <!-- Mode banner -->
+  <div class="mode-banner" id="modeBanner">
+    <div class="mode-dot"></div>
+    <span id="modeText">Detecting server…</span>
+  </div>
+
+  <div class="page">
+    <header class="hero">
+      <p class="hero__eyebrow">Regent Brand.com · Prototype Portal</p>
+      <h1 class="hero__title">Add a prototype</h1>
+      <p class="hero__sub">Fill in the details below. When you submit, your prototype file is placed in <code style="font-size:12px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;">_prototype/</code> and the registry is updated automatically.</p>
+    </header>
+
+    <form id="protoForm" novalidate>
+
+      <!-- File upload -->
+      <div class="form-section">
+        <p class="form-section__title">Prototype file</p>
+        <div class="field">
+          <label class="field__label">HTML file</label>
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept=".html">
+            <div class="dropzone__icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 2v8M5 5l3-3 3 3"/><path d="M3 11v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2"/>
+              </svg>
+            </div>
+            <p class="dropzone__label"><strong>Drop your .html file here</strong> or click to browse</p>
+            <p class="dropzone__hint">Single self-contained HTML file only</p>
+            <p class="dropzone__filename" id="dropFilename"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Basics -->
+      <div class="form-section">
+        <p class="form-section__title">Basics</p>
+
+        <div class="field">
+          <label class="field__label" for="f-label">Display name</label>
+          <input type="text" id="f-label" placeholder="e.g. Homepage Mobile v2" required>
+          <p class="field__hint">Shown in the sidebar. Keep it short and descriptive.</p>
+        </div>
+
+        <div class="field">
+          <label class="field__label">Section</label>
+          <div class="section-cards">
+            <div class="section-card section-card--review">
+              <input type="radio" name="section" id="s-review" value="review">
+              <label for="s-review">
+                <p class="section-card__title">Ready for Review</p>
+                <p class="section-card__desc">Polished work ready for stakeholder feedback. Shown prominently at the top of the sidebar.</p>
+              </label>
+            </div>
+            <div class="section-card">
+              <input type="radio" name="section" id="s-explore" value="explorations" checked>
+              <label for="s-explore">
+                <p class="section-card__title">Explorations</p>
+                <p class="section-card__desc">Work in progress, earlier directions, or experiments. Good for internal team review.</p>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" id="subsectionField">
+          <label class="field__label" for="f-subsection">Subsection <span style="opacity:0.4;font-size:7px;letter-spacing:0.1em">optional</span></label>
+          <input type="text" id="f-subsection" placeholder="e.g. Homepage, Destinations Cards">
+          <p class="field__hint">Groups related explorations together in the sidebar.</p>
+        </div>
+
+        <div class="field">
+          <label class="field__label">Status</label>
+          <div class="pill-group">
+            <div class="pill-option">
+              <input type="radio" name="status" id="st-draft" value="draft" checked>
+              <label for="st-draft">Draft</label>
+            </div>
+            <div class="pill-option pill-option--amber">
+              <input type="radio" name="status" id="st-review" value="review">
+              <label for="st-review">In Review</label>
+            </div>
+            <div class="pill-option pill-option--approved">
+              <input type="radio" name="status" id="st-approved" value="approved">
+              <label for="st-approved">Approved</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label">Tags</label>
+          <div class="pill-group">
+            <div class="pill-option">
+              <input type="checkbox" name="tags" id="t-desktop" value="Desktop">
+              <label for="t-desktop">Desktop</label>
+            </div>
+            <div class="pill-option">
+              <input type="checkbox" name="tags" id="t-mobile" value="Mobile" checked>
+              <label for="t-mobile">Mobile</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Devices -->
+      <div class="form-section">
+        <p class="form-section__title">Device support</p>
+        <p class="field__hint" style="margin-bottom:18px;">Select which devices this prototype supports. Only selected devices will appear as tabs in the portal.</p>
+
+        <div class="field">
+          <label class="field__label">Supported devices</label>
+          <div class="pill-group" style="margin-bottom:16px;">
+            <div class="pill-option">
+              <input type="checkbox" name="devices" id="d-ios" value="ios" checked onchange="updateDeviceRows()">
+              <label for="d-ios">iPhone</label>
+            </div>
+            <div class="pill-option">
+              <input type="checkbox" name="devices" id="d-android" value="android" checked onchange="updateDeviceRows()">
+              <label for="d-android">Android</label>
+            </div>
+            <div class="pill-option">
+              <input type="checkbox" name="devices" id="d-desktop" value="desktop" onchange="updateDeviceRows()">
+              <label for="d-desktop">Desktop</label>
+            </div>
+          </div>
+
+          <div class="device-urls" id="deviceUrls">
+            <div class="device-url-row" id="row-ios">
+              <span class="device-url-tag">iPhone URL</span>
+              <input type="text" id="url-ios" placeholder="auto-filled from file name" readonly style="opacity:0.6;cursor:default;">
+            </div>
+            <div class="device-url-row" id="row-android">
+              <span class="device-url-tag">Android URL</span>
+              <input type="text" id="url-android" placeholder="auto-filled from file name" readonly style="opacity:0.6;cursor:default;">
+            </div>
+            <div class="device-url-row inactive" id="row-desktop">
+              <span class="device-url-tag">Desktop URL</span>
+              <input type="text" id="url-desktop" placeholder="auto-filled from file name" readonly style="opacity:0.6;cursor:default;">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label">Default device</label>
+          <div class="pill-group" id="defaultDevicePills">
+            <div class="pill-option">
+              <input type="radio" name="default" id="def-ios" value="ios" checked>
+              <label for="def-ios">iPhone</label>
+            </div>
+            <div class="pill-option">
+              <input type="radio" name="default" id="def-android" value="android">
+              <label for="def-android">Android</label>
+            </div>
+            <div class="pill-option" id="def-desktop-wrap" style="display:none;">
+              <input type="radio" name="default" id="def-desktop" value="desktop">
+              <label for="def-desktop">Desktop</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Figma -->
+      <div class="form-section">
+        <p class="form-section__title">Figma source</p>
+        <div class="field">
+          <label class="field__label" for="f-figma">Figma share URL <span style="opacity:0.4;font-size:7px;letter-spacing:0.1em">optional</span></label>
+          <input type="url" id="f-figma" placeholder="https://www.figma.com/design/…">
+          <p class="field__hint">When set, a Figma button appears in the portal toolbar so reviewers can jump to the source frame.</p>
+        </div>
+      </div>
+
+      <!-- Changelog -->
+      <div class="form-section">
+        <p class="form-section__title">Changelog</p>
+        <p class="field__hint" style="margin-bottom:18px;">Add at least one note describing this version. Keep it short — one sentence per entry.</p>
+        <div class="notes-list" id="notesList"></div>
+        <button type="button" class="btn-add-note" onclick="addNote()">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg>
+          Add note
+        </button>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-zone">
+        <button type="submit" class="btn-submit" id="btnSubmit">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2v8M5 5l3-3 3 3"/><path d="M3 11v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-2"/>
+          </svg>
+          <span id="btnSubmitLabel">Add to Portal</span>
+        </button>
+        <button type="button" class="btn-download" id="btnDownload" style="display:none;" onclick="downloadFallback()">
+          Download files for manual placement
+        </button>
+      </div>
+
+      <div class="result" id="result"></div>
+
+    </form>
+  </div>
+
+<script>
+/* ── Server detection ───────────────────────────────────────────── */
+let IS_LOCAL = false;
+
+async function detectServer() {
+  const banner   = document.getElementById('modeBanner');
+  const modeText = document.getElementById('modeText');
+  try {
+    const r = await fetch('/api/ping', { signal: AbortSignal.timeout(800) });
+    const j = await r.json();
+    if (j.ok) {
+      IS_LOCAL = true;
+      banner.className   = 'mode-banner local';
+      modeText.textContent = 'Local server detected — prototypes will be added directly to the portal.';
+      document.getElementById('btnDownload').style.display = 'none';
+      return;
+    }
+  } catch (_) {}
+  IS_LOCAL = false;
+  banner.className   = 'mode-banner static';
+  modeText.textContent = 'Running without local server — you\'ll download files to place manually. Run node server.js for direct writes.';
+  document.getElementById('btnDownload').style.display = 'flex';
+  document.getElementById('btnSubmitLabel').textContent = 'Generate Entry';
+}
+
+detectServer();
+
+/* ── File drop zone ─────────────────────────────────────────────── */
+let selectedFile = null;
+let derivedFilename = '';
+
+const dropzone  = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+dropzone.addEventListener('dragover',  e => { e.preventDefault(); dropzone.classList.add('over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('over');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+function handleFile(file) {
+  if (!file || !file.name.endsWith('.html')) {
+    alert('Please select an .html file.');
+    return;
+  }
+  selectedFile    = file;
+  derivedFilename = file.name;
+  dropzone.classList.add('has-file');
+  document.getElementById('dropFilename').textContent = derivedFilename;
+  updateUrlFields();
+
+  if (!document.getElementById('f-label').value) {
+    const suggested = derivedFilename
+      .replace('.html', '')
+      .split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    document.getElementById('f-label').value = suggested;
+  }
+}
+
+/* ── Section toggle ─────────────────────────────────────────────── */
+document.querySelectorAll('input[name="section"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const isExplore = r.value === 'explorations';
+    document.getElementById('subsectionField').style.display = isExplore ? '' : 'none';
+  });
+});
+
+/* ── Device rows ────────────────────────────────────────────────── */
+function updateDeviceRows() {
+  ['ios', 'android', 'desktop'].forEach(d => {
+    const checked = document.getElementById('d-' + d).checked;
+    document.getElementById('row-' + d).classList.toggle('inactive', !checked);
+    const defWrap = document.getElementById('def-' + d + '-wrap');
+    if (defWrap) defWrap.style.display = checked ? '' : 'none';
+  });
+  updateUrlFields();
+}
+
+function updateUrlFields() {
+  if (!derivedFilename) return;
+  const path = `../_prototype/${derivedFilename}`;
+  ['ios', 'android', 'desktop'].forEach(d => {
+    const el = document.getElementById('url-' + d);
+    if (document.getElementById('d-' + d).checked) {
+      el.value = path;
+    } else {
+      el.value = '';
+    }
+  });
+}
+
+document.getElementById('d-desktop').addEventListener('change', () => {
+  const desktopWrap = document.getElementById('def-desktop-wrap');
+  desktopWrap.style.display = document.getElementById('d-desktop').checked ? '' : 'none';
+  updateDeviceRows();
+});
+
+/* ── Notes ──────────────────────────────────────────────────────── */
+let noteCount = 0;
+
+function addNote(date = '', text = '') {
+  noteCount++;
+  const id   = 'note-' + noteCount;
+  const list = document.getElementById('notesList');
+  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const row  = document.createElement('div');
+  row.className = 'note-row';
+  row.id = id;
+  row.innerHTML = `
+    <input type="text" class="note-date" placeholder="${today}" value="${date}" style="text-align:center;">
+    <input type="text" class="note-text" placeholder="What changed or was decided…" value="${text}">
+    <button type="button" class="note-remove" onclick="document.getElementById('${id}').remove()">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg>
+    </button>`;
+  list.appendChild(row);
+}
+
+addNote(); // start with one
+
+/* ── Build entry string ─────────────────────────────────────────── */
+function buildEntry(filename) {
+  const label      = document.getElementById('f-label').value.trim() || 'Untitled';
+  const section    = document.querySelector('input[name="section"]:checked').value;
+  const subsection = section === 'explorations'
+    ? (document.getElementById('f-subsection').value.trim() || null)
+    : null;
+  const status     = document.querySelector('input[name="status"]:checked').value;
+  const figma      = document.getElementById('f-figma').value.trim() || null;
+  const def        = document.querySelector('input[name="default"]:checked').value;
+
+  const tags = [...document.querySelectorAll('input[name="tags"]:checked')].map(c => `'${c.value}'`);
+
+  const devices    = ['ios', 'android', 'desktop'].filter(d => document.getElementById('d-' + d).checked);
+  const urlsLines  = devices.map(d => `    ${d}: '../_prototype/${filename}',`).join('\n');
+
+  const notes = [...document.querySelectorAll('.note-row')].map(row => {
+    const date = row.querySelector('.note-date').value.trim();
+    const text = row.querySelector('.note-text').value.trim();
+    if (!text) return null;
+    return `    { date: '${date}', text: '${text.replace(/'/g, "\\'")}' },`;
+  }).filter(Boolean).join('\n');
+
+  const idSlug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const prefix = section === 'review' ? 'r' : 'x';
+  const id     = `${prefix}-${idSlug}`;
+
+  const subsStr = subsection ? `'${subsection}'` : 'null';
+  const figmaStr = figma ? `'${figma}'` : 'null';
+
+  return `  // Added via portal form
+  {
+    id: '${id}', section: '${section}', subsection: ${subsStr},
+    label: '${label}', tags: [${tags.join(', ')}],
+    status: '${status}',
+    figma: ${figmaStr},
+    notes: [
+${notes || `    { date: '${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}', text: 'Added to portal.' },`}
+    ],
+    urls: {
+${urlsLines}
+    },
+    default: '${def}',
+  },`;
+}
+
+/* ── Form submit ────────────────────────────────────────────────── */
+document.getElementById('protoForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!selectedFile) { showResult('error', 'No file selected', 'Please drop or select your .html prototype file first.'); return; }
+
+  const label = document.getElementById('f-label').value.trim();
+  if (!label) { showResult('error', 'Display name required', 'Please enter a display name for this prototype.'); return; }
+
+  const filename = derivedFilename;
+  const entry    = buildEntry(filename);
+
+  if (IS_LOCAL) {
+    await submitToServer(filename, entry);
+  } else {
+    showSnippet(entry, filename);
+  }
+});
+
+async function submitToServer(filename, entry) {
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  document.getElementById('btnSubmitLabel').textContent = 'Adding…';
+
+  try {
+    const fileContent = await selectedFile.text();
+    const res = await fetch('/api/add-proto', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entry, filename, fileContent }),
+    });
+    const json = await res.json();
+    if (json.ok) {
+      showResult('success', 'Added to portal',
+        `<strong>${filename}</strong> has been placed in <code>_prototype/</code> and registered in <code>protos.js</code>. Commit both files to publish.<br><br>
+        <a href="portal-v3.html" style="color:var(--green);text-decoration:none;font-weight:400;">Open portal →</a>`);
+    } else {
+      throw new Error(json.error);
+    }
+  } catch (err) {
+    showResult('error', 'Something went wrong', err.message);
+  } finally {
+    btn.disabled = false;
+    document.getElementById('btnSubmitLabel').textContent = 'Add to Portal';
+  }
+}
+
+function showSnippet(entry, filename) {
+  const wrap = document.getElementById('result');
+  wrap.className = 'result success';
+  wrap.innerHTML = `
+    <p class="result__title">Entry generated</p>
+    <p class="result__body" style="margin-bottom:16px;">
+      Copy the snippet below and paste it into <code style="font-size:11px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:3px;">_portal-v2/protos.js</code> before the closing <code style="font-size:11px;color:rgba(255,255,255,0.4);">];</code>.
+      Then download your HTML file and place it in <code style="font-size:11px;color:rgba(255,255,255,0.4);">_prototype/</code>.
+    </p>
+    <div class="snippet-wrap">
+      <p class="snippet-label">protos.js entry — copy this</p>
+      <div class="snippet" id="snippetCode">${escHtml(entry)}</div>
+      <button class="btn-copy" id="btnCopySnippet" onclick="copySnippet()">Copy</button>
+    </div>`;
+}
+
+function downloadFallback() {
+  if (!selectedFile) { alert('Please select a file first.'); return; }
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(selectedFile);
+  a.href = url; a.download = derivedFilename; a.click();
+  URL.revokeObjectURL(url);
+  if (document.getElementById('f-label').value.trim()) {
+    showSnippet(buildEntry(derivedFilename), derivedFilename);
+  }
+}
+
+async function copySnippet() {
+  const code = document.getElementById('snippetCode').textContent;
+  await navigator.clipboard.writeText(code);
+  const btn = document.getElementById('btnCopySnippet');
+  btn.textContent = 'Copied!'; btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+function showResult(type, title, body) {
+  const el = document.getElementById('result');
+  el.className = 'result ' + type;
+  el.innerHTML = `<p class="result__title">${title}</p><p class="result__body">${body}</p>`;
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>

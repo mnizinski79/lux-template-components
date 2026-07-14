@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent Brand.com — Prototype Index</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:     #211551;
+      --teal:      #1F4456;
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', 'Arial Narrow', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: var(--inter);
+      background: #FAF8F5;
+      color: var(--brand);
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────── */
+    .site-header {
+      border-bottom: 1px solid rgba(33, 21, 81, 0.1);
+      padding: 40px 80px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .site-header__wordmark {
+      font-family: var(--engravers);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--brand);
+    }
+
+    .site-header__meta {
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(33, 21, 81, 0.45);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── Hero ───────────────────────────────────────────────── */
+    .hero {
+      padding: 80px 80px 64px;
+      max-width: 720px;
+    }
+
+    .hero__eyebrow {
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(33, 21, 81, 0.45);
+      margin-bottom: 20px;
+    }
+
+    .hero__title {
+      font-family: var(--canela);
+      font-size: 56px;
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--brand);
+      margin-bottom: 24px;
+    }
+
+    .hero__title em {
+      font-style: italic;
+    }
+
+    .hero__desc {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(33, 21, 81, 0.6);
+      max-width: 480px;
+    }
+
+    /* ─── Section ────────────────────────────────────────────── */
+    .section {
+      padding: 0 80px 80px;
+    }
+
+    .section__label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(33, 21, 81, 0.4);
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(33, 21, 81, 0.1);
+      margin-bottom: 0;
+    }
+
+    .section__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      opacity: 0.5;
+    }
+
+    .section__label--review {
+      color: #1a6b3a;
+      opacity: 0.85;
+      border-bottom-color: rgba(26, 107, 58, 0.2);
+    }
+
+    .section__label--review .section__icon {
+      opacity: 0.8;
+    }
+
+    /* ─── Sandbox section (Explorations) ────────────────────── */
+    .section--sandbox {
+      background-color: #F5F2EE;
+      background-image: radial-gradient(circle, rgba(33,21,81,0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      padding: 48px 80px 80px;
+    }
+
+    .section--sandbox .section__label {
+      border-bottom-color: rgba(33, 21, 81, 0.14);
+    }
+
+    /* ─── Subsection (within Explorations) ──────────────────── */
+    .subsection {
+      padding-top: 48px;
+    }
+
+    .subsection__label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--engravers);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(33, 21, 81, 0.35);
+      padding-bottom: 16px;
+      border-bottom: 1px dashed rgba(33, 21, 81, 0.15);
+      margin-bottom: 0;
+    }
+
+    .subsection__label::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(33, 21, 81, 0.3);
+      flex-shrink: 0;
+    }
+
+    /* ─── Grid ───────────────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-left: 1px solid rgba(33, 21, 81, 0.1);
+    }
+
+    .section--sandbox .grid {
+      border-left: 1px dashed rgba(33, 21, 81, 0.15);
+    }
+
+    /* ─── Card ───────────────────────────────────────────────── */
+    .card {
+      border-right: 1px solid rgba(33, 21, 81, 0.1);
+      border-bottom: 1px solid rgba(33, 21, 81, 0.1);
+      padding: 36px 32px 32px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      transition: background 0.3s var(--ease);
+    }
+
+    .card:hover {
+      background: rgba(33, 21, 81, 0.03);
+    }
+
+    .section--sandbox .card {
+      border-right: 1px dashed rgba(33, 21, 81, 0.15);
+      border-bottom: 1px dashed rgba(33, 21, 81, 0.15);
+      background: transparent;
+    }
+
+    .section--sandbox .card:hover {
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .card__tag {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(33, 21, 81, 0.4);
+    }
+
+    .card__tag--mobile {
+      color: var(--teal);
+      opacity: 0.7;
+    }
+
+    .card__tag--review {
+      color: #1a6b3a;
+    }
+
+    .section__label--review {
+      color: #1a6b3a;
+      opacity: 0.85;
+      border-bottom-color: rgba(26, 107, 58, 0.2);
+    }
+
+.card__title {
+      font-family: var(--canela);
+      font-size: 24px;
+      font-weight: 300;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      color: var(--brand);
+    }
+
+    .card__desc {
+      font-family: var(--inter);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(33, 21, 81, 0.55);
+      flex: 1;
+    }
+
+    .card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-top: 8px;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+
+    .card__cta::after {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.25s var(--ease);
+    }
+
+    .card:hover .card__cta {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .card:hover .card__cta::after {
+      width: 28px;
+    }
+
+    /* ─── Multi-platform links (review cards) ────────────────── */
+    .card__links {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .card__link {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--brand);
+      text-decoration: none;
+      border: 1px solid rgba(33, 21, 81, 0.3);
+      padding: 8px 14px;
+      transition: background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
+    }
+
+    .card__link:hover {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────── */
+    .site-footer {
+      padding: 32px 80px;
+      border-top: 1px solid rgba(33, 21, 81, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-footer__note {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(33, 21, 81, 0.35);
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <span class="site-header__wordmark">Regent Hotels &amp; Resorts</span>
+    <span class="site-header__meta">Brand.com Prototype Index — Sprint 2.1</span>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <p class="hero__eyebrow">Wilson Design System · IHG CXD</p>
+    <h1 class="hero__title">Component<br><em>Explorations</em></h1>
+    <p class="hero__desc">Interactive prototypes for the Regent Brand.com redesign. Built with Wilson design system tokens and components, exploring layout, interaction, and animation patterns across desktop and mobile.</p>
+  </div>
+
+  <!-- Portal -->
+  <section class="section">
+    <p class="section__label">
+      <span class="section__icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1"/>
+          <rect x="1" y="1" width="4" height="14" rx="1" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.08"/>
+          <line x1="7" y1="5" x2="13" y2="5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <line x1="7" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Prototype Portal
+    </p>
+    <div class="grid">
+
+      <a class="card" href="_portal-v2/portal-v3.html" target="_blank">
+        <span class="card__tag">Desktop · Tool</span>
+        <span class="card__title">AI Prototype Portal</span>
+        <p class="card__desc">Internal design review tool — organize, share, and get approval on prototypes across every device and sprint. The design team's equivalent of Storybook.</p>
+        <span class="card__cta">Open Portal</span>
+      </a>
+
+      <a class="card" href="_portal-v2/story.html" target="_blank">
+        <span class="card__tag">Desktop · Presentation</span>
+        <span class="card__title">How I Got Here</span>
+        <p class="card__desc">The story behind the AI prototype workflow — pain points, the three-layer architecture, and how it evolved into the portal. 13-slide deck.</p>
+        <span class="card__cta">View Story</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Ready for Review -->
+  <section class="section">
+    <p class="section__label section__label--review">
+      <span class="section__icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="#1a6b3a" stroke-width="1"/>
+          <polyline points="4.5,8.5 7,11 11.5,5.5" stroke="#1a6b3a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      Ready for Review
+    </p>
+    <div class="grid">
+
+      <div class="card">
+        <span class="card__tag card__tag--review">Desktop + Mobile · Destinations</span>
+        <span class="card__title">Destinations Cards</span>
+        <p class="card__desc">Horizontal accordion on desktop — hover to reveal destination details. Full-screen snap-scroll on mobile, wrapped in a realistic device shell.</p>
+        <div class="card__links">
+          <a class="card__link" href="_prototype/destinations-cards.html" target="_blank">Desktop</a>
+          <a class="card__link" href="_shells/ios-safari.html" target="_blank">iOS Safari</a>
+          <a class="card__link" href="_shells/android-chrome.html?url=../_prototype/destinations-cards-mobile.html" target="_blank">Android Chrome</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card__tag card__tag--review">Desktop + Mobile · Events</span>
+        <span class="card__title">Events Accordion</span>
+        <p class="card__desc">Two-column layout with a crossfading image panel and accordion — location label animates on switch. Stacked mobile variant included.</p>
+        <div class="card__links">
+          <a class="card__link" href="_prototype/events-accordion.html" target="_blank">Desktop</a>
+          <a class="card__link" href="_shells/ios-safari.html?url=../_prototype/events-accordion-mobile.html" target="_blank">iOS Safari</a>
+          <a class="card__link" href="_shells/android-chrome.html?url=../_prototype/events-accordion-mobile.html" target="_blank">Android Chrome</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card__tag card__tag--review">Mobile · Navigation</span>
+        <span class="card__title">Mobile Header + CTA Bar</span>
+        <p class="card__desc">Scroll-aware header — transparent over hero, solid on scroll — with a persistent Reserve bar pinned to the bottom.</p>
+        <div class="card__links">
+          <a class="card__link" href="_shells/ios-safari.html?url=../_prototype/mobile-header.html" target="_blank">iOS Safari</a>
+          <a class="card__link" href="_shells/android-chrome.html?url=../_prototype/mobile-header.html" target="_blank">Android Chrome</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Components -->
+  <section class="section">
+    <p class="section__label">
+      <span class="section__icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1"/>
+          <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1"/>
+          <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1"/>
+          <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </span>
+      Components
+    </p>
+    <div class="grid">
+
+      <a class="card" href="_shells/ios-safari.html?url=" target="_blank">
+        <span class="card__tag card__tag--mobile">iOS · Shell</span>
+        <span class="card__title">iOS Safari</span>
+        <p class="card__desc">iPhone 17 shell — Dynamic Island, status bar, frosted toolbar, scroll-aware address bar. Pass ?url= to mount any prototype.</p>
+        <span class="card__cta">Open</span>
+      </a>
+
+      <a class="card" href="_shells/android-chrome.html?url=" target="_blank">
+        <span class="card__tag card__tag--mobile">Android · Shell</span>
+        <span class="card__title">Android Chrome</span>
+        <p class="card__desc">Pixel 9 Pro shell — punch-hole camera, Chrome address bar, gesture nav pill. Pass ?url= to mount any prototype.</p>
+        <span class="card__cta">Open</span>
+      </a>
+
+      <a class="card" href="_prototype/mobile-header.html" target="_blank">
+        <span class="card__tag card__tag--mobile">Mobile · Navigation</span>
+        <span class="card__title">Mobile Header + CTA Bar</span>
+        <p class="card__desc">Scroll-aware header — transparent over hero (white icons), solid on scroll (dark icons). Reserve bar slides up after scrolling past the hero.</p>
+        <span class="card__cta">Open</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Explorations -->
+  <section class="section section--sandbox">
+    <p class="section__label">
+      <span class="section__icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 1h6M6 1v5L2 13a1 1 0 00.9 1.5h10.2A1 1 0 0014 13L10 6V1" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="6" cy="11" r="0.8" fill="currentColor" opacity="0.5"/>
+          <circle cx="9.5" cy="12.5" r="0.6" fill="currentColor" opacity="0.4"/>
+        </svg>
+      </span>
+      Explorations
+    </p>
+
+    <!-- Homepage -->
+    <div class="subsection">
+      <p class="subsection__label">Homepage</p>
+      <div class="grid">
+
+        <a class="card" href="_prototype/homepage-desktop.html" target="_blank">
+          <span class="card__tag">Desktop</span>
+          <span class="card__title">Homepage — Desktop</span>
+          <p class="card__desc">Full desktop homepage: hero video with pause control, booking bar straddling hero/editorial boundary, destinations carousel, events accordion, stay unique grid, and footer. Wilson tokens applied throughout.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Destinations Cards -->
+    <div class="subsection">
+      <p class="subsection__label">Destinations Cards</p>
+      <div class="grid">
+
+        <a class="card" href="_prototype/destinations-cards.html" target="_blank">
+          <span class="card__tag">Desktop</span>
+          <span class="card__title">Destinations Carousel</span>
+          <p class="card__desc">3-up card carousel with standard linked cards and expandable teaser cards. Progress bar navigation.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+        <a class="card" href="_prototype/destinations-cards-teaser.html" target="_blank">
+          <span class="card__tag">Desktop</span>
+          <span class="card__title">Destinations Teaser</span>
+          <p class="card__desc">Refined teaser card variant with updated expand interaction values from Figma spec.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+        <a class="card" href="_prototype/destinations-cards-overlap.html" target="_blank">
+          <span class="card__tag">Desktop</span>
+          <span class="card__title">Overlap Layout</span>
+          <p class="card__desc">Alternative card layout with overlapping elements — an exploration in layered depth.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+        <a class="card" href="_prototype/destinations-cards-mobile.html" target="_blank">
+          <span class="card__tag card__tag--mobile">Mobile</span>
+          <span class="card__title">Mobile Snap Scroll</span>
+          <p class="card__desc">Full-screen snap-scroll experience — one destination per screen with entrance animations.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+        <a class="card" href="_prototype/destinations-cards-mobile-device.html" target="_blank">
+          <span class="card__tag card__tag--mobile">Mobile · Device Frame</span>
+          <span class="card__title">iPhone Device Preview</span>
+          <p class="card__desc">Mobile snap-scroll wrapped in an iPhone 17 device frame at 900px height for presentation.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+        <a class="card" href="_prototype/destinations-cards-mobile-pushpull.html" target="_blank">
+          <span class="card__tag card__tag--mobile">Mobile</span>
+          <span class="card__title">Push / Pull Interaction</span>
+          <p class="card__desc">Mobile interaction exploration using a push/pull gesture metaphor for navigating destinations.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Events Accordion -->
+    <div class="subsection">
+      <p class="subsection__label">Events Accordion</p>
+      <div class="grid">
+
+        <a class="card" href="_prototype/events-accordion.html" target="_blank">
+          <span class="card__tag">Desktop</span>
+          <span class="card__title">Events Accordion</span>
+          <p class="card__desc">Two-column layout with a crossfading image panel and accordion. Location label animates on switch.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+        <a class="card" href="_prototype/events-accordion-mobile.html" target="_blank">
+          <span class="card__tag card__tag--mobile">Mobile</span>
+          <span class="card__title">Events Mobile</span>
+          <p class="card__desc">Stacked mobile layout — image on top, accordion below. Mountable in device shells.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Content Block Carousel -->
+    <div class="subsection">
+      <p class="subsection__label">Content Block Carousel</p>
+      <div class="grid">
+
+        <a class="card" href="_prototype/content-block-carousel.html" target="_blank">
+          <span class="card__tag">Desktop</span>
+          <span class="card__title">Image Strip Carousel</span>
+          <p class="card__desc">Four-image editorial strip with alternating tall/short heights and infinite-loop prev/next navigation. 1440px.</p>
+          <span class="card__cta">Open</span>
+        </a>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <span class="site-footer__note">IHG · Wilson Design System · Regent Brand.com · 2026</span>
+    <span class="site-footer__note">Francisco Vivar</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440">
+  <title>Regent — Content Block Carousel</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../_assets/_fonts/Engravers Gothic/EngraversGothic-BoldExt.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+    :root {
+      --brand:   #211551;
+      --gold:    #A68B5B;
+      --canela:  'Canela', Georgia, serif;
+      --josefin: 'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:   'Inter', system-ui, sans-serif;
+      --ease:    cubic-bezier(0.4, 0, 0.2, 1);
+      --dur:     0.7s;
+      --col-w:   466.667px;
+      --gap:     32px;
+    }
+
+    body {
+      background: #fff;
+      color: var(--brand);
+      overflow-x: hidden;
+    }
+
+    /* ─── Section ──────────────────────────────────────────────── */
+    .section {
+      padding: 80px 0 72px;
+    }
+
+    /* ─── Carousel wrapper ─────────────────────────────────────── */
+    .carousel {
+      position: relative;
+    }
+
+    .carousel__viewport {
+      overflow: hidden;
+      width: 100%;
+    }
+
+    /* ─── Track
+         Array order: [r1c, r2c, r3c | r0, r1, r2, r3 | r0c, r1c, r2c]
+         3 clones prepended (last 3 real items), 3 clones appended (first 3)
+         This enables seamless infinite looping in both directions.
+    ──────────────────────────────────────────────────────────────── */
+    .carousel__track {
+      display: flex;
+      gap: var(--gap);
+      align-items: center;     /* vertically center tall even images against short odd ones */
+      height: 582.703px;       /* tallest tile height */
+      transition: transform var(--dur) var(--ease);
+      will-change: transform;
+    }
+
+    /* ─── Tiles ────────────────────────────────────────────────── */
+    .tile {
+      flex: 0 0 var(--col-w);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile--short { height: 480px; }     /* odd images  — 466.667 × 480 */
+    .tile--tall  { height: 582.703px; } /* even images — 466.667 × 582.703 */
+
+    .tile {
+      transition: opacity 0.4s ease;
+    }
+
+    .tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ─── Controls row ─────────────────────────────────────────── */
+    .carousel__controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;       /* --spacing/desktop/small */
+      width: 787px;
+      height: 36px;
+      margin: 40px auto 0;
+      box-sizing: content-box;
+    }
+
+    /* Arrow icon buttons — no border, 36×36 with 4px padding */
+    .arrow-btn {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      padding: 4px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+
+    .arrow-btn:hover { opacity: 1; }
+
+    .arrow-btn svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .arrow-btn svg path {
+      stroke: #4a4a4a; /* color/text/secondary → color/gray/800 */
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    /* Progress line */
+    .progress-track {
+      flex: 1;
+      position: relative;
+      height: 1px;
+    }
+
+    /* Background line — color/text/secondary */
+    .progress-track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #d6d6d6; /* regent/color/grayscale/200 → color/gray/200 */
+    }
+
+    /* Animated fill — color/text/secondary */
+    .progress-fill {
+      position: absolute;
+      top: -0.375px;   /* centre the thicker bar over the 1px track */
+      left: 0;
+      height: 1.75px;
+      background: #4a4a4a; /* color/text/secondary → color/gray/800 */
+      width: 25%;      /* 1 of 4 slides */
+      transition: width var(--dur) var(--ease);
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+  <div class="carousel" role="region" aria-label="Content carousel">
+
+    <div class="carousel__viewport">
+      <div class="carousel__track" id="track">
+
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-1-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-taste-studio-img-2-svp-1340x1340.jpeg" alt="Taste Studio">
+        </div>
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-spa-wellness-img-2-lvp-1180x664.jpeg" alt="Spa &amp; Wellness">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-2-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-1-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-taste-studio-img-2-svp-1340x1340.jpeg" alt="Taste Studio">
+        </div>
+        <div class="tile tile--short">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-spa-wellness-img-2-lvp-1180x664.jpeg" alt="Spa &amp; Wellness">
+        </div>
+        <div class="tile tile--tall">
+          <img src="../_assets/_imgs/_about/rg-brand-refresh-experience-lp-offer-3col-tile-cuisine-img-2-svp-1340x1340.jpeg" alt="Cuisine">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="carousel__controls">
+      <!-- Lucide arrow-left -->
+      <button class="arrow-btn" id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+
+      <!-- Progress line -->
+      <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <!-- Lucide arrow-right -->
+      <button class="arrow-btn" id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const track        = document.getElementById('track');
+  const progressFill = document.getElementById('progressFill');
+  const progressBar  = progressFill.closest('[role="progressbar"]');
+
+  /*
+    3 positions:
+      0 — image 1 at left edge (left-aligned)
+      1 — all 4 images centered, equal crop both sides  ← default start
+      2 — image 4 at right edge (right-aligned)
+
+    STEP = half of (total strip width − viewport width)
+         = (4 cols + 3 gaps − 1440) / 2
+  */
+  const colW          = track.querySelector('.tile').offsetWidth;
+  const viewW         = track.parentElement.offsetWidth;
+  const GAP           = 32;
+  const STEP          = colW + GAP;
+  const totalW        = colW * 8 + GAP * 7;
+  const INITIAL_OFFSET = colW / 2;                         // start half-way into image 1
+  const MAX           = Math.max(0, Math.floor((totalW - viewW - INITIAL_OFFSET) / STEP));
+
+  let current = 0;  // start left-aligned: images 1–3 fill 1440px edge to edge
+  let busy    = false;
+
+  /* translateX for each position — starts half-way into image 1, snaps flush right at end */
+  function offsetFor(idx) {
+    const base = INITIAL_OFFSET + idx * STEP;
+    if (base >= totalW - viewW) return -(totalW - viewW);
+    return -base;
+  }
+
+  /* ── Dim tiles that are cut off (partially outside the viewport) ── */
+  function updateOpacities(translateX) {
+    const scrolled = -translateX; // positive scroll amount
+    track.querySelectorAll('.tile').forEach((tile, i) => {
+      const tileLeft  = i * STEP - scrolled;
+      const tileRight = tileLeft + colW;
+      const fullyVisible = tileLeft >= -0.5 && tileRight <= viewW + 0.5;
+      tile.style.opacity = fullyVisible ? '1' : '0.8';
+    });
+  }
+
+  /* ── Update progress bar — 0% start, 100% at last image ── */
+  function updateProgress(idx) {
+    const pct = (idx / MAX * 100).toFixed(2) + '%';
+    progressFill.style.width = pct;
+    progressBar.setAttribute('aria-valuenow', idx + 1);
+  }
+
+  /* ── Initialise: left-aligned, no animation ── */
+  track.style.transition = 'none';
+  track.style.transform  = `translateX(${offsetFor(current)}px)`;
+  updateOpacities(offsetFor(current));
+  updateProgress(current);
+
+  /* ── Animate track to position ── */
+  function go(idx, animate = true) {
+    const tx = offsetFor(idx);
+    track.style.transition = animate ? `transform var(--dur) var(--ease)` : 'none';
+    track.style.transform  = `translateX(${tx}px)`;
+    updateOpacities(tx);
+  }
+
+  /* ── Navigate forward — stops at right edge (image 4 fully visible) ── */
+  function next() {
+    if (busy || current >= MAX) return;
+    busy = true;
+    current++;
+    go(current);
+    updateProgress(current);
+    track.addEventListener('transitionend', () => { busy = false; }, { once: true });
+  }
+
+  /* ── Navigate backward — stops at left edge (image 1 fully visible) ── */
+  function prev() {
+    if (busy || current <= 0) return;
+    busy = true;
+    current--;
+    go(current);
+    updateProgress(current);
+    track.addEventListener('transitionend', () => { busy = false; }, { once: true });
+  }
+
+  /* ── Event listeners ── */
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+
+  /* ── Keyboard navigation ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft')  prev();
+  });
+
+  /* ── Touch / pointer swipe ── */
+  let pointerStartX = null;
+  track.addEventListener('pointerdown', e => { pointerStartX = e.clientX; });
+  track.addEventListener('pointerup',   e => {
+    if (pointerStartX === null) return;
+    const delta = e.clientX - pointerStartX;
+    if (delta < -40) next();
+    else if (delta > 40) prev();
+    pointerStartX = null;
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prototype Portal — Team Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --brand:     #211551;
+      --canvas-bg: #0b0917;
+      --card-bg:   #110e1e;
+      --border:    rgba(255,255,255,0.08);
+      --canela:    'Cormorant Garamond', Georgia, serif;
+      --engravers: 'Josefin Sans', sans-serif;
+      --inter:     'Inter', system-ui, sans-serif;
+      --text:      rgba(255,255,255,0.82);
+      --text-muted: rgba(255,255,255,0.42);
+      --green:     rgba(74,188,118,0.9);
+      --amber:     rgba(240,192,80,0.9);
+    }
+
+    body {
+      background: var(--canvas-bg);
+      color: var(--text);
+      font-family: var(--inter);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,9,23,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 56px;
+      gap: 32px;
+    }
+
+    .nav__logo img {
+      display: block;
+      height: 20px;
+      opacity: 0.72;
+      filter: brightness(0) invert(1);
+    }
+
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav__link {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      transition: color 0.12s, background 0.12s;
+    }
+    .nav__link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    .nav__cta {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      background: var(--brand);
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.12s;
+      white-space: nowrap;
+    }
+    .nav__cta:hover { background: #2e1e6e; }
+
+    /* ── Layout ── */
+    .page { max-width: 800px; margin: 0 auto; padding: 0 32px 120px; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 100px 0 80px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 80px;
+    }
+
+    .hero__eyebrow {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .hero__title {
+      font-family: var(--canela);
+      font-size: 64px;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.05;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 28px;
+    }
+
+    .hero__title span {
+      color: rgba(255,255,255,0.28);
+    }
+
+    .hero__body {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-muted);
+      max-width: 560px;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 80px;
+    }
+
+    .section__label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .section__label-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section__label-text {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .section__title {
+      font-family: var(--canela);
+      font-size: 38px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+
+    .section__intro {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 580px;
+    }
+
+    /* ── Cards ── */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .cards--3 { grid-template-columns: 1fr 1fr 1fr; }
+    .cards--1 { grid-template-columns: 1fr; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .card__icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .card__icon svg { width: 16px; height: 16px; color: rgba(255,255,255,0.55); }
+
+    .card__title {
+      font-family: var(--engravers);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 10px;
+    }
+
+    .card__body {
+      font-size: 13.5px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    .card__body strong {
+      color: rgba(255,255,255,0.72);
+      font-weight: 400;
+    }
+
+    /* ── Process flow ── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .flow__step {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 20px;
+      position: relative;
+    }
+
+    .flow__step::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 44px;
+      bottom: -1px;
+      width: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+    .flow__step:last-child::before { display: none; }
+
+    .flow__num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--engravers);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .flow__step--active .flow__num {
+      background: var(--brand);
+      border-color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .flow__content {
+      padding-bottom: 36px;
+    }
+
+    .flow__title {
+      font-family: var(--engravers);
+      font-size: 10.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 8px;
+      padding-top: 10px;
+    }
+
+    .flow__body {
+      font-size: 13.5px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    .flow__body strong { color: rgba(255,255,255,0.65); font-weight: 400; }
+
+    .flow__tag {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .flow__tag--designer { color: rgba(100,180,255,0.85); background: rgba(100,180,255,0.1); border: 1px solid rgba(100,180,255,0.2); }
+    .flow__tag--lead     { color: rgba(240,192,80,0.85);  background: rgba(240,192,80,0.08);  border: 1px solid rgba(240,192,80,0.18); }
+    .flow__tag--stakeholder { color: rgba(74,188,118,0.85); background: rgba(74,188,118,0.08); border: 1px solid rgba(74,188,118,0.18); }
+
+    /* ── Status table ── */
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .status-table th {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: left;
+      padding: 0 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status-table td {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-muted);
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+      line-height: 1.55;
+    }
+
+    .status-table tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .badge--approved { color: var(--green);  background: rgba(74,188,118,0.1);  border: 1px solid rgba(74,188,118,0.2);  }
+    .badge--review   { color: var(--amber);  background: rgba(240,192,80,0.08); border: 1px solid rgba(240,192,80,0.18); }
+    .badge--draft    { color: rgba(255,255,255,0.3); background: transparent; border: 1px solid rgba(255,255,255,0.1); }
+
+    /* ── Code block ── */
+    .code-block {
+      background: #0d0a18;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+
+    .code-block pre {
+      font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .code-block .c  { color: rgba(255,255,255,0.22); } /* comment */
+    .code-block .k  { color: rgba(180,140,255,0.8);  } /* keyword */
+    .code-block .s  { color: rgba(100,220,160,0.8);  } /* string */
+    .code-block .p  { color: rgba(255,255,255,0.35); } /* punctuation */
+
+    /* ── Tip ── */
+    .tip {
+      display: flex;
+      gap: 14px;
+      padding: 16px 20px;
+      background: rgba(33,21,81,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-left: 2px solid rgba(140,100,255,0.5);
+      border-radius: 0 8px 8px 0;
+      margin-top: 20px;
+    }
+
+    .tip__icon { font-size: 14px; flex-shrink: 0; padding-top: 1px; }
+
+    .tip__body {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .tip__body strong { color: rgba(255,255,255,0.72); font-weight: 400; }
+
+    /* ── Visual aids ── */
+    .visual {
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 36px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .visual__label {
+      position: absolute;
+      top: 14px; right: 14px;
+      font-family: var(--engravers);
+      font-size: 7.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
+      padding: 4px 10px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.08);
+      pointer-events: none;
+    }
+
+    /* Portal overview illustration */
+    .vi-portal {
+      background: #0e0c14;
+      display: flex;
+      height: 320px;
+    }
+
+    .vi-sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: #0d0a1a;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vi-sb-head {
+      padding: 16px 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .vi-sb-logo {
+      margin-bottom: 4px;
+    }
+
+    .vi-sb-sub {
+      font-family: var(--engravers);
+      font-size: 7px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+    }
+
+    .vi-sb-scroll { flex: 1; padding: 16px 0; overflow: hidden; }
+
+    .vi-sb-section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px 8px;
+    }
+    .vi-sb-section-label span {
+      font-family: var(--engravers);
+      font-size: 7px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .vi-sb-section-label .vi-rule { flex: 1; height: 1px; background: rgba(255,255,255,0.12); }
+    .vi-sb-section-label .vi-rule--green { background: rgba(74,188,118,0.22); }
+    .vi-sb-section-label .vi-text--green { color: rgba(74,188,118,0.75); }
+    .vi-sb-section-label .vi-text { color: rgba(255,255,255,0.45); }
+
+    .vi-sb-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      cursor: default;
+    }
+    .vi-sb-item.active { background: rgba(255,255,255,0.08); }
+    .vi-sb-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      width: 2px; height: 60%;
+      background: rgba(255,255,255,0.35);
+      border-radius: 1px;
+      transform: translateY(-50%);
+    }
+    .vi-sb-item { position: relative; }
+    .vi-sb-item__label {
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.72);
+      flex: 1;
+    }
+    .vi-sb-item.active .vi-sb-item__label { color: #fff; font-weight: 400; }
+
+    .vi-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vi-toolbar {
+      height: 52px;
+      background: #18131f;
+      border-bottom: 1px solid rgba(255,255,255,0.09);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .vi-tb-btn {
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: transparent;
+      white-space: nowrap;
+    }
+
+    .vi-tb-btn.active {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    .vi-tb-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.09); margin: 0 6px; }
+
+    .vi-tb-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .vi-tb-proto-name {
+      font-family: var(--canela);
+      font-size: 13px;
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .vi-tb-badge {
+      font-family: var(--engravers);
+      font-size: 7px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 2px 5px;
+      border-radius: 3px;
+      color: rgba(240,192,80,0.9);
+      background: rgba(240,192,80,0.08);
+      border: 1px solid rgba(240,192,80,0.18);
+    }
+
+    .vi-tb-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .vi-subrow {
+      height: 38px;
+      background: #120f1a;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .vi-subrow__btn {
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .vi-subrow__btn.active {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .vi-canvas {
+      flex: 1;
+      background: #0e0c14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vi-canvas::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .vi-device {
+      width: 72px; height: 140px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .vi-device__notch {
+      position: absolute;
+      top: 6px; left: 50%; transform: translateX(-50%);
+      width: 20px; height: 4px;
+      background: #111;
+      border-radius: 2px;
+    }
+
+    .vi-device__screen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #f8f0e8 0%, #e8dfd4 100%);
+    }
+
+    .vi-device__bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 18px;
+      background: rgba(0,0,0,0.04);
+    }
+
+    .vi-device__img {
+      position: absolute;
+      top: 18px; left: 0; right: 0;
+      height: 52px;
+      background: linear-gradient(180deg, #8b7355 0%, #6b5340 100%);
+    }
+
+    .vi-device__content {
+      position: absolute;
+      top: 74px; left: 6px; right: 6px;
+    }
+
+    .vi-device__line {
+      height: 4px;
+      background: rgba(0,0,0,0.12);
+      border-radius: 2px;
+      margin-bottom: 5px;
+    }
+    .vi-device__line--short { width: 60%; }
+
+    /* Glow behind device */
+    .vi-glow {
+      position: absolute;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(33,21,81,0.5) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* FAB illustration */
+    .vi-fab-cluster {
+      position: absolute;
+      bottom: 14px; right: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .vi-fab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .vi-fab svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+    .vi-fab--share {
+      color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .vi-fab--open {
+      color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* Annotation arrows */
+    .vi-annotations {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .vi-ann {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vi-ann__label {
+      font-family: var(--engravers);
+      font-size: 7.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      white-space: nowrap;
+      background: rgba(0,0,0,0.5);
+      padding: 3px 8px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .vi-ann__dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      flex-shrink: 0;
+    }
+
+    /* QR visual */
+    .vi-qr-modal {
+      background: #1a1625;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 200px;
+    }
+
+    .vi-qr-label {
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+    }
+
+    .vi-qr-img {
+      width: 120px; height: 120px;
+      background: #fff;
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 1.5px;
+      padding: 10px;
+    }
+
+    .vi-qr-cell {
+      border-radius: 1px;
+      background: #000;
+    }
+    .vi-qr-cell.w { background: transparent; }
+
+    .vi-qr-proto {
+      font-family: var(--canela);
+      font-size: 14px;
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .vi-qr-hint {
+      font-family: var(--inter);
+      font-size: 10px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+    }
+
+    /* Changelog drawer visual */
+    .vi-drawer {
+      width: 220px;
+      background: #0f0c1c;
+      border-left: 1px solid rgba(255,255,255,0.07);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .vi-drawer__head {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .vi-drawer__eyebrow {
+      font-family: var(--engravers);
+      font-size: 7.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 6px;
+    }
+
+    .vi-drawer__name {
+      font-family: var(--canela);
+      font-size: 17px;
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(255,255,255,0.72);
+    }
+
+    .vi-drawer__body { padding: 16px; }
+
+    .vi-entry {
+      display: flex;
+      gap: 10px;
+      padding-bottom: 18px;
+      position: relative;
+    }
+
+    .vi-entry::before {
+      content: '';
+      position: absolute;
+      left: 4px; top: 14px; bottom: 0;
+      width: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+    .vi-entry:last-child::before { display: none; }
+
+    .vi-entry__dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: #0f0c1c;
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative; z-index: 1;
+    }
+    .vi-entry:first-child .vi-entry__dot {
+      border-color: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.15);
+    }
+
+    .vi-entry__date {
+      font-family: var(--engravers);
+      font-size: 7px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 4px;
+    }
+
+    .vi-entry__text {
+      font-family: var(--inter);
+      font-size: 10.5px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.55;
+    }
+
+    /* ── Feature explorer ── */
+    .feat-explorer {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 12px;
+      margin-bottom: 0;
+    }
+
+    .feat-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .feat-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 14px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .feat-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .feat-card.is-active {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.14);
+      border-left-color: rgba(255,255,255,0.45);
+      border-left-width: 2px;
+    }
+
+    .feat-card__icon {
+      width: 30px; height: 30px;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .feat-card__icon svg { width: 13px; height: 13px; color: rgba(255,255,255,0.5); }
+    .feat-card.is-active .feat-card__icon { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.16); }
+    .feat-card.is-active .feat-card__icon svg { color: rgba(255,255,255,0.85); }
+
+    .feat-card__title {
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+    }
+    .feat-card.is-active .feat-card__title { color: rgba(255,255,255,0.85); }
+
+    .feat-card__body {
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.28);
+    }
+    .feat-card.is-active .feat-card__body { color: rgba(255,255,255,0.5); }
+
+    .feat-visual-wrap {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      min-height: 340px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+
+    .feat-panel {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .feat-panel.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── Role cards ── */
+    .role-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 48px;
+    }
+
+    .role-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 28px 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+      cursor: pointer;
+    }
+    .role-card:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.03); }
+
+    .role-card__icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .role-card__icon svg { width: 18px; height: 18px; color: rgba(255,255,255,0.55); }
+
+    .role-card__label {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 2px;
+    }
+
+    .role-card__title {
+      font-family: var(--canela);
+      font-size: 26px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.2;
+    }
+
+    .role-card__body {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    .role-card__arrow {
+      font-family: var(--engravers);
+      font-size: 8.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .role-card:hover .role-card__arrow { color: rgba(255,255,255,0.55); }
+
+    /* ── Prerequisites callout ── */
+    .prereq {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 36px;
+    }
+
+    .prereq__label {
+      display: flex;
+      align-items: center;
+      padding: 18px 20px;
+      background: rgba(255,255,255,0.04);
+      border-right: 1px solid rgba(255,255,255,0.07);
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .prereq__items {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 18px 24px;
+      flex-wrap: wrap;
+    }
+
+    .prereq__item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .prereq__item::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+
+    .prereq__item strong { color: rgba(255,255,255,0.78); font-weight: 400; }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 100px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer__left {
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.22);
+    }
+
+    .footer__right {
+      font-family: var(--engravers);
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav__logo">
+      <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha" alt="IHG">
+    </div>
+    <div class="nav__links">
+      <a href="#for-reviewers" class="nav__link">Reviewers</a>
+      <a href="#for-designers" class="nav__link">Designers</a>
+      <a href="#process" class="nav__link">Process</a>
+      <a href="#reference" class="nav__link">Reference</a>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a href="add.html" class="nav__cta" style="background:transparent;border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);">+ Add Prototype</a>
+      <a href="portal-v3.html" class="nav__cta">Open Portal →</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- Hero -->
+    <header class="hero">
+      <p class="hero__eyebrow">Regent Brand.com · Wilson Design System</p>
+      <h1 class="hero__title">Prototype Portal<br><span>Team Guide</span></h1>
+      <p class="hero__body">This is where the Regent Brand.com design team builds, shares, and signs off on interactive prototypes. Pick your role below to jump to what's relevant for you.</p>
+
+      <!-- Role split -->
+      <div class="role-cards">
+        <a href="#for-reviewers" class="role-card">
+          <div class="role-card__icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="3"/><path d="M1 13c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg>
+          </div>
+          <div>
+            <p class="role-card__label">Stakeholder / PM</p>
+            <p class="role-card__title">I'm reviewing designs</p>
+          </div>
+          <p class="role-card__body">You received a link from the design team. Here's how to navigate the portal, switch devices, and view prototypes on your phone.</p>
+          <p class="role-card__arrow">Go to reviewer guide →</p>
+        </a>
+        <a href="#for-designers" class="role-card">
+          <div class="role-card__icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v8M2 6h8"/><rect x="1" y="1" width="14" height="14" rx="2"/></svg>
+          </div>
+          <div>
+            <p class="role-card__label">Designer</p>
+            <p class="role-card__title">I'm adding a prototype</p>
+          </div>
+          <p class="role-card__body">You built an HTML prototype and want to add it to the portal. There's a form for this — no manual JSON editing required.</p>
+          <p class="role-card__arrow">Go to designer guide →</p>
+        </a>
+      </div>
+    </header>
+
+
+    <!-- For Reviewers -->
+    <section class="section" id="for-reviewers">
+      <div class="section__label">
+        <span class="section__label-rule"></span>
+        <span class="section__label-text">For Reviewers</span>
+        <span class="section__label-rule"></span>
+      </div>
+      <h2 class="section__title">Viewing prototypes</h2>
+      <p class="section__intro">Open the link in any browser — no login, no software to install. Select a feature to see how it works.</p>
+
+      <!-- Interactive feature explorer -->
+      <div class="feat-explorer">
+
+        <!-- Left: selectable cards -->
+        <div class="feat-cards">
+
+          <button class="feat-card is-active" data-feat="sidebar" onclick="selectFeature('sidebar')">
+            <div class="feat-card__icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="5" x2="13" y2="5"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="11" x2="8" y2="11"/><rect x="1" y="1" width="14" height="14" rx="2"/></svg>
+            </div>
+            <div>
+              <p class="feat-card__title">Sidebar</p>
+              <p class="feat-card__body">Browse and select prototypes from the left panel.</p>
+            </div>
+          </button>
+
+          <button class="feat-card" data-feat="devices" onclick="selectFeature('devices')">
+            <div class="feat-card__icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="1" width="8" height="14" rx="2"/><circle cx="8" cy="12.5" r="0.75" fill="currentColor" stroke="none"/></svg>
+            </div>
+            <div>
+              <p class="feat-card__title">Switch devices</p>
+              <p class="feat-card__body">Preview on Desktop, iPhone, or Android.</p>
+            </div>
+          </button>
+
+          <button class="feat-card" data-feat="phone" onclick="selectFeature('phone')">
+            <div class="feat-card__icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+            </div>
+            <div>
+              <p class="feat-card__title">View on your phone</p>
+              <p class="feat-card__body">Scan a QR code to open it on your real device.</p>
+            </div>
+          </button>
+
+          <button class="feat-card" data-feat="share" onclick="selectFeature('share')">
+            <div class="feat-card__icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="3" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="13" r="1.5"/><path d="M5.5 8.8l5 2.7M10.5 4.2l-5 2.7"/></svg>
+            </div>
+            <div>
+              <p class="feat-card__title">Share a prototype</p>
+              <p class="feat-card__body">Copy a direct link to exactly what you're viewing.</p>
+            </div>
+          </button>
+
+          <button class="feat-card" data-feat="changelog" onclick="selectFeature('changelog')">
+            <div class="feat-card__icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M2 8h8M2 12h5"/></svg>
+            </div>
+            <div>
+              <p class="feat-card__title">Changelog</p>
+              <p class="feat-card__body">See what changed and when before giving feedback.</p>
+            </div>
+          </button>
+
+          <button class="feat-card" data-feat="present" onclick="selectFeature('present')">
+            <div class="feat-card__icon">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="2" width="14" height="10" rx="1.5"/><path d="M5 14h6M8 12v2"/></svg>
+            </div>
+            <div>
+              <p class="feat-card__title">Presenter mode</p>
+              <p class="feat-card__body">Hide all chrome for a clean walkthrough in meetings.</p>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- Right: visual panels -->
+        <div class="feat-visual-wrap">
+
+          <!-- Panel: Sidebar -->
+          <div class="feat-panel is-active" id="panel-sidebar">
+            <div class="vi-portal" style="height:100%;">
+              <div class="vi-sidebar">
+                <div class="vi-sb-head">
+                  <div class="vi-sb-logo">
+                    <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha" height="14" alt="IHG" style="display:block;opacity:0.72;filter:brightness(0) invert(1);">
+                  </div>
+                  <span class="vi-sb-sub">Prototype Portal · v3</span>
+                </div>
+                <div class="vi-sb-scroll">
+                  <div style="padding-top:10px;">
+                    <div class="vi-sb-section-label">
+                      <span class="vi-rule vi-rule--green"></span>
+                      <span class="vi-text--green" style="font-family:var(--engravers);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;white-space:nowrap;">Ready for Review</span>
+                      <span class="vi-rule vi-rule--green"></span>
+                    </div>
+                    <div class="vi-sb-item active"><div class="vi-sb-item__label">Destinations Cards</div></div>
+                    <div class="vi-sb-item"><div class="vi-sb-item__label">Events Accordion</div></div>
+                    <div class="vi-sb-item"><div class="vi-sb-item__label">Mobile Header</div></div>
+                  </div>
+                  <div style="padding-top:14px;">
+                    <div class="vi-sb-section-label">
+                      <span class="vi-rule"></span>
+                      <span class="vi-text" style="font-family:var(--engravers);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;white-space:nowrap;">Explorations</span>
+                      <span class="vi-rule"></span>
+                    </div>
+                    <div class="vi-sb-item"><div class="vi-sb-item__label" style="color:rgba(255,255,255,0.45)">Homepage — Desktop</div></div>
+                    <div class="vi-sb-item"><div class="vi-sb-item__label" style="color:rgba(255,255,255,0.45)">Destinations Carousel</div></div>
+                    <div class="vi-sb-item"><div class="vi-sb-item__label" style="color:rgba(255,255,255,0.45)">Push / Pull</div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="vi-main">
+                <div class="vi-canvas" style="align-items:center;justify-content:center;">
+                  <div class="vi-glow"></div>
+                  <div style="text-align:center;position:relative;z-index:1;">
+                    <p style="font-family:var(--engravers);font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.22);margin-bottom:12px;">Select a prototype</p>
+                    <div style="width:64px;height:1px;background:rgba(255,255,255,0.08);margin:0 auto;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Devices -->
+          <div class="feat-panel" id="panel-devices">
+            <div style="background:#0e0c14;height:100%;display:flex;flex-direction:column;">
+              <div class="vi-toolbar" style="justify-content:center;gap:4px;">
+                <div class="vi-tb-btn" style="border-radius:7px;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:5px;">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="2" width="14" height="10" rx="1.5"/><path d="M5 14h6M8 12v2"/></svg>Desktop
+                </div>
+                <div class="vi-tb-btn active" style="border-radius:7px;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:5px;">
+                  <svg width="10" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="1" width="8" height="14" rx="2"/></svg>iOS
+                </div>
+                <div class="vi-tb-btn" style="border-radius:7px;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:5px;">
+                  <svg width="10" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3.5" y="3" width="9" height="12" rx="1.5"/><path d="M6 3V2M10 3V2M3.5 7h9"/></svg>Android
+                </div>
+              </div>
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:28px;position:relative;">
+                <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:20px 20px;"></div>
+                <div style="width:56px;height:110px;border-radius:12px;background:#fff;border:1px solid rgba(255,255,255,0.15);box-shadow:0 20px 60px rgba(0,0,0,0.7);position:relative;z-index:1;overflow:hidden;opacity:0.35;">
+                  <div style="height:14px;background:rgba(0,0,0,0.06);"></div>
+                  <div style="height:36px;background:linear-gradient(180deg,#8b7355,#6b5340);"></div>
+                </div>
+                <div class="vi-device" style="position:relative;z-index:2;box-shadow:0 24px 70px rgba(0,0,0,0.8);">
+                  <div class="vi-device__screen"></div>
+                  <div class="vi-device__notch"></div>
+                  <div class="vi-device__bar"></div>
+                  <div class="vi-device__img"></div>
+                  <div class="vi-device__content">
+                    <div class="vi-device__line"></div>
+                    <div class="vi-device__line vi-device__line--short"></div>
+                  </div>
+                </div>
+                <div style="width:56px;height:110px;border-radius:12px;background:#fff;border:1px solid rgba(255,255,255,0.15);box-shadow:0 20px 60px rgba(0,0,0,0.7);position:relative;z-index:1;overflow:hidden;opacity:0.35;">
+                  <div style="height:12px;background:#1a1a1a;"></div>
+                  <div style="height:36px;background:linear-gradient(180deg,#8b7355,#6b5340);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Phone / QR -->
+          <div class="feat-panel" id="panel-phone">
+            <div style="background:#0e0c14;height:100%;display:flex;align-items:center;justify-content:center;">
+              <div class="vi-qr-modal">
+                <p class="vi-qr-label">Scan to open</p>
+                <div class="vi-qr-img">
+                  <div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div>
+                  <div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div>
+                  <div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div>
+                  <div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div>
+                  <div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div>
+                  <div class="vi-qr-cell"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell w"></div><div class="vi-qr-cell"></div>
+                  <div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div><div class="vi-qr-cell"></div>
+                </div>
+                <p class="vi-qr-proto">Destinations Cards</p>
+                <p class="vi-qr-hint">Point your camera at this code</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Share -->
+          <div class="feat-panel" id="panel-share">
+            <div style="background:#0e0c14;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative;">
+              <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:20px 20px;"></div>
+              <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:16px;">
+                <div style="display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:100px;background:var(--brand);border:1px solid rgba(255,255,255,0.15);box-shadow:0 8px 32px rgba(33,21,81,0.6);">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="3" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="13" r="1.5"/><path d="M5.5 8.8l5 2.7M10.5 4.2l-5 2.7"/></svg>
+                  <span style="font-family:var(--engravers);font-size:8.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.8);">Share Link</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:rgba(74,188,118,0.1);border:1px solid rgba(74,188,118,0.25);">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="rgba(74,188,118,0.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 4 6-7"/></svg>
+                  <span style="font-family:var(--inter);font-size:12px;font-weight:300;color:rgba(74,188,118,0.9);">Link copied to clipboard</span>
+                </div>
+                <p style="font-family:var(--inter);font-size:10.5px;font-weight:300;color:rgba(255,255,255,0.2);max-width:220px;text-align:center;line-height:1.6;">Recipients land on exactly what you were viewing — same prototype, device, and mode.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Changelog -->
+          <div class="feat-panel" id="panel-changelog">
+            <div style="background:#0e0c14;height:100%;display:flex;overflow:hidden;">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;">
+                <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:20px 20px;"></div>
+                <div style="width:60px;height:110px;border-radius:12px;background:#fff;opacity:0.12;position:relative;z-index:1;"></div>
+              </div>
+              <div class="vi-drawer" style="width:240px;">
+                <div class="vi-drawer__head">
+                  <p class="vi-drawer__eyebrow">Changelog</p>
+                  <p class="vi-drawer__name">Destinations Cards</p>
+                </div>
+                <div class="vi-drawer__body">
+                  <div class="vi-entry"><div class="vi-entry__dot"></div><div><p class="vi-entry__date">May 11</p><p class="vi-entry__text">Mobile snap-scroll variant added.</p></div></div>
+                  <div class="vi-entry"><div class="vi-entry__dot"></div><div><p class="vi-entry__date">Apr 28</p><p class="vi-entry__text">Direction selected from A/B/C exploration.</p></div></div>
+                  <div class="vi-entry"><div class="vi-entry__dot"></div><div><p class="vi-entry__date">Apr 15</p><p class="vi-entry__text">Initial exploration — 3 directions presented.</p></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Presenter -->
+          <div class="feat-panel" id="panel-present">
+            <div style="background:#05040a;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;position:relative;">
+              <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(33,21,81,0.35) 0%,transparent 70%);"></div>
+              <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:24px;">
+                <div style="width:160px;height:110px;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.8);">
+                  <div style="height:22px;background:rgba(0,0,0,0.05);"></div>
+                  <div style="height:50px;background:linear-gradient(180deg,#8b7355,#6b5340);"></div>
+                  <div style="padding:8px 10px;display:flex;flex-direction:column;gap:5px;">
+                    <div style="height:4px;background:rgba(0,0,0,0.12);border-radius:2px;"></div>
+                    <div style="height:4px;width:60%;background:rgba(0,0,0,0.08);border-radius:2px;"></div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);">
+                  <span style="font-family:var(--inter);font-size:10.5px;font-weight:300;color:rgba(255,255,255,0.35);">Press</span>
+                  <span style="font-family:var(--engravers);font-size:8px;letter-spacing:0.14em;color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.08);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);">Esc</span>
+                  <span style="font-family:var(--inter);font-size:10.5px;font-weight:300;color:rgba(255,255,255,0.35);">to exit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <script>
+      function selectFeature(name) {
+        document.querySelectorAll('.feat-card').forEach(c =>
+          c.classList.toggle('is-active', c.dataset.feat === name));
+        document.querySelectorAll('.feat-panel').forEach(p =>
+          p.classList.toggle('is-active', p.id === 'panel-' + name));
+      }
+    </script>
+
+    <!-- For Designers -->
+    <section class="section" id="for-designers">
+      <div class="section__label">
+        <span class="section__label-rule"></span>
+        <span class="section__label-text">For Designers</span>
+        <span class="section__label-rule"></span>
+      </div>
+      <h2 class="section__title">Adding a prototype</h2>
+      <p class="section__intro">There's a form for this. Drop your file, fill in the details, hit submit — no JSON editing, no manual file moves. You'll need three things set up first.</p>
+
+      <!-- Prerequisites -->
+      <div class="prereq">
+        <span class="prereq__label">Before you start</span>
+        <div class="prereq__items">
+          <span class="prereq__item"><strong>Git</strong> installed</span>
+          <span class="prereq__item"><strong>Node.js</strong> installed (v18+)</span>
+          <span class="prereq__item">Repo <strong>cloned</strong> to your machine</span>
+          <span class="prereq__item">A prototype saved as a <strong>.html file</strong></span>
+        </div>
+      </div>
+
+      <!-- Add form visual -->
+      <div class="visual">
+        <span class="visual__label">add.html</span>
+        <div style="background:#0b0917;padding:32px 28px 28px;">
+
+          <!-- Mock nav -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+            <img src="https://digital.ihg.com/is/image/ihg/ihg-logo-nav?fmt=png-alpha" height="14" alt="IHG" style="opacity:0.65;filter:brightness(0) invert(1);">
+            <span style="font-family:var(--engravers);font-size:8px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.28);">Add Prototype</span>
+            <span style="font-family:var(--engravers);font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(74,188,118,0.75);background:rgba(74,188,118,0.07);border:1px solid rgba(74,188,118,0.2);padding:5px 10px;border-radius:5px;">● Local server active</span>
+          </div>
+
+          <!-- Two columns: form fields + submit -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+            <!-- Left: fields -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+
+              <!-- Drop zone -->
+              <div style="border:1px dashed rgba(74,188,118,0.3);border-radius:8px;padding:16px;text-align:center;background:rgba(74,188,118,0.04);">
+                <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(74,188,118,0.7);margin-bottom:4px;">File selected</div>
+                <div style="font-family:monospace;font-size:11px;color:rgba(74,188,118,0.6);">homepage-mobile-v2.html</div>
+              </div>
+
+              <!-- Label field -->
+              <div>
+                <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.38);margin-bottom:5px;">Display name</div>
+                <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:9px 12px;font-size:12px;font-weight:300;color:rgba(255,255,255,0.7);">Homepage Mobile v2</div>
+              </div>
+
+              <!-- Section pills -->
+              <div>
+                <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.38);margin-bottom:8px;">Section</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                  <div style="padding:10px;border-radius:7px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);">
+                    <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:3px;">Ready for Review</div>
+                    <div style="font-size:10px;font-weight:300;color:rgba(255,255,255,0.28);">Stakeholder-facing</div>
+                  </div>
+                  <div style="padding:10px;border-radius:7px;border:1px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.07);">
+                    <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:3px;">Explorations</div>
+                    <div style="font-size:10px;font-weight:300;color:rgba(255,255,255,0.35);">Work in progress</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status + devices row -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div>
+                  <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.38);margin-bottom:7px;">Status</div>
+                  <div style="display:flex;gap:5px;">
+                    <span style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 9px;border-radius:100px;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);">Draft</span>
+                    <span style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 9px;border-radius:100px;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.28);">Review</span>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.38);margin-bottom:7px;">Devices</div>
+                  <div style="display:flex;gap:5px;">
+                    <span style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 9px;border-radius:100px;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);">iPhone</span>
+                    <span style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 9px;border-radius:100px;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);">Android</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right: changelog + submit -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+
+              <!-- Figma -->
+              <div>
+                <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.38);margin-bottom:5px;">Figma URL <span style="opacity:0.4;">optional</span></div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:9px 12px;font-size:11px;font-weight:300;color:rgba(255,255,255,0.25);">https://figma.com/design/…</div>
+              </div>
+
+              <!-- Notes -->
+              <div style="flex:1;">
+                <div style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.38);margin-bottom:8px;">Changelog</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:grid;grid-template-columns:70px 1fr;gap:6px;">
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:5px;padding:7px 8px;font-size:10px;font-weight:300;color:rgba(255,255,255,0.5);text-align:center;">May 12</div>
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:5px;padding:7px 10px;font-size:10px;font-weight:300;color:rgba(255,255,255,0.55);">Initial mobile exploration — two layout directions.</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;opacity:0.4;padding:5px 2px;cursor:default;">
+                    <span style="font-family:var(--engravers);font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.4);">+ Add note</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit button -->
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:auto;">
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:8px;background:#211551;border:1px solid rgba(255,255,255,0.15);font-family:var(--engravers);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#fff;box-shadow:0 4px 20px rgba(33,21,81,0.5);">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v6M3.5 4.5L6 2l2.5 2.5"/><path d="M2 9v1a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9"/></svg>
+                  Add to Portal
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow">
+
+        <div class="flow__step flow__step--active">
+          <div class="flow__num">1</div>
+          <div class="flow__content">
+            <p class="flow__title">One-time setup — start the local server</p>
+            <p class="flow__body">Open Terminal, navigate to the repo folder, and run this command. You only need to do this when you're adding a prototype. Once it's running, leave that Terminal window open.</p>
+            <div class="code-block">
+              <pre><span class="c"># In Terminal, from the repo folder</span>
+node server.js</pre>
+            </div>
+            <div class="tip">
+              <span class="tip__icon">→</span>
+              <p class="tip__body">Not sure how to open Terminal or navigate to the repo? Ask <strong>Francisco</strong> to do a quick 5-minute walkthrough — it's a one-time thing.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow__step">
+          <div class="flow__num">2</div>
+          <div class="flow__content">
+            <p class="flow__title">Open the Add Prototype form</p>
+            <p class="flow__body">Go to <a href="add.html" style="color:rgba(255,255,255,0.55);text-decoration:underline;text-underline-offset:3px;">add.html</a> or click <strong>Add Prototype</strong> from the portal landing screen. The green banner at the top confirms the server is running and the form will write files directly.</p>
+          </div>
+        </div>
+
+        <div class="flow__step">
+          <div class="flow__num">3</div>
+          <div class="flow__content">
+            <p class="flow__title">Fill in the form and submit</p>
+            <p class="flow__body">Drop your <strong>.html file</strong>, give it a display name, pick a section (Explorations for WIP, Ready for Review for stakeholder-facing), choose your devices, add a one-line changelog note, and hit <strong>Add to Portal</strong>. The form places your file and registers it automatically.</p>
+            <div class="tip">
+              <span class="tip__icon">→</span>
+              <p class="tip__body">Have a Figma frame for this prototype? Paste the share URL into the Figma field. A shortcut button will appear in the portal toolbar so reviewers can jump directly to the source.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow__step">
+          <div class="flow__num">4</div>
+          <div class="flow__content">
+            <p class="flow__title">Commit and open a PR</p>
+            <p class="flow__body">The form already handled the files. Just commit two files and open a pull request — once it's merged, your prototype is live in the portal.</p>
+            <div class="code-block">
+              <pre>git add _prototype/your-file.html _portal-v2/protos.js
+git commit -m <span class="s">"Add [Prototype Name]"</span>
+git push origin proto/your-file-name</pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Process -->
+    <section class="section" id="process">
+      <div class="section__label">
+        <span class="section__label-rule"></span>
+        <span class="section__label-text">The Process</span>
+        <span class="section__label-rule"></span>
+      </div>
+      <h2 class="section__title">From idea to approved</h2>
+      <p class="section__intro">Every prototype moves through four stages. The sidebar sections and status badges in the portal map directly to this flow — so everyone always knows where something stands.</p>
+
+      <div class="flow">
+
+        <div class="flow__step">
+          <div class="flow__num">1</div>
+          <div class="flow__content">
+            <p class="flow__title">Build <span class="flow__tag flow__tag--designer">Designer</span></p>
+            <p class="flow__body">Designer builds an HTML prototype and adds it to the portal under <strong>Explorations</strong> with status <span class="badge badge--draft">Draft</span>. Multiple directions can live side by side — A, B, C variants all visible in the portal under the same subsection.</p>
+          </div>
+        </div>
+
+        <div class="flow__step">
+          <div class="flow__num">2</div>
+          <div class="flow__content">
+            <p class="flow__title">Internal review <span class="flow__tag flow__tag--lead">Design Lead</span></p>
+            <p class="flow__body">Designer shares the portal link in Slack with the design lead (Mariam / Julia). Review happens directly in the portal — the lead can view on desktop and phone, check the changelog for context, and give feedback in Slack or Figma comments. A direction is selected and the others are deprioritised (kept in Explorations, not deleted).</p>
+          </div>
+        </div>
+
+        <div class="flow__step flow__step--active">
+          <div class="flow__num">3</div>
+          <div class="flow__content">
+            <p class="flow__title">Stakeholder review <span class="flow__tag flow__tag--stakeholder">Stakeholder</span></p>
+            <p class="flow__body">Designer moves the prototype to <strong>Ready for Review</strong> and updates status to <span class="badge badge--review">In Review</span>. A share link is sent to Allison / Chao. They view it in the portal — on desktop, on their phone via QR — and give sign-off or feedback. No Figma access needed.</p>
+          </div>
+        </div>
+
+        <div class="flow__step">
+          <div class="flow__num">4</div>
+          <div class="flow__content">
+            <p class="flow__title">Approved <span class="flow__tag flow__tag--lead">Design Lead</span></p>
+            <p class="flow__body">Once signed off, status is updated to <span class="badge badge--approved">Approved</span> in <code style="font-size:11px;color:rgba(255,255,255,0.4);">protos.js</code> and a changelog entry is added noting the approval. The prototype stays in the portal as a reference for engineering handoff.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Reference -->
+    <section class="section" id="reference">
+      <div class="section__label">
+        <span class="section__label-rule"></span>
+        <span class="section__label-text">Reference</span>
+        <span class="section__label-rule"></span>
+      </div>
+      <h2 class="section__title">Quick reference</h2>
+      <p class="section__intro">Status values and what they mean in the portal.</p>
+
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <table class="status-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Meaning</th>
+              <th>Where it appears</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge--draft">Draft</span></td>
+              <td>Work in progress — not ready for external eyes</td>
+              <td>Explorations section only</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge--review">In Review</span></td>
+              <td>Polished and ready for stakeholder feedback</td>
+              <td>Ready for Review section</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge--approved">Approved</span></td>
+              <td>Signed off by design lead — locked for handoff</td>
+              <td>Ready for Review section</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cards" style="margin-top: 14px;">
+        <div class="card">
+          <p class="card__title">File naming</p>
+          <p class="card__body">Use hyphens, no spaces, no version numbers in the filename — use the changelog for version history instead.<br><br><strong>Good:</strong> homepage-mobile.html<br><strong>Avoid:</strong> Homepage Mobile v2 FINAL.html</p>
+        </div>
+        <div class="card">
+          <p class="card__title">ID prefixes</p>
+          <p class="card__body">Prototype IDs in protos.js use a prefix to indicate stage.<br><br><strong>r-</strong> for Ready for Review<br><strong>x-</strong> for Explorations<br><br>Example: <code style="font-size:11px;color:rgba(255,255,255,0.4);">x-homepage-mobile</code></p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="page">
+    <footer class="footer">
+      <span class="footer__left">IHG Wilson Design System · Regent Brand.com</span>
+      <span class="footer__right">Sprint 2.1 · 2026</span>
+    </footer>
+  </div>
+
+</body>
+</html>
