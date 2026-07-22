@@ -1,39 +1,9 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/app/(.*)",
-      "dest": "/app/$1"
-    },
-    {
-      "src": "/_prototype/(.*)",
-      "dest": "/_prototype/$1"
-    },
-    {
-      "src": "/(.*\\..*)",
-      "dest": "/$1"
-    },
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/login",
-      "dest": "/login.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/app/portal.html"
+      "source": "/(.*)",
+      "destination": "/app/portal.html"
     }
   ]
 }
