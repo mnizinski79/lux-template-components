@@ -1,9 +1,3 @@
 {
   "version": 2,
-  "env": {
-    "GITHUB_OWNER": "mnizinski79",
-    "GITHUB_REPO": "lux-template-components",
-    "GITHUB_BRANCH": "main",
-    "GITHUB_PATH_PREFIX": "00_portal"
-  }
 }
