@@ -111,10 +111,7 @@ const PROTOS = [
     motionSpec: null,
     about: 'Header (text-only, no icon/meta list) + a WDS Accordion instance, real 1440px block width and token-accurate padding/gutter. Toggle switches between the two live headingPosition layouts — above (stacked) and start (header pinned to a 373px column, accordion filling the rest). Body content demonstrates all three real content sub-components: textBlock (paragraph + optional link), unorderedList (diamond bullets), and contactStack (icon + phone/email).',
     docs: null,
-    notes: [
-      { date: 'Aug 19', text: 'FAQ-page context built with 8 real guest-services items. Rebuilt against the actual Figma specs after review: bodyPanel padding corrected from an invented left-indent to the real uniform 12px, contact icons resized to their real inset dimensions (were stretched to fill the 24px box), list/contact copy weight matched to the textBlock paragraph weight. Wrapped in the real 1440px AccordionBlock container with a live above/start headingPosition toggle. Plus/minus icon rebuilt as two independently-rotating bars (matches the real Phosphor Plus-Light geometry) with an ease-out-expo reveal — row opens first, then content fades and rises in on a slight delay; close has no delay so nothing lingers.' },
-      { date: 'Aug 18', text: 'Ryan\'s two Aug 18 feedback threads on the built component resolved: tab open/close is multi-mode only (no single-mode toggle), spacing tokens moved to the semantic ui/space/static family where a match exists, headingPosition prop rename verified, legacy appearance mode removed, layer fills cleared (transparent by default), top/bottom spacing added and left/right moved to a responsive gutter token with maxWidth relocated onto the content frame.' },
-    ],
+    notes: [],
     urls: {
       desktop: '../_prototype/wds/accordion/final/wds-accordion-faq-desktop.html',
     },
