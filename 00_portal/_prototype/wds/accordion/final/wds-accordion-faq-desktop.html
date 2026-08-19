@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WDS Accordion — FAQ Page Context</title>
+<style>
+  :root {
+    --wds-color-title: #384250;
+    --wds-color-body: #4B5563;
+    --wds-color-icon: #1F2A37;
+    --wds-color-border: #F3F4F6;
+    --wds-color-page-bg: #FBFAF8;
+    --wds-space-300: 12px;
+    --wds-space-500: 20px;
+    --wds-space-600: 24px;
+
+    /* House "luxe" motion signature — same ease-out-expo family used on
+       TeaserCard Reveal (cubic-bezier(0.16,1,0.3,1)). Fast start, long
+       considered settle, no mechanical symmetry. */
+    --wds-ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+    --wds-icon-duration: 340ms;
+    --wds-panel-duration: 440ms;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--wds-color-page-bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .page {
+    padding: 96px 0 160px;
+  }
+
+  /* Variant toggle — demo control only, not part of AccordionBlock itself. */
+  .variant-toggle {
+    max-width: 1440px;
+    margin: 0 auto 40px;
+    padding: 0 24px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .variant-toggle button {
+    all: unset;
+    cursor: pointer;
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6B7280;
+    background: #F3F4F6;
+    padding: 8px 16px;
+    border-radius: 100px;
+  }
+
+  .variant-toggle button.active {
+    background: #1F2A37;
+    color: #fff;
+  }
+
+  /* Real AccordionBlock/Desktop root: w-1440px, flex-col, px = responsive
+     gutter token (wds-tkn/layout/space/responsive/1000-1600-3000, 120px at
+     desktop), py-40 (ui/space/static/1000). No fill — transparent, drops
+     into the parent section's color, per the layer-fills fix. */
+  .block-root {
+    width: 1440px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 40px 120px;
+  }
+
+  /* Real "content" wrapper: max-w-1800, gap-40 (ui/space/static/1000).
+     Direction flips per headingPosition — column for "above", row for
+     "start" — same gap token either way. */
+  .block-content {
+    max-width: 1800px;
+    display: flex;
+    gap: 40px;
+  }
+
+  .block-content.variant-above {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .block-content.variant-start {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  /* Real textBox: gap-40 (layout/space/responsive/1000-1000-1000).
+     Fixed 373px in "start", full width in "above". */
+  .block-header {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .variant-above .block-header {
+    width: 100%;
+  }
+
+  .variant-start .block-header {
+    width: 373px;
+    flex-shrink: 0;
+  }
+
+  .variant-start .accordion {
+    flex: 1 0 0;
+    min-width: 0;
+  }
+
+  /* Real ._WDS MediaBlock / TextHeading recipe — AccordionBlock's own
+     Header is this, text-only, no icon/meta list. Not the 44px generic
+     page title this was before. */
+  .block-title {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-weight: 400;
+    font-size: 29px;
+    line-height: 38px;
+    color: #53389E;
+    margin: 0;
+  }
+
+  .accordion {
+    border-top: 1px solid var(--wds-color-border);
+  }
+
+  .accordion-item {
+    border-bottom: 1px solid var(--wds-color-border);
+  }
+
+  .accordion-header {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wds-space-600);
+    width: 100%;
+    padding: var(--wds-space-500) var(--wds-space-300);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  /* No background wash on hover/active, per the confirmed direction —
+     modes stay structurally present but visually transparent. The icon
+     rotation on click carries the interaction feedback, not a color fill. */
+  .accordion-header:focus-visible {
+    outline: 2px solid #6941C6;
+    outline-offset: -2px;
+    border-radius: 2px;
+  }
+
+  .accordion-title {
+    flex: 1 0 0;
+    min-width: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 32px;
+    color: var(--wds-color-title);
+    text-align: left;
+    word-break: break-word;
+  }
+
+  /* Real [icon] wrapper spec: pt-6/pb-10/px-10 (wds-tkn/ui/space/static/150,
+     250, 250) — asymmetric, not centered padding. */
+  .icon-wrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px 10px;
+  }
+
+  .icon-box {
+    position: relative;
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Real Phosphor "Plus-Light" proportions (17.625x17.625, 0.5625 stroke,
+     13.28% inset in a 24px box), split into two independent bars so the
+     vertical stroke can rotate on its own. */
+  .bar {
+    position: absolute;
+    background: var(--wds-color-icon);
+    border-radius: 1px;
+  }
+
+  .bar--h {
+    left: 13.28%;
+    right: 13.28%;
+    top: 48.4045%;
+    height: 3.191%;
+  }
+
+  .bar--v {
+    top: 13.28%;
+    bottom: 13.28%;
+    left: 48.4045%;
+    width: 3.191%;
+    transform-origin: center;
+    transition: transform var(--wds-icon-duration) var(--wds-ease-luxe);
+  }
+
+  .accordion-item.is-open .bar--v {
+    transform: rotate(90deg);
+  }
+
+  .accordion-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--wds-panel-duration) var(--wds-ease-luxe);
+  }
+
+  .accordion-item.is-open .accordion-body {
+    grid-template-rows: 1fr;
+  }
+
+  .accordion-body-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* Real bodyPanel spec: p-[wds-tkn/ui/space/static/300,12px] — uniform
+     12px on every side, no left indent to "align under" the title.
+
+     The content itself carries its own fade + rise, layered on top of the
+     row expansion rather than just clipping into view — this is the part
+     that reads as "considered" instead of mechanical. On open it's
+     deliberately delayed so the space opens first, then the copy settles
+     in. On close there's no delay, so it doesn't linger while the row is
+     visibly collapsing underneath it. */
+  .accordion-body-content {
+    padding: var(--wds-space-300);
+    color: var(--wds-color-body);
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 300ms var(--wds-ease-luxe),
+                transform 300ms var(--wds-ease-luxe);
+  }
+
+  .accordion-item.is-open .accordion-body-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 140ms;
+  }
+
+  /* [textBlock] — body paragraph + optional TextLink, 8px gap. Real
+     structure/type ramp pulled from the Accordion FPO component. */
+  .content-textblock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .content-textblock p {
+    margin: 0;
+    font-family: Inter, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 24px;
+    color: #121212;
+  }
+
+  .content-textlink {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    font-family: 'IBM Plex Sans', Inter, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    color: #42307D;
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #6941C6;
+    width: fit-content;
+  }
+
+  /* [unorderedList] — diamond-bullet items, real amenity-style copy. */
+  .content-ul {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .content-ul .list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .content-ul .bullet-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content-ul .bullet-icon img {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* Body copy weight matched to [textBlock]'s body-md (400, 0 tracking)
+     rather than the component's own body-sm (300, 0.5px) — reads too
+     light sitting next to the regular paragraph copy in this context. */
+  .content-ul p {
+    margin: 0;
+    font-family: Inter, -apple-system, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    color: #121212;
+  }
+
+  /* [contactStack] — icon + text items, 12px gap between rows. */
+  .content-contactstack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .content-contactstack .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Real spec: 24px icon box, glyph sits at its natural size inset within
+     it (not stretched to fill 24x24 — that's what made these look huge). */
+  .content-contactstack .icon-box {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content-contactstack .icon-box img {
+    display: block;
+  }
+
+  .content-contactstack p {
+    margin: 0;
+    font-family: Inter, -apple-system, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    color: #121212;
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+    <div class="variant-toggle">
+      <button data-variant="above" class="active">headingPosition: above</button>
+      <button data-variant="start">headingPosition: start</button>
+    </div>
+
+    <div class="block-root">
+      <div class="block-content variant-above" id="blockContent">
+        <div class="block-header">
+          <h2 class="block-title">Frequently Asked Questions</h2>
+        </div>
+
+    <div class="accordion" id="faq-accordion">
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">What time is check-in and check-out?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          <div class="content-textblock">
+            <p>Check-in begins at 3:00 PM and check-out is at 12:00 PM. Early arrival and late departure
+            may be arranged based on availability — reach out to the front desk ahead of your stay.</p>
+            <a href="#" class="content-textlink">View full hotel policies</a>
+          </div>
+        </div></div></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">What is your cancellation policy?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          Reservations may be cancelled free of charge up to 48 hours before arrival. Cancellations
+          made within 48 hours are subject to a one-night charge.
+        </div></div></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">Is parking available, and is valet included?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          Valet parking is available for $58 per night. Self-parking is offered nearby at a reduced
+          rate for hotel guests — ask the concierge for a validated ticket.
+        </div></div></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">Do you accommodate pets?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          Dogs under 40 lbs are welcome for an additional $75 per stay. Please let us know at the
+          time of booking so we can prepare a pet-friendly room.
+        </div></div></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">How do I book a spa treatment?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          <div class="content-ul">
+            <div class="list-item"><span class="bullet-icon"><img src="assets/diamond-bullet.svg" alt=""></span><p>Open daily 8:00 AM&ndash;9:00 PM, reservations through the hotel app or spa desk</p></div>
+            <div class="list-item"><span class="bullet-icon"><img src="assets/diamond-bullet.svg" alt=""></span><p>Treatments include massage, facials, and body therapies</p></div>
+            <div class="list-item"><span class="bullet-icon"><img src="assets/diamond-bullet.svg" alt=""></span><p>Steam room and sauna access included with any treatment</p></div>
+            <div class="list-item"><span class="bullet-icon"><img src="assets/diamond-bullet.svg" alt=""></span><p>Poolside cabana service available seasonally</p></div>
+          </div>
+        </div></div></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">Are reservations required for the restaurant?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          <div class="content-contactstack">
+            <div class="contact-item"><span class="icon-box"><img src="assets/contact-phone.svg" alt="" width="18.37" height="18.37"></span><p>+1 310-899-1040</p></div>
+            <div class="contact-item"><span class="icon-box"><img src="assets/contact-email.svg" alt="" width="19.13" height="14.63"></span><p>dining@hotelwebsite.com</p></div>
+          </div>
+        </div></div></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">Is Wi-Fi complimentary throughout the property?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          Yes, complimentary high-speed Wi-Fi is available in all guest rooms and public spaces.
+          Network details are provided at check-in.
+        </div></div></div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">How do I redeem loyalty points for a stay?</span>
+          <span class="icon-wrapper"><span class="icon-box"><span class="bar bar--h"></span><span class="bar bar--v"></span></span></span>
+        </button>
+        <div class="accordion-body"><div class="accordion-body-inner"><div class="accordion-body-content">
+          Points can be redeemed at booking through the loyalty portal or by calling reservations
+          directly. A blackout-date calendar is available on the rewards site.
+        </div></div></div>
+      </div>
+    </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  document.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const item = header.closest('.accordion-item');
+      const willOpen = !item.classList.contains('is-open');
+      item.classList.toggle('is-open', willOpen);
+      header.setAttribute('aria-expanded', String(willOpen));
+    });
+  });
+
+  const blockContent = document.getElementById('blockContent');
+  document.querySelectorAll('.variant-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.variant-toggle button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const variant = btn.dataset.variant;
+      blockContent.classList.remove('variant-above', 'variant-start');
+      blockContent.classList.add('variant-' + variant);
+    });
+  });
+</script>
+
+</body>
+</html>
