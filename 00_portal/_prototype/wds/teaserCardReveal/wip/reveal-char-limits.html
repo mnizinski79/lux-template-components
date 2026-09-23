@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reveal Gen2 — Character Limit Tester</title>
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  @font-face {
+    font-family: 'Canela';
+    src: url('../../../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+    font-weight: 100 900;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Engravers Gothic';
+    src: url('../../../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+    font-weight: 100 500;
+    font-style: normal;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #14121f;
+    color: #fff;
+    padding: 32px;
+  }
+
+  :root {
+    --canela: 'Canela', Georgia, serif;
+    --engravers: 'Engravers Gothic', 'Arial Narrow', sans-serif;
+    --plex: 'IBM Plex Sans', sans-serif;
+  }
+
+  h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #a8a3c0; margin-bottom: 20px; max-width: 760px; line-height: 1.5; }
+  .sub b { color: #fff; }
+
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;
+    background: #1e1b2e; border: 1px solid #322d47; border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 20px;
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; flex: 1 1 260px; }
+  .field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #8880a8; }
+  .field textarea {
+    font-family: 'Inter', sans-serif; font-size: 13px; background: #14121f;
+    border: 1px solid #322d47; border-radius: 4px; color: #fff;
+    padding: 8px 10px; resize: vertical; min-height: 44px;
+  }
+  .count { font-size: 11px; color: #8880a8; }
+
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+  .presets button {
+    font-size: 11px; background: #2a2540; border: 1px solid #3d3660; color: #d6d0f0;
+    padding: 6px 10px; border-radius: 4px; cursor: pointer;
+  }
+  .presets button:hover { background: #382f5c; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 32px; }
+  .combo { background: #1e1b2e; border: 1px solid #322d47; border-radius: 8px; padding: 16px; }
+  .combo-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: #d6d0f0;
+    margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;
+  }
+  .flag {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 2px 7px; border-radius: 3px;
+  }
+  .flag.ok   { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+  .flag.fail { background: rgba(255, 107, 76, 0.18); color: #ff6b4c; }
+  .card-wrap { display: flex; justify-content: center; }
+
+  .metrics {
+    margin-top: 12px; font-size: 11px; color: #a8a3c0; line-height: 1.6;
+    border-top: 1px solid #322d47; padding-top: 10px;
+  }
+  .metrics b { color: #fff; }
+  .metrics .bad { color: #ff8a6b; font-weight: 600; }
+
+  /* ─── Tabs ───────────────────────────────────────────── */
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid #322d47; }
+  .tab-btn {
+    font-size: 13px; font-weight: 600; color: #8880a8; background: none; border: none;
+    padding: 10px 4px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tab-btn.active { color: #fff; border-bottom-color: #6941C6; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ─── Recommendations table ──────────────────────────── */
+  .rec-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  .rec-table th, .rec-table td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #322d47; }
+  .rec-table th { color: #8880a8; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .rec-table td.best { color: #4ade80; font-weight: 700; }
+  .rec-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .rec-note {
+    background: #1e1b2e; border: 1px solid #322d47; border-radius: 8px;
+    padding: 16px 20px; margin-top: 20px; font-size: 13px; color: #a8a3c0; line-height: 1.6;
+  }
+  .rec-note b { color: #fff; }
+
+  /* ══════════════════════════════════════════════════════════════════
+     Real Gen2 Reveal component structure, pulled directly from Figma
+     (file 9ImJTrRIvr9hxx8wiCNl8T, nodes 209:8237 / 209:8153 / 212:7172 /
+     210:7122 — Desktop 4:5, Mobile 4:5, Desktop 1:1, Mobile 1:1). All four
+     nodes share identical padding/gap/type values; only the card's own
+     height changes per ratio. This is a real flex-column hug layout, not
+     the older teaserCardReveal/final/*.html prototype's fixed-pixel
+     translateY + absolute-position mechanism — that file predates this
+     token pass. No line-clamp exists in the real component: overflow
+     content gets pushed up and clipped at the card's top edge (bottom-
+     anchored hug exceeding the card's height), not ellipsis-truncated.
+     ══════════════════════════════════════════════════════════════════ */
+  .card {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .card__img {
+    display: block; width: 100%; flex-shrink: 0; object-fit: cover;
+  }
+  .card__overlay {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(33, 21, 81, 0.1), rgba(33, 21, 81, 0.1)),
+      linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.45) 75%, rgba(0, 0, 0, 0.75) 95%);
+    pointer-events: none;
+  }
+  .card__content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  }
+  .card__frost {
+    width: 100%;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(6, 5, 15, 0.68);
+    display: flex; align-items: flex-end;
+  }
+  .vp-desktop .card__frost { padding: 40px 28px 28px 28px; gap: 16px; }
+  .vp-mobile  .card__frost { padding: 28px 20px 20px 20px; gap: 16px; }
+
+  .card__wrapper { display: flex; align-items: flex-end; justify-content: flex-end; flex: 1 1 auto; min-width: 0; }
+  .vp-desktop .card__wrapper { gap: 16px; }
+  .vp-mobile  .card__wrapper { gap: 12px; }
+
+  .card__container { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
+  .vp-desktop .card__container { gap: 16px; }
+  .vp-mobile  .card__container { gap: 12px; }
+
+  .card__title-block { display: flex; flex-direction: column; width: 100%; }
+  .card__title {
+    font-family: var(--canela); font-weight: 300; color: #f5f5f5;
+    word-break: break-word;
+  }
+  .vp-desktop .card__title { font-size: 28px; line-height: 44px; }
+  .vp-mobile  .card__title { font-size: 22px; line-height: 32px; }
+
+  .card__meta {
+    font-family: var(--engravers); font-weight: 400; color: #c2c2c2;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .vp-desktop .card__meta { font-size: 14px; line-height: 24px; }
+  .vp-mobile  .card__meta { font-size: 12px; line-height: 20px; }
+
+  .card__lower { display: flex; flex-direction: column; width: 100%; }
+  .vp-desktop .card__lower { gap: 36px; }
+  .vp-mobile  .card__lower { gap: 24px; }
+
+  .card__desc {
+    font-family: var(--plex); font-weight: 300; color: #c2c2c2; letter-spacing: 0.5px;
+    word-break: break-word;
+  }
+  .vp-desktop .card__desc { font-size: 16px; line-height: 24px; }
+  .vp-mobile  .card__desc { font-size: 14px; line-height: 22px; }
+
+  .card__button {
+    height: 36px; padding: 1px 3px; border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: fit-content;
+  }
+  .card__button span {
+    font-family: var(--plex); font-weight: 500; font-size: 14px; line-height: 16px;
+    letter-spacing: 1.5px; color: #f5f5f5;
+    border-bottom: 1px solid #c2c2c2; padding-bottom: 3px;
+    text-transform: uppercase;
+  }
+
+  .card__toggle {
+    flex-shrink: 0; background: #fff; border: none; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center; color: #211551;
+  }
+  .vp-desktop .card__toggle { width: 44px; height: 44px; font-size: 24px; }
+  .vp-mobile  .card__toggle { width: 36px; height: 36px; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<h1>Reveal Gen2 — Character Limit Tester</h1>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="tester">Live Tester</button>
+  <button class="tab-btn" data-tab="recs">Recommendations</button>
+</div>
+
+<div class="tab-panel active" id="panel-tester">
+  <p class="sub">Rebuilt against the <b>real Gen2 Figma component</b> (file <code>9ImJTrRIvr9hxx8wiCNl8T</code>, nodes 209:8237 / 209:8153 / 212:7172 / 210:7122) — a genuine flex-column hug layout, not the older <code>teaserCardReveal/final/*.html</code> prototype's fixed-offset mechanism. Real padding (40/28/28/28 desktop, 28/20/20/20 mobile), real gaps (16/36 desktop, 12/24 mobile), real fonts (Canela title 28px/44px desktop · 22px/32px mobile, IBM Plex Sans description/button, Engravers Gothic meta). No line-clamp exists in the real component — content that's too tall gets pushed up and clipped at the card's <b>top</b> edge, since the frost box is bottom-anchored and hugs its own height.</p>
+  <p class="sub"><b>Target content budget</b> (Julia/Ryan/Francisco): 4:5 — header up to 2 lines, description up to 3-line clamp &nbsp;·&nbsp; 1:1 — header capped at 1 line, description capped at 2-line clamp. Flags below check both: whether the real component visually clips this content (pushed off the card top), and separately whether it's within the target budget (which is stricter, meant to keep content away from the clip point entirely).</p>
+
+  <div class="controls">
+    <div class="field">
+      <label>Header</label>
+      <textarea id="headerInput">Sunset Rooftop Terrace</textarea>
+      <span class="count" id="headerCount"></span>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="descInput">Sink into panoramic sunset views and handcrafted cocktails on our rooftop terrace.</textarea>
+      <span class="count" id="descCount"></span>
+    </div>
+  </div>
+
+  <div class="presets">
+    <button data-preset="realistic-short">Realistic — short</button>
+    <button data-preset="realistic-long">Realistic — long</button>
+    <button data-preset="worst-w">Worst case — repeated W</button>
+    <button data-preset="worst-m">Worst case — repeated M</button>
+    <button data-preset="worst-i">Best case — repeated i (narrow)</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="tab-panel" id="panel-recs">
+  <p class="sub">Calculated from real values pulled from Figma — available text width (card width minus frost padding, toggle column, and gap) and average character width per typeface/size. Word-boundary wrapping loses a bit of efficiency vs. the raw math, so estimates are shaded down slightly. Verify exact tipping points against the Live Tester tab, since real word-length distribution shifts these.</p>
+
+  <table class="rec-table">
+    <thead>
+      <tr>
+        <th>Combo</th>
+        <th>Field</th>
+        <th>Shortest (always safe)</th>
+        <th>Longest (max before next cap)</th>
+        <th>Best / medium</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="2">Desktop 4:5<br><span style="color:#8880a8;font-weight:400;">(title ≤2 ln, desc ≤3 ln)</span></td>
+        <td>Header</td><td>1–15</td><td>~32–36</td><td class="best">24–28 chars</td>
+      </tr>
+      <tr>
+        <td>Description</td><td>1–40</td><td>~90–100</td><td class="best">70–80 chars</td>
+      </tr>
+      <tr>
+        <td rowspan="2">Desktop 1:1<br><span style="color:#8880a8;font-weight:400;">(title ≤1 ln, desc ≤2 ln)</span></td>
+        <td>Header</td><td>1–8</td><td>~16</td><td class="best">10–14 chars</td>
+      </tr>
+      <tr>
+        <td>Description</td><td>1–20</td><td>~58–62</td><td class="best">45–50 chars</td>
+      </tr>
+      <tr>
+        <td rowspan="2">Mobile 4:5<br><span style="color:#8880a8;font-weight:400;">(title ≤2 ln, desc ≤3 ln)</span></td>
+        <td>Header</td><td>1–16</td><td>~32–36</td><td class="best">24–28 chars</td>
+      </tr>
+      <tr>
+        <td>Description</td><td>1–36</td><td>~82–88</td><td class="best">65–70 chars</td>
+      </tr>
+      <tr>
+        <td rowspan="2">Mobile 1:1<br><span style="color:#8880a8;font-weight:400;">(title ≤1 ln, desc ≤2 ln)</span></td>
+        <td>Header</td><td>1–8</td><td>~17</td><td class="best">10–14 chars</td>
+      </tr>
+      <tr>
+        <td>Description</td><td>1–18</td><td>~54–58</td><td class="best">42–48 chars</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="rec-note">
+    <b>Worth flagging:</b> the 1:1 title cap (1 line, ~10–14 chars recommended) is notably tight compared to 4:5 — a title full of wide characters (W/M, all-caps) could tip over sooner than this average suggests, and a narrow-character title (i/l/t) could safely run longer. Worth confirming with Ryan/Julia whether hotel-name-style headers can realistically fit within that 1:1 constraint, since it's a much harder limit than 4:5's.
+  </div>
+</div>
+
+<script>
+  const COMBOS = [
+    { key: 'desktop-45', label: 'Desktop · 4:5', vp: 'vp-desktop', w: 400, h: 500, titleCap: 2, descCap: 3 },
+    { key: 'desktop-11', label: 'Desktop · 1:1', vp: 'vp-desktop', w: 400, h: 400, titleCap: 1, descCap: 2 },
+    { key: 'mobile-45',  label: 'Mobile · 4:5',  vp: 'vp-mobile',  w: 320, h: 400, titleCap: 2, descCap: 3 },
+    { key: 'mobile-11',  label: 'Mobile · 1:1',  vp: 'vp-mobile',  w: 320, h: 320, titleCap: 1, descCap: 2 },
+  ];
+
+  const PRESETS = {
+    'realistic-short': {
+      header: 'Sunset Rooftop Terrace',
+      desc: 'Sink into panoramic sunset views and handcrafted cocktails on our rooftop terrace.'
+    },
+    'realistic-long': {
+      header: 'Sunset Rooftop Terrace & Lounge Experience',
+      desc: 'Sink into panoramic sunset views from our rooftop terrace, where handcrafted cocktails meet live music and breathtaking coastline scenery every evening.'
+    },
+    'worst-w': { header: 'WWWWWWWWWWWWWWWWWWWW', desc: 'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW' },
+    'worst-m': { header: 'MMMMMMMMMMMMMMMMMMMM', desc: 'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM' },
+    'worst-i': { header: 'iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii', desc: 'iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii' },
+  };
+
+  const grid = document.getElementById('grid');
+  const headerInput = document.getElementById('headerInput');
+  const descInput = document.getElementById('descInput');
+  const headerCount = document.getElementById('headerCount');
+  const descCount = document.getElementById('descCount');
+
+  const nodes = {};
+
+  COMBOS.forEach(c => {
+    const combo = document.createElement('div');
+    combo.className = 'combo';
+    combo.innerHTML = `
+      <div class="combo-label">${c.label} <span class="flag ok" data-flag-clip>Real: OK</span> <span class="flag ok" data-flag-target>Target: OK</span></div>
+      <div class="card-wrap ${c.vp}">
+        <div class="card" style="width:${c.w}px; height:${c.h}px;">
+          <img class="card__img" src="../../../_assets/_imgs/teaser_prototype/1.png" alt="" style="height:${c.h}px;">
+          <div class="card__overlay"></div>
+          <div class="card__content">
+            <div class="card__frost" data-frost>
+              <div class="card__wrapper">
+                <div class="card__container">
+                  <div class="card__title-block">
+                    <div class="card__title" data-title></div>
+                    <div class="card__meta">Planning</div>
+                  </div>
+                  <div class="card__lower">
+                    <p class="card__desc" data-desc></p>
+                    <div class="card__button"><span>Explore</span></div>
+                  </div>
+                </div>
+                <button class="card__toggle" aria-label="Toggle">
+                  <i class="ph ph-x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="metrics" data-metrics></div>
+    `;
+    grid.appendChild(combo);
+    nodes[c.key] = {
+      flagClip: combo.querySelector('[data-flag-clip]'),
+      flagTarget: combo.querySelector('[data-flag-target]'),
+      frost: combo.querySelector('[data-frost]'),
+      title: combo.querySelector('[data-title]'),
+      desc: combo.querySelector('[data-desc]'),
+      metrics: combo.querySelector('[data-metrics]'),
+    };
+  });
+
+  function measure() {
+    const header = headerInput.value;
+    const desc = descInput.value;
+    headerCount.textContent = `${header.length} characters`;
+    descCount.textContent = `${desc.length} characters`;
+
+    COMBOS.forEach(c => {
+      const n = nodes[c.key];
+      n.title.textContent = header;
+      n.desc.textContent = desc;
+
+      // Neither element is clamped in the real component (no max-height,
+      // no line-clamp) — they just wrap naturally, so their own rendered
+      // height already reflects the real line count. No hidden probe
+      // clone needed (that indirection was the source of a measurement
+      // bug carried over from the old clamped design).
+      const titleLineHeight = parseFloat(getComputedStyle(n.title).lineHeight);
+      const titleLines = Math.round(n.title.getBoundingClientRect().height / titleLineHeight);
+      const descLineHeight = parseFloat(getComputedStyle(n.desc).lineHeight);
+      const descLines = Math.round(n.desc.getBoundingClientRect().height / descLineHeight);
+
+      // Real component has no clamp — it clips at the card's top edge once
+      // the bottom-anchored frost box's natural height exceeds the card.
+      const frostHeight = n.frost.scrollHeight;
+      const cardHeight = c.h;
+      const clips = frostHeight > cardHeight;
+
+      const targetFail = titleLines > c.titleCap || descLines > c.descCap;
+
+      n.flagClip.textContent = 'Real: ' + (clips ? 'CLIPPED' : 'OK');
+      n.flagClip.className = 'flag ' + (clips ? 'fail' : 'ok');
+      n.flagTarget.textContent = 'Target: ' + (targetFail ? 'OVER' : 'OK');
+      n.flagTarget.className = 'flag ' + (targetFail ? 'fail' : 'ok');
+
+      n.metrics.innerHTML = `
+        Title: ${titleLines} line${titleLines === 1 ? '' : 's'} (target cap ${c.titleCap})<br>
+        Description: ${descLines} line${descLines === 1 ? '' : 's'} of ${desc.length} chars (target cap ${c.descCap})<br>
+        Frost box: ${Math.round(frostHeight)}px of ${cardHeight}px card ${clips ? '<span class="bad">— clips at top</span>' : '<b>(fits, image visible above)</b>'}
+      `;
+    });
+  }
+
+  headerInput.addEventListener('input', measure);
+  descInput.addEventListener('input', measure);
+
+  document.querySelectorAll('.presets button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = PRESETS[btn.dataset.preset];
+      headerInput.value = p.header;
+      descInput.value = p.desc;
+      measure();
+    });
+  });
+
+  measure();
+  document.fonts.ready.then(measure);
+  setTimeout(measure, 300);
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

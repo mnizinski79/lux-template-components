@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regent — TeaserCard Animated States (Desktop)</title>
+
+  <style>
+    @font-face {
+      font-family: 'Canela';
+      src: url('../../../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Engravers Gothic';
+      src: url('../../../_assets/_fonts/Engravers Gothic/EngraversGothic-Ext.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F3F7F5;
+      color: #211551;
+    }
+
+    :root {
+      --brand:      #211551;
+      --brand-rgb:  33, 21, 81;
+      --focus-blue: #6941C6;
+      --canela:     'Canela', Georgia, serif;
+      --engravers:  'Engravers Gothic', 'Arial Narrow', sans-serif;
+      --inter:      'Inter', system-ui, sans-serif;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section {
+      padding: 72px 0 96px;
+    }
+
+    .section-header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 80px 48px;
+    }
+
+    .section-header h3 {
+      font-family: var(--canela);
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--brand);
+    }
+
+    .section-header p {
+      font-family: var(--inter);
+      font-size: 14px;
+      font-weight: 400;
+      color: #2b2b2b;
+      margin-top: 10px;
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    .stage {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 80px;
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    /* ─── Card ───────────────────────────────────────────── */
+    .card {
+      position: relative;
+      width: 400px;
+      height: 500px;
+      overflow: hidden;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .card:focus-visible {
+      outline: 2px solid var(--focus-blue);
+      outline-offset: 0;
+      border-radius: 4px;
+    }
+
+    .card__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease);
+    }
+
+    .card:hover .card__img {
+      transform: scale(1.06);
+    }
+
+    /* Per spec: brand wash @ 10% + black gradient stops 50/75/95 — existing gradient, shipping as-is per Ryan */
+    .card__overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(var(--brand-rgb), 0.1), rgba(var(--brand-rgb), 0.1)),
+        linear-gradient(
+          to bottom,
+          transparent 50%,
+          rgba(0, 0, 0, 0.45) 75%,
+          rgba(0, 0, 0, 0.75) 95%
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Active — 18% black overlay, momentary, reverts on release */
+    .card__active-layer {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.15s var(--ease);
+    }
+
+    .card:active .card__active-layer {
+      opacity: 1;
+    }
+
+    .card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 28px 28px;
+      color: #fff;
+      z-index: 2;
+    }
+
+    .card__title {
+      font-family: var(--canela);
+      font-size: 26px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+
+    .card__meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-family: var(--engravers);
+      font-size: 12px;
+      line-height: 26px;
+      font-weight: 400;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .card__meta .sep { font-size: 9px; color: rgba(255, 255, 255, 0.4); }
+
+    .card__link {
+      display: inline-block;
+      margin-top: 14px;
+      font-family: var(--engravers);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      padding-bottom: 2px;
+    }
+
+    .card__link:focus-visible {
+      outline: 2px solid var(--focus-blue);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ─── Live state badge (review aid, not part of the shipped component) ─── */
+    .state-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 3;
+      font-family: var(--inter);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--brand);
+      background: #fff;
+      padding: 5px 10px;
+      border-radius: 100px;
+      pointer-events: none;
+    }
+
+    .stage-copy {
+      flex: 1;
+      padding-top: 24px;
+      max-width: 480px;
+    }
+
+    .stage-copy h4 {
+      font-family: var(--inter);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--brand);
+      margin-bottom: 14px;
+    }
+
+    .stage-copy p {
+      font-family: var(--inter);
+      font-size: 14.5px;
+      font-weight: 400;
+      line-height: 1.7;
+      color: #2b2b2b;
+      margin-bottom: 20px;
+    }
+
+    .stage-copy ul {
+      font-family: var(--inter);
+      font-size: 14.5px;
+      font-weight: 400;
+      line-height: 1.75;
+      color: #1e1e1e;
+      padding-left: 20px;
+    }
+
+    .stage-copy li {
+      margin-bottom: 10px;
+    }
+
+    .stage-copy li strong {
+      font-weight: 600;
+      color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+<section class="section">
+  <div class="section-header">
+    <h3>teaserCard — Animated States (Desktop)</h3>
+    <p>Hover, focus (Tab), and click the card to preview each state live. Image scale on hover and the momentary active overlay are the two animated behaviors under review.</p>
+  </div>
+
+  <div class="stage">
+    <div class="card" tabindex="0" id="card" role="link" aria-label="The Meridian Residences — Rooftop, Level 12">
+      <span class="state-badge" id="stateBadge">Default</span>
+      <img class="card__img" src="../../../_assets/_imgs/teaserCardStates/building.jpg" alt="">
+      <div class="card__overlay"></div>
+      <div class="card__active-layer"></div>
+      <div class="card__body">
+        <div class="card__title">The Meridian Residences</div>
+        <div class="card__meta">Rooftop <span class="sep">•</span> Level 12</div>
+        <a class="card__link" href="#" onclick="event.stopPropagation()">Explore</a>
+      </div>
+    </div>
+
+    <div class="stage-copy">
+      <h4>What to check</h4>
+      <p>This is a live, interactive comparison — trigger each state directly on the card instead of judging from static Figma frames. The two behaviors below are what's actually under review for whether the base teaserCard ships animated in v1.</p>
+      <ul>
+        <li><strong>Hover</strong> — image scales to 1.06x within the fixed card bounds, clipped so nothing shifts around it. Scrim, text, and link stay put; this signals the whole card is a single interactive target, not just the link.</li>
+        <li><strong>Focus</strong> — Tab lands on the card first (its own visible ring), then Tab again moves to the nested link, which has its own distinct focus treatment. Two separate, sequential tab stops.</li>
+        <li><strong>Active</strong> — an 18% opacity black overlay washes across the full image on click/tap. It's momentary and reverts to Default as soon as the click releases — no layout or text change.</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<script>
+  const card = document.getElementById('card');
+  const badge = document.getElementById('stateBadge');
+  const link = card.querySelector('.card__link');
+
+  function setState(label) { badge.textContent = label; }
+
+  card.addEventListener('mouseenter', () => setState('Hover'));
+  card.addEventListener('mouseleave', () => setState('Default'));
+  card.addEventListener('mousedown', () => setState('Active'));
+  card.addEventListener('mouseup', () => setState(card.matches(':hover') ? 'Hover' : 'Default'));
+  card.addEventListener('focus', () => { if (card.matches(':focus-visible')) setState('Focus — Tab 1 (Card)'); });
+  card.addEventListener('blur', () => setState('Default'));
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = link.href; }
+  });
+  link.addEventListener('focus', (e) => {
+    e.stopPropagation();
+    if (link.matches(':focus-visible')) setState('Focus — Tab 2 (Link)');
+  });
+  link.addEventListener('blur', () => setState('Default'));
+</script>
+
+</body>
+</html>
