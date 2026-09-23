@@ -774,6 +774,67 @@
   .rev-toggle .icon-close { opacity: 0; transform: rotate(-45deg); }
   .rev-card.panel-open .rev-toggle .icon-plus  { opacity: 0; transform: rotate(45deg); }
   .rev-card.panel-open .rev-toggle .icon-close { opacity: 1; transform: rotate(0deg); }
+
+  /* ============================================================
+     04 — AccordionItem expand / collapse
+     Same values as wds-accordion-faq-desktop.html
+  ============================================================ */
+  .acc-demo {
+    --acc-ease: cubic-bezier(0.23, 1, 0.32, 1);
+    --acc-open: 0.7s;
+    --acc-close: 0.45s;
+    width: 528px;
+    border-top: 1px solid rgba(255,255,255,0.16);
+  }
+  .acc-row { border-bottom: 1px solid rgba(255,255,255,0.16); }
+  .acc-row__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 29px;
+    padding: 24px 5px;
+    cursor: pointer;
+  }
+  .acc-row__title { height: 12px; background: rgba(255,255,255,0.85); border-radius: 2px; }
+  .acc-row:nth-child(1) .acc-row__title { width: 62%; }
+  .acc-row:nth-child(2) .acc-row__title { width: 48%; }
+  .acc-row:nth-child(3) .acc-row__title { width: 56%; }
+  .acc-icon { position: relative; width: 19px; height: 19px; flex-shrink: 0; }
+  .acc-icon span { position: absolute; background: #fff; border-radius: 1px; }
+  .acc-icon__h { left: 0; right: 0; top: 9px; height: 1px; }
+  .acc-icon__v {
+    top: 0; bottom: 0; left: 9px; width: 1px;
+    transform-origin: center;
+    transition: transform var(--acc-close) var(--acc-ease);
+  }
+  .acc-row.is-open .acc-icon__v {
+    transform: rotate(90deg);
+    transition-duration: var(--acc-open);
+  }
+  .acc-row__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--acc-close) var(--acc-ease);
+  }
+  .acc-row.is-open .acc-row__body {
+    grid-template-rows: 1fr;
+    transition-duration: var(--acc-open);
+  }
+  .acc-row__inner { overflow: hidden; min-height: 0; }
+  .acc-row__content {
+    padding: 0 5px 26px;
+    opacity: 0;
+    transition: opacity 0.3s var(--acc-ease) 0s;
+  }
+  .acc-row.is-open .acc-row__content {
+    opacity: 1;
+    transition: opacity 0.5s var(--acc-ease) 0.22s;
+  }
+  .acc-line { height: 7px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+  .acc-line + .acc-line { margin-top: 11px; }
+  .acc-line:nth-child(1) { width: 94%; }
+  .acc-line:nth-child(2) { width: 86%; }
+  .acc-line:nth-child(3) { width: 58%; }
 </style>
 </head>
 <body>
@@ -789,6 +850,7 @@
   <a href="#teaser-reveal" data-target="teaser-reveal"><span class="ml-nav__num">01</span>teaserCard — Tap to Reveal</a>
   <a href="#hover-expand" data-target="hover-expand"><span class="ml-nav__num">02</span>editorialGallery — Hover Expand</a>
   <a href="#scroll-reveal" data-target="scroll-reveal"><span class="ml-nav__num">03</span>editorialGallery — Scroll Reveal</a>
+  <a href="#accordion-expand" data-target="accordion-expand"><span class="ml-nav__num">04</span>AccordionItem — Expand / Collapse</a>
 </nav>
 
 <div class="scrolly">
@@ -908,6 +970,27 @@
         <div class="demo-hint">Scroll to reveal, tap the toggle for the frost panel</div>
       </div>
 
+      <div class="stage-panel" data-stage="accordion-expand">
+        <div class="stage-panel__label">04 — Expand / Collapse</div>
+        <div class="demo-bracket">
+          <div class="acc-demo" id="accDemo">
+            <div class="acc-row">
+              <div class="acc-row__head"><div class="acc-row__title"></div><div class="acc-icon"><span class="acc-icon__h"></span><span class="acc-icon__v"></span></div></div>
+              <div class="acc-row__body"><div class="acc-row__inner"><div class="acc-row__content"><div class="acc-line"></div><div class="acc-line"></div><div class="acc-line"></div></div></div></div>
+            </div>
+            <div class="acc-row">
+              <div class="acc-row__head"><div class="acc-row__title"></div><div class="acc-icon"><span class="acc-icon__h"></span><span class="acc-icon__v"></span></div></div>
+              <div class="acc-row__body"><div class="acc-row__inner"><div class="acc-row__content"><div class="acc-line"></div><div class="acc-line"></div><div class="acc-line"></div></div></div></div>
+            </div>
+            <div class="acc-row">
+              <div class="acc-row__head"><div class="acc-row__title"></div><div class="acc-icon"><span class="acc-icon__h"></span><span class="acc-icon__v"></span></div></div>
+              <div class="acc-row__body"><div class="acc-row__inner"><div class="acc-row__content"><div class="acc-line"></div><div class="acc-line"></div><div class="acc-line"></div></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-hint">Click a row to open and close</div>
+      </div>
+
     </div>
   </div>
 
@@ -926,6 +1009,11 @@
     <section class="pattern-block" id="scroll-reveal" data-pattern="scroll-reveal">
       <div class="pattern-block__dot"></div>
       <div class="pattern-block__content" id="a-scroll-reveal"></div>
+    </section>
+
+    <section class="pattern-block" id="accordion-expand" data-pattern="accordion-expand">
+      <div class="pattern-block__dot"></div>
+      <div class="pattern-block__content" id="a-accordion-expand"></div>
     </section>
 
   </div>
@@ -1044,6 +1132,13 @@
     }
   });
 
+  // ── AccordionItem — Expand / Collapse ────────────────────────────────────
+  // Rows open independently; open/close timing lives entirely in CSS
+  // transitions, so a click mid-animation retargets from the current state.
+  document.querySelectorAll('#accDemo .acc-row__head').forEach(head => {
+    head.addEventListener('click', () => head.parentElement.classList.toggle('is-open'));
+  });
+
   // ── Spec-only mode — ?spec=teaser-reveal isolates one pattern's notes,
   // no stage demo or nav, for embedding in the portal's Motion Spec drawer ──
   const specId = new URLSearchParams(location.search).get('spec');
@@ -1145,9 +1240,9 @@ function BreakpointTag({ breakpoint="Mobile" }) {
 }
 
 // ─── FilePill — links straight to the prototype the pattern is ported from ────
-function FilePill({ file, label }) {
+function FilePill({ file, label, dir="01_regent-brand-com", href }) {
   return (
-    <a className="file-pill" href={`../_prototype/01_regent-brand-com/${file}`} target="_blank" rel="noopener noreferrer">
+    <a className="file-pill" href={href || `../_prototype/${dir}/${file}`} target="_blank" rel="noopener noreferrer">
       <i className="ph ph-file-html file-pill__icon"></i>
       {file}
       {label && <span className="file-pill__tag">{label}</span>}
@@ -1159,7 +1254,7 @@ function FilePill({ file, label }) {
 function UsedIn({ files=[] }) {
   return (
     <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:14 }}>
-      {files.map((f,i) => <FilePill key={i} file={f.file} label={f.label}/>)}
+      {files.map((f,i) => <FilePill key={i} file={f.file} label={f.label} dir={f.dir} href={f.href}/>)}
     </div>
   );
 }
@@ -1194,9 +1289,9 @@ const mounts = {
       titleCode
       body="Tapping/clicking the + button on a card. Title and meta slide up out of the way first, then description and link fade in below with an exact 16px gap. Closing reverses it, with meta and title settling back down nearly together — meta leads by a touch, title finishes last and slowest."
       files={[
-        {file:"wds-teaser-card-mobile.html"},
-        {file:"wds-teaser-card-desktop.html", label:"desktop"},
-        {file:"destinations-cards-mobile.html"},
+        {file:"wds-teaser-card-mobile.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-teaser-card&device=ios&mode=light"},
+        {file:"wds-teaser-card-desktop.html", label:"desktop", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-teaser-card&device=desktop&mode=light"},
+        {file:"destinations-cards-mobile.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=x-dest-mobile&device=ios&mode=light"},
       ]}
     />
 
@@ -1247,7 +1342,7 @@ const mounts = {
       title="editorialGallery"
       titleCode
       body="Hovering a card in the horizontal track compresses the others and expands the hovered one to its full image width, darkening the gradient further and revealing desc + CTA via a grid-template-rows trick. Desktop counterpart to the mobile scroll-reveal pattern below — same component family, but the interaction itself is hover-driven, not scroll-triggered, so the choreography is genuinely different rather than a responsive variant of the same timing."
-      files={[{file:"wds-editorial-gallery-desktop.html"}]}
+      files={[{file:"wds-editorial-gallery-desktop.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-editorial-gallery&device=desktop&mode=light"}]}
     />
 
     <CurvePlot label="cubic-bezier(0.4, 0, 0.2, 1)" curveName="ease" p1x={40} p1y={100} p2x={20} p2y={0}/>
@@ -1290,7 +1385,7 @@ const mounts = {
       title="editorialGallery"
       titleCode
       body="Each card's entrance as it scrolls into view in the vertical snap-scroll carousel. Image scale-in, staggered text, and a pulse-ring affordance on the toggle."
-      files={[{file:"wds-editorial-gallery-mobile.html"}]}
+      files={[{file:"wds-editorial-gallery-mobile.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-editorial-gallery&device=ios&mode=light"}]}
     />
 
     <CurvePlot label="cubic-bezier(0.16, 1, 0.3, 1)" curveName="ease"/>
@@ -1324,6 +1419,44 @@ const mounts = {
 
     <StickyNote type="Decision">
       Pulse ring fires twice, starting 1.2s after reveal — a deliberate "tap me" affordance so first-time users notice the + is interactive, not just decorative.
+    </StickyNote>
+  </div>,
+
+  "a-accordion-expand": <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+    <PatternHeader
+      num="04"
+      eyebrow="Tap / Click"
+      breakpoints={["Desktop"]}
+      title="AccordionItem"
+      titleCode
+      body="Clicking an item header expands its panel to full content height while the + rotates into a –. Panel and icon share one curve and one duration, so the rotation lands the moment the row finishes opening. Body content fades in once the space has opened. Closing is faster than opening."
+      files={[{file:"wds-accordion-faq-desktop.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-accordion-block&device=desktop&model=dt-1920&mode=light"}]}
+    />
+
+    <CurvePlot label="cubic-bezier(0.23, 1, 0.32, 1)" curveName="acc-ease" p1x={23} p1y={0} p2x={32} p2y={0}/>
+
+    <AnnotationCard index="01" title="Open Sequence" rows={[
+      {key:"panel",value:"0s delay · 0.7s (grid-template-rows 0fr → 1fr)"},
+      {key:"icon",value:"0s delay · 0.7s (vertical stroke rotate 0 → 90°)"},
+      {key:"content",value:"+0.22s · 0.5s (opacity 0 → 1)"},
+    ]}/>
+
+    <AnnotationCard index="02" title="Close Sequence" rows={[
+      {key:"content",value:"0s delay · 0.3s (opacity 1 → 0)"},
+      {key:"panel",value:"0s delay · 0.45s (1fr → 0fr)"},
+      {key:"icon",value:"0s delay · 0.45s (90° → 0)"},
+    ]}/>
+
+    <AnnotationCard index="03" title="Values" rows={[
+      {key:"--acc-ease",value:"cubic-bezier(.23,1,.32,1)"},
+      {key:"--acc-open",value:"0.7s"},
+      {key:"--acc-close",value:"0.45s"},
+      {key:"icon",value:"Phosphor Plus-Light · vertical stroke rotates 90° clockwise into a –"},
+      {key:"reduced motion",value:"panel + icon change instantly, content keeps its fade"},
+    ]}/>
+
+    <StickyNote type="Decision">
+      Close runs faster than open. Opening is the moment the reader is waiting for, so it takes its time settling; closing just gets out of the way. Content fades out first with no delay so it never lingers while the row collapses underneath it.
     </StickyNote>
   </div>,
 };

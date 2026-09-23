@@ -39,29 +39,29 @@ const PROTOS = [
 
   {
     id: 'r-teaser-card', section: 'wds-library', subsection: null,
-    label: 'teaserCard', tags: ['Desktop', 'Mobile'],
+    label: 'teaserCard Reveal', tags: ['Desktop', 'Mobile'],
     status: 'review',
     figma: null,
     motionSpec: 'teaser-reveal',
     about: 'A tap-to-reveal teaser card for surfacing a set of related offerings (event services, vendors, wellness) under a single themed section. Frost-reveal overlay expands on tap/click to show description and CTA without navigating away.',
     docs: [
-      { label: 'Accessibility Report', url: '../_prototype/wds/teaserCard/documentation/teaserCard-a11y-report.html' },
+      { label: 'Accessibility Report', url: '../_prototype/wds/teaserCardReveal/documentation/teaserCardReveal-a11y-report.html' },
     ],
     notes: [
       { date: 'Jun 23', text: 'Added mobile swipe carousel variant with matching frost-reveal interaction and the updated gradient overlay spec.' },
       { date: 'Jun 22', text: 'Teaser carousel with frost-reveal expand interaction ported from the mobile snap-scroll panel — title lifts via flow to make room for subcopy and CTA on open, fixed 16px gaps throughout.' },
     ],
     urls: {
-      desktop: '../_prototype/wds/teaserCard/final/wds-teaser-card-desktop.html',
-      ios:     '../_prototype/wds/teaserCard/final/wds-teaser-card-mobile.html',
-      android: '../_prototype/wds/teaserCard/final/wds-teaser-card-mobile.html',
+      desktop: '../_prototype/wds/teaserCardReveal/final/wds-teaser-card-reveal-desktop.html',
+      ios:     '../_prototype/wds/teaserCardReveal/final/wds-teaser-card-reveal-mobile.html',
+      android: '../_prototype/wds/teaserCardReveal/final/wds-teaser-card-reveal-mobile.html',
     },
     default: 'desktop',
   },
 
   {
     id: 'r-teaser-card-states', section: 'wds-library', subsection: null,
-    label: 'teaserCard — Animated States', tags: ['Desktop', 'Mobile'],
+    label: 'teaserCard Base — Animated States', tags: ['Desktop', 'Mobile'],
     status: 'review',
     figma: null,
     motionSpec: null,
@@ -71,9 +71,9 @@ const PROTOS = [
       { date: 'Jul 9', text: 'Built to give stakeholders a live, interactive comparison ahead of the animation-for-v1 decision — hover/focus/active can be triggered directly instead of judging from static frames.' },
     ],
     urls: {
-      desktop: '../_prototype/wds/teaserCardStates/final/wds-teaser-card-states-desktop.html',
-      ios:     '../_prototype/wds/teaserCardStates/final/wds-teaser-card-states-mobile.html',
-      android: '../_prototype/wds/teaserCardStates/final/wds-teaser-card-states-mobile.html',
+      desktop: '../_prototype/wds/teaserCardBase/final/wds-teaser-card-base-desktop.html',
+      ios:     '../_prototype/wds/teaserCardBase/final/wds-teaser-card-base-mobile.html',
+      android: '../_prototype/wds/teaserCardBase/final/wds-teaser-card-base-mobile.html',
     },
     default: 'desktop',
   },
@@ -108,7 +108,7 @@ const PROTOS = [
     label: 'AccordionBlock', tags: ['Desktop'],
     status: 'review',
     figma: 'https://www.figma.com/design/ldhUkCq0tXwPCzYJDPZflL/WDS-10-%F0%9F%A7%AA-EXP-Components?node-id=6084-39312',
-    motionSpec: null,
+    motionSpec: 'accordion-expand',
     about: 'Header (text-only, no icon/meta list) + a WDS Accordion instance, real 1440px block width and token-accurate padding/gutter. Toggle switches between the two live headingPosition layouts — above (stacked) and start (header pinned to a 373px column, accordion filling the rest). Body content demonstrates all three real content sub-components: textBlock (paragraph + optional link), unorderedList (diamond bullets), and contactStack (icon + phone/email).',
     docs: null,
     notes: [],
