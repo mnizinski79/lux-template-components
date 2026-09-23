@@ -14,12 +14,14 @@
     --wds-space-500: 20px;
     --wds-space-600: 24px;
 
-    /* House "luxe" motion signature — same ease-out-expo family used on
-       TeaserCard Reveal (cubic-bezier(0.16,1,0.3,1)). Fast start, long
-       considered settle, no mechanical symmetry. */
-    --wds-ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
-    --wds-icon-duration: 340ms;
-    --wds-panel-duration: 440ms;
+    /* One shared motion curve for the whole item: strong ease-out, so the
+       row responds immediately and takes its time settling. Icon and panel
+       share the curve and the duration, so the rotation stays locked to the
+       expansion the whole way. Close is faster than open: opening is what
+       people are waiting to read, closing just gets out of the way. */
+    --wds-ease-panel: cubic-bezier(0.23, 1, 0.32, 1);
+    --wds-open-duration: 0.7s;
+    --wds-close-duration: 0.45s;
   }
 
   * { box-sizing: border-box; }
@@ -203,21 +205,23 @@
     left: 48.4045%;
     width: 3.191%;
     transform-origin: center;
-    transition: transform var(--wds-icon-duration) var(--wds-ease-luxe);
+    transition: transform var(--wds-close-duration) var(--wds-ease-panel);
   }
 
   .accordion-item.is-open .bar--v {
     transform: rotate(90deg);
+    transition-duration: var(--wds-open-duration);
   }
 
   .accordion-body {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows var(--wds-panel-duration) var(--wds-ease-luxe);
+    transition: grid-template-rows var(--wds-close-duration) var(--wds-ease-panel);
   }
 
   .accordion-item.is-open .accordion-body {
     grid-template-rows: 1fr;
+    transition-duration: var(--wds-open-duration);
   }
 
   .accordion-body-inner {
@@ -228,25 +232,20 @@
   /* Real bodyPanel spec: p-[wds-tkn/ui/space/static/300,12px] — uniform
      12px on every side, no left indent to "align under" the title.
 
-     The content itself carries its own fade + rise, layered on top of the
-     row expansion rather than just clipping into view — this is the part
-     that reads as "considered" instead of mechanical. On open it's
-     deliberately delayed so the space opens first, then the copy settles
-     in. On close there's no delay, so it doesn't linger while the row is
-     visibly collapsing underneath it. */
+     Content fade is based on the Regent Events Accordion: on open it waits
+     0.22s so the space opens first, then fades in over 0.5s. On close it
+     fades out in 0.3s with no delay, so it doesn't linger while the row
+     collapses underneath it. */
   .accordion-body-content {
     padding: var(--wds-space-300);
     color: var(--wds-color-body);
     opacity: 0;
-    transform: translateY(-6px);
-    transition: opacity 300ms var(--wds-ease-luxe),
-                transform 300ms var(--wds-ease-luxe);
+    transition: opacity 0.3s var(--wds-ease-panel) 0s;
   }
 
   .accordion-item.is-open .accordion-body-content {
     opacity: 1;
-    transform: translateY(0);
-    transition-delay: 140ms;
+    transition: opacity 0.5s var(--wds-ease-panel) 0.22s;
   }
 
   /* [textBlock] — body paragraph + optional TextLink, 8px gap. Real
