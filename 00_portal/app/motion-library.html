@@ -1948,7 +1948,7 @@ const mounts = {
     ]}/>
 
     <StickyNote type="Observation">
-      The image and card content actually key off the same single .revealed class — there's a leftover img.classList.add('revealed') call in the source with no matching CSS rule, so it's a no-op. Don't carry that dead line into a new file; the image just has a longer transition duration than the text, which is what makes it look like a separate stage.
+      The image and card content both key off one .revealed class; the image's longer transition is what makes it read as a separate stage. Adding .revealed to the image element itself has no effect and can be left out of new files.
     </StickyNote>
 
     <StickyNote type="Decision">
@@ -2002,7 +2002,7 @@ const mounts = {
       title="MediaGallery/Media"
       titleCode
       body="The clickable cue on a media tile in MediaGalleryGrid. On desktop the image zooms gently inside its frame on hover and on keyboard focus, and snaps back faster when the pointer leaves, so sweeping across the grid never leaves a trail of shrinking tiles. Touch has no hover, so on mobile the whole tile presses in slightly under the finger before the lightbox opens."
-      files={[{file:"wds-media-gallery-lightbox.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-media-hover&device=desktop&mode=light"}]}
+      files={[{file:"wds-media-gallery-lightbox.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-media-gallery-lightbox&device=desktop&mode=light"}]}
     />
 
     <CurvePlot label="cubic-bezier(0.25, 0.1, 0.25, 1)" curveName="ease" p1x={25} p1y={90} p2x={25} p2y={0}/>
@@ -2033,7 +2033,7 @@ const mounts = {
     ]}/>
 
     <StickyNote type="Observation">
-      Interactive states belong to the Media component (WDS Media Gen2 in Figma), not to MediaGalleryGrid or MediaGalleryLightbox. These values are a proposal for Media, shown on the grid because that is where the tile is clickable.
+      Interactive states belong to the Media component (WDS Media Gen2 in Figma), not to MediaGalleryGrid or MediaGalleryLightbox. These are proposed values for the Media component, shown on the grid because that is where the tile is clickable.
     </StickyNote>
 
     <StickyNote type="Decision">
@@ -2110,7 +2110,7 @@ const mounts = {
     </StickyNote>
 
     <StickyNote type="Decision">
-      450ms in / 300ms out is deliberate. It is slower than the usual under-300ms guidance for interface motion, which read as rushed for a luxury gallery. The overlap blur, instant keyboard steps and velocity-based swipe exit come from a separate motion review and are kept.
+      450ms in / 300ms out is deliberate: slower than typical interface motion, suited to an unhurried gallery. The overlap blur, instant keyboard steps and speed-matched swipe exit keep it responsive.
     </StickyNote>
   </div>,
 };
