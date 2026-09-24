@@ -147,8 +147,8 @@
 
   .stage-frame {
     position: relative;
-    width: 680px;
-    height: 520px;
+    width: min(900px, 100%);
+    height: min(700px, calc(100vh - var(--nav-h) - 40px));
   }
 
   /* corner brackets — wraps each demo (not the demo itself, since demos
@@ -835,6 +835,234 @@
   .acc-line:nth-child(1) { width: 94%; }
   .acc-line:nth-child(2) { width: 86%; }
   .acc-line:nth-child(3) { width: 58%; }
+
+  /* ============================================================
+     Shared — Desktop / Mobile toggle inside a stage panel
+  ============================================================ */
+  .bp-toggle {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .bp-toggle button {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: rgba(255,255,255,0.4);
+  }
+  .bp-toggle button.is-on { background: rgba(255,255,255,0.14); color: #fff; }
+  .bp-view { display: none; }
+  .bp-view.is-on { display: block; }
+
+  /* Scale box — the wireframe inside is built at the component's real size
+     (1440×900, 1200px grid, 390×844 phone) and scaled down as one unit, so
+     every px value (drift, padding, button size, swipe distance) shows in
+     true proportion instead of being eyeballed at a smaller size. */
+  .scale-box { position: relative; overflow: hidden; }
+  .scale-box__inner { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+
+  /* Wireframe "image" — a flat block with a sun + horizon, so ratio changes
+     read at a glance without real photography. */
+  .wf-img {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.08));
+    overflow: hidden;
+  }
+  .wf-img::before {
+    content: '';
+    position: absolute;
+    width: 18%; aspect-ratio: 1;
+    border-radius: 50%;
+    top: 18%; left: 64%;
+    background: rgba(255,255,255,0.28);
+  }
+  .wf-img::after {
+    content: '';
+    position: absolute;
+    left: -10%; right: -10%; bottom: -30%;
+    height: 70%;
+    background: rgba(255,255,255,0.12);
+    transform: rotate(-8deg);
+  }
+
+  /* Phone shell — screen is a 390×844 scale box */
+  .wf-phone {
+    position: relative;
+    padding: 10px;
+    border-radius: 34px;
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.02);
+  }
+  .wf-phone > .scale-box { border-radius: 24px; }
+
+  /* ============================================================
+     05 — MediaGallery/Media hover / press
+     Real values from final/gallery-grid.css, at real size
+  ============================================================ */
+  .mh-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    width: 1200px;
+  }
+  .mh-grid--mobile {
+    grid-template-columns: 1fr;
+    width: 390px;
+    padding: 40px 20px;
+  }
+  .mh-tile {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .mh-tile .wf-img { transition: transform 150ms ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .mh-grid:not(.mh-grid--mobile) .mh-tile:hover .wf-img { transform: scale(1.04); transition-duration: 220ms; }
+  }
+  .mh-tile:focus-visible .wf-img { transform: scale(1.04); transition-duration: 220ms; }
+  .mh-tile:focus-visible { box-shadow: 0 0 0 4px #0E0E1A, 0 0 0 8px rgba(174,169,231,0.9); }
+  .mh-tile:active { transform: scale(0.97); }
+
+  /* ============================================================
+     06 — MediaGallery/Lightbox image to image
+     Real values from final/lightbox.css + lightbox.js, at real size
+  ============================================================ */
+  .lbw {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.55);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .lbw--desktop { width: 1440px; height: 900px; padding: 40px; gap: 40px; }
+  .lbw--mobile  { width: 390px; height: 844px; padding: 40px 0 96px; gap: 40px; }
+  .lbw__head {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    flex-shrink: 0;
+    height: 52px;
+  }
+  .lbw--mobile .lbw__head { padding: 0 12px; }
+  .lbw__count {
+    grid-column: 2;
+    text-align: center;
+    font-family: var(--canela);
+    font-size: 23px;
+    line-height: 30px;
+    color: rgba(255,255,255,0.9);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .lbw--mobile .lbw__count { font-size: 14px; line-height: 18px; }
+  .lbw__close, .lbw__arrow {
+    width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.9);
+    font-size: 24px;
+    line-height: 1;
+  }
+  .lbw__close { grid-column: 3; justify-self: end; }
+  .lbw__row {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .lbw--mobile .lbw__row { gap: 0; }
+  /* Slot stays in flow; the button is pinned to the media center for a
+     one-line caption: 50% + (52px header − 24px caption line) / 2. */
+  .lbw__arrow-slot { flex-shrink: 0; width: 52px; align-self: stretch; }
+  .lbw__arrow {
+    all: unset;
+    position: absolute;
+    top: calc(50% + 14px);
+    transform: translateY(-50%);
+    width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.9);
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .lbw__arrow:hover { background: #e7eeea; color: #303030; }
+  .lbw__stage {
+    position: relative;
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-width: 0;
+    touch-action: pan-y;
+  }
+  .lbw--mobile .lbw__stage { cursor: grab; }
+  .lbw__layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .lbw__media { position: relative; }
+  /* Caption bars stand in for 16/24 body text: 10px bar per 24px line */
+  .lbw__cap {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .lbw--mobile .lbw__cap { max-width: none; padding: 0 28px; }
+  .lbw__cap span { display: block; height: 10px; border-radius: 3px; background: rgba(255,255,255,0.45); }
+  .lbw__zones {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .lbw__zones.is-shown { opacity: 1; }
+  .lbw__zones div {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 12px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.55);
+    border: 2px dashed rgba(255,255,255,0.22);
+  }
+  .demo-hint__row { display: flex; align-items: center; gap: 12px; }
+  .zone-toggle {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    border-bottom: 1px dotted rgba(255,255,255,0.3);
+  }
 </style>
 </head>
 <body>
@@ -851,6 +1079,8 @@
   <a href="#hover-expand" data-target="hover-expand"><span class="ml-nav__num">02</span>editorialGallery — Hover Expand</a>
   <a href="#scroll-reveal" data-target="scroll-reveal"><span class="ml-nav__num">03</span>editorialGallery — Scroll Reveal</a>
   <a href="#accordion-expand" data-target="accordion-expand"><span class="ml-nav__num">04</span>AccordionItem — Expand / Collapse</a>
+  <a href="#media-hover" data-target="media-hover"><span class="ml-nav__num">05</span>MediaGallery/Media — Hover / Press</a>
+  <a href="#lightbox-change" data-target="lightbox-change"><span class="ml-nav__num">06</span>MediaGalleryLightbox — Image to Image</a>
 </nav>
 
 <div class="scrolly">
@@ -991,6 +1221,84 @@
         <div class="demo-hint">Click a row to open and close</div>
       </div>
 
+      <div class="stage-panel" data-stage="media-hover">
+        <div class="stage-panel__label">05 — Hover / Press</div>
+        <div class="bp-toggle" data-for="mh">
+          <button class="is-on" data-bp="desktop">Desktop</button>
+          <button data-bp="mobile">Mobile</button>
+        </div>
+        <div class="bp-view is-on" data-view="mh-desktop">
+          <div class="demo-bracket">
+            <div class="scale-box" data-w="1200" data-h="789.34" data-k="0.4617">
+              <div class="scale-box__inner"><div class="mh-grid">
+                <div class="mh-tile" tabindex="0"><div class="wf-img"></div></div>
+                <div class="mh-tile" tabindex="0"><div class="wf-img"></div></div>
+                <div class="mh-tile" tabindex="0"><div class="wf-img"></div></div>
+                <div class="mh-tile" tabindex="0"><div class="wf-img"></div></div>
+                <div class="mh-tile" tabindex="0"><div class="wf-img"></div></div>
+                <div class="mh-tile" tabindex="0"><div class="wf-img"></div></div>
+              </div></div>
+            </div>
+          </div>
+        </div>
+        <div class="bp-view" data-view="mh-mobile">
+          <div class="demo-bracket">
+            <div class="wf-phone">
+              <div class="scale-box" data-w="390" data-h="844" data-k="0.6269">
+                <div class="scale-box__inner"><div class="mh-grid mh-grid--mobile">
+                  <div class="mh-tile"><div class="wf-img"></div></div>
+                  <div class="mh-tile"><div class="wf-img"></div></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-hint" data-hint="mh">Hover a tile, or Tab to it for the focus state</div>
+      </div>
+
+      <div class="stage-panel" data-stage="lightbox-change">
+        <div class="stage-panel__label">06 — Image to Image</div>
+        <div class="bp-toggle" data-for="lb">
+          <button class="is-on" data-bp="desktop">Desktop</button>
+          <button data-bp="mobile">Mobile</button>
+        </div>
+        <div class="bp-view is-on" data-view="lb-desktop">
+          <div class="demo-bracket">
+            <div class="scale-box" data-w="1440" data-h="900" data-k="0.6" data-fit>
+              <div class="scale-box__inner">
+                <div class="lbw lbw--desktop" id="lbwDesktop">
+                  <div class="lbw__head"><div class="lbw__count"></div><div class="lbw__close">✕</div></div>
+                  <div class="lbw__row">
+                    <div class="lbw__arrow-slot"><button class="lbw__arrow" data-dir="-1" aria-label="Previous">←</button></div>
+                    <div class="lbw__stage"></div>
+                    <div class="lbw__arrow-slot"><button class="lbw__arrow" data-dir="1" aria-label="Next">→</button></div>
+                  </div>
+                  <div class="lbw__cap"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bp-view" data-view="lb-mobile">
+          <div class="demo-bracket">
+            <div class="wf-phone">
+              <div class="scale-box" data-w="390" data-h="844" data-k="0.6269">
+                <div class="scale-box__inner">
+                  <div class="lbw lbw--mobile" id="lbwMobile">
+                    <div class="lbw__head"><div class="lbw__count"></div><div class="lbw__close">✕</div></div>
+                    <div class="lbw__row">
+                      <div class="lbw__stage"><div class="lbw__zones is-shown"><div>PREV</div><div>NEXT</div></div></div>
+                    </div>
+                    <div class="lbw__cap"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-hint demo-hint__row" data-hint="lb">Click the arrows · caption line count changes on purpose</div>
+      </div>
+
     </div>
   </div>
 
@@ -1014,6 +1322,16 @@
     <section class="pattern-block" id="accordion-expand" data-pattern="accordion-expand">
       <div class="pattern-block__dot"></div>
       <div class="pattern-block__content" id="a-accordion-expand"></div>
+    </section>
+
+    <section class="pattern-block" id="media-hover" data-pattern="media-hover">
+      <div class="pattern-block__dot"></div>
+      <div class="pattern-block__content" id="a-media-hover"></div>
+    </section>
+
+    <section class="pattern-block" id="lightbox-change" data-pattern="lightbox-change">
+      <div class="pattern-block__dot"></div>
+      <div class="pattern-block__content" id="a-lightbox-change"></div>
     </section>
 
   </div>
@@ -1138,6 +1456,222 @@
   document.querySelectorAll('#accDemo .acc-row__head').forEach(head => {
     head.addEventListener('click', () => head.parentElement.classList.toggle('is-open'));
   });
+
+  // ── Scale boxes (05, 06): wireframes are built at real size and scaled ──
+  // data-fit boxes take data-k as a maximum and shrink to the stage column.
+  function sizeScaleBoxes() {
+    const colW = document.querySelector('.stage-col').clientWidth;
+    document.querySelectorAll('.scale-box').forEach(box => {
+      const w = +box.dataset.w, h = +box.dataset.h, max = +(box.dataset.kmax || box.dataset.k);
+      box.dataset.kmax = max;
+      const k = 'fit' in box.dataset ? Math.min(max, (colW - 96) / w) : max;
+      box.dataset.k = k;
+      box.style.width = (w * k) + 'px';
+      box.style.height = (h * k) + 'px';
+      const inner = box.querySelector('.scale-box__inner');
+      inner.style.width = w + 'px';
+      inner.style.height = h + 'px';
+      inner.style.transform = `scale(${k})`;
+    });
+  }
+  sizeScaleBoxes();
+  addEventListener('resize', sizeScaleBoxes);
+  const scaleOf = el => +el.closest('.scale-box').dataset.k;
+
+  // ── Desktop / Mobile toggles (05, 06) ────────────────────────────────────
+  const BP_HINTS = {
+    'mh-desktop': 'Hover a tile, or Tab to it for the focus state',
+    'mh-mobile':  'Press and hold a tile (touch has no hover)',
+    'lb-desktop': 'Click the arrows · caption line count changes on purpose',
+    'lb-mobile':  'Drag or flick the image · tap either half',
+  };
+  document.querySelectorAll('.bp-toggle').forEach(toggle => {
+    const key = toggle.dataset.for;
+    const panel = toggle.closest('.stage-panel');
+    toggle.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+      toggle.querySelectorAll('button').forEach(b => b.classList.toggle('is-on', b === btn));
+      const view = `${key}-${btn.dataset.bp}`;
+      panel.querySelectorAll('.bp-view').forEach(v => v.classList.toggle('is-on', v.dataset.view === view));
+      const hint = panel.querySelector(`[data-hint="${key}"]`);
+      hint.firstChild.textContent = BP_HINTS[view] + ' ';
+      if (key === 'lb') {
+        hint.querySelector('.zone-toggle').style.display = btn.dataset.bp === 'mobile' ? '' : 'none';
+        (btn.dataset.bp === 'mobile' ? lbMobile : lbDesktop).relayout();
+      }
+    }));
+  });
+
+  // ── MediaGallery/Lightbox — Image to Image ──────────────────────────────
+  // Wireframe build of final/lightbox.js at real size: same drift, caption
+  // reserve, swipe and tap rules, all in real px. Pointer movement is divided
+  // by the scale so a drag, a flick and the exit distance are true values.
+  const LBW = {
+    ease: 'cubic-bezier(0.23, 1, 0.32, 1)',
+    drawer: 'cubic-bezier(0.32, 0.72, 0, 1)',
+    inMs: 450, outMs: 300, drift: 32,
+    items: [
+      { r: 4 / 5, cap: [86, 62] },
+      { r: 16 / 9, cap: [58] },
+      { r: 1, cap: [90, 74] },
+      { r: 2 / 1, cap: [66] },
+      { r: 4 / 5, cap: [88, 92, 40] },
+    ],
+  };
+  const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function lightboxWireframe(root, mobile) {
+    const stage = root.querySelector('.lbw__stage');
+    const count = root.querySelector('.lbw__count');
+    const cap = root.querySelector('.lbw__cap');
+    const k = () => scaleOf(root);
+    const n = LBW.items.length;
+    let index = 0, current = null;
+    const wrap = i => (i + n) % n;
+    const capHeight = lines => lines * 24 - 14;   // 10px bars, 14px gaps
+    const capHTML = item => item.cap.map(w => `<span style="width:${w}%"></span>`).join('');
+
+    function makeLayer(i) {
+      const l = document.createElement('div');
+      l.className = 'lbw__layer';
+      const m = document.createElement('div');
+      m.className = 'lbw__media';
+      m.innerHTML = '<div class="wf-img"></div>';
+      const W = stage.clientWidth, H = stage.clientHeight, r = LBW.items[i].r;
+      const w = Math.min(W, H * r);
+      m.style.width = w + 'px';
+      m.style.height = (w / r) + 'px';
+      l.appendChild(m);
+      stage.appendChild(l);
+      return l;
+    }
+    function freeze(el) {
+      el.getAnimations().forEach(a => { try { a.commitStyles(); } catch (e) {} a.cancel(); });
+    }
+    function render(animate) {
+      const item = LBW.items[index];
+      count.textContent = `${index + 1}/${n}`;
+      cap.getAnimations().forEach(a => a.cancel());
+      if (!animate) { cap.style.height = ''; cap.innerHTML = capHTML(item); return; }
+      // Reserve the new caption height first so the media area settles
+      // before the incoming image appears.
+      cap.style.height = capHeight(item.cap.length) + 'px';
+      const out = cap.animate([{ opacity: 0 }], { duration: 150, easing: LBW.ease, fill: 'forwards' });
+      out.finished.then(() => {
+        cap.innerHTML = capHTML(item); cap.style.height = ''; out.cancel();
+        cap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: LBW.ease });
+      }).catch(() => {});
+    }
+    function go(dir, opts = {}) {
+      index = wrap(index + dir);
+      const h = stage.clientHeight;
+      stage.querySelectorAll('.lbw__layer').forEach(l => { l.style.bottom = 'auto'; l.style.height = h + 'px'; });
+      render(true);
+      const outgoing = opts.outgoing === undefined ? current : opts.outgoing;
+      if (outgoing) {
+        freeze(outgoing);
+        stage.querySelectorAll('.lbw__layer.is-leaving').forEach(l => l.remove());
+        outgoing.classList.add('is-leaving');
+        const kf = reducedMotion() ? [{ opacity: 0 }] : [{ opacity: 0, transform: `translateX(${-dir * LBW.drift}px)`, filter: 'blur(2px)' }];
+        outgoing.animate(kf, { duration: reducedMotion() ? 150 : LBW.outMs, easing: LBW.ease, fill: 'forwards' }).finished.then(() => outgoing.remove()).catch(() => {});
+      }
+      current = makeLayer(index);
+      const kf = reducedMotion()
+        ? [{ opacity: 0 }, { opacity: 1 }]
+        : [{ opacity: 0, transform: `translateX(${dir * LBW.drift}px)`, filter: 'blur(2px)' }, { opacity: 1, transform: 'translateX(0)', filter: 'blur(0px)' }];
+      current.animate(kf, { duration: reducedMotion() ? 150 : LBW.inMs, easing: LBW.ease, fill: 'both' });
+    }
+    function relayout() {
+      stage.querySelectorAll('.lbw__layer').forEach(l => l.remove());
+      render(false);
+      current = makeLayer(index);
+    }
+
+    root.querySelectorAll('.lbw__arrow').forEach(b => b.addEventListener('click', () => go(+b.dataset.dir)));
+
+    if (mobile) {
+      let drag = null;
+      stage.addEventListener('pointerdown', e => {
+        if (!e.isPrimary || (drag && drag.active)) return;
+        drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, active: false, samples: [] };
+      });
+      stage.addEventListener('pointermove', e => {
+        if (!drag || e.pointerId !== drag.id) return;
+        // Real px = screen px ÷ scale
+        const dx = (e.clientX - drag.x0) / k(), dy = (e.clientY - drag.y0) / k();
+        if (!drag.active) {
+          if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;
+          drag.active = true;
+          try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+          // Grab the image from wherever it is, even mid-transition.
+          freeze(current);
+          const cs = getComputedStyle(current);
+          drag.baseX = cs.transform !== 'none' ? new DOMMatrixReadOnly(cs.transform).m41 : 0;
+          drag.baseO = parseFloat(cs.opacity) || 1;
+          drag.startDx = dx;
+          current.style.filter = '';
+        }
+        drag.x = drag.baseX + (dx - drag.startDx);
+        drag.samples.push({ x: e.clientX / k(), t: e.timeStamp });
+        if (drag.samples.length > 6) drag.samples.shift();
+        current.style.transform = `translateX(${drag.x}px)`;
+        current.style.opacity = String(drag.baseO * (1 - Math.min(Math.abs(drag.x) / stage.clientWidth, 1) * 0.6));
+      });
+      const end = e => {
+        if (!drag || e.pointerId !== drag.id) return;
+        const d = drag; drag = null;
+        if (!d.active) {
+          // Tap: left half = previous, right half = next.
+          const r = stage.getBoundingClientRect();
+          go(e.clientX < r.left + r.width / 2 ? -1 : 1);
+          return;
+        }
+        const s = d.samples;
+        // A finger that has been still for 100ms before lifting isn't flicking.
+        const still = s.length && e.timeStamp - s[s.length - 1].t > 100;
+        const v = s.length > 1 && !still ? (s[s.length - 1].x - s[0].x) / Math.max(s[s.length - 1].t - s[0].t, 1) : 0;
+        const w = stage.clientWidth;
+        const commit = Math.abs(d.x) > w * 0.2 || (Math.abs(v) > 0.11 && Math.sign(v) === Math.sign(d.x));
+        if (!commit) {
+          const layer = current;
+          layer.animate([{ transform: 'translateX(0)', opacity: 1 }], { duration: 300, easing: LBW.drawer, fill: 'forwards' })
+            .finished.then(() => { freeze(layer); layer.style.transform = ''; layer.style.opacity = ''; }).catch(() => {});
+          return;
+        }
+        const dir = d.x < 0 ? 1 : -1;
+        const old = current;
+        const speed = Math.max(Math.abs(v), 0.2);
+        const travel = Math.min(200, Math.max(60, speed * 110));
+        const ms = Math.min(300, Math.max(160, (2.25 * travel) / speed));
+        old.classList.add('is-leaving');
+        old.animate([{ transform: `translateX(${d.x - dir * travel}px)`, opacity: 0 }], { duration: ms, easing: LBW.drawer, fill: 'forwards' })
+          .finished.then(() => old.remove()).catch(() => {});
+        go(dir, { outgoing: null });
+      };
+      stage.addEventListener('pointerup', end);
+      stage.addEventListener('pointercancel', end);
+    }
+
+    return { relayout };
+  }
+
+  const lbDesktop = lightboxWireframe(document.getElementById('lbwDesktop'), false);
+  const lbMobile = lightboxWireframe(document.getElementById('lbwMobile'), true);
+  lbDesktop.relayout();
+
+  // Tap zones show by default on mobile; this link hides/shows them.
+  (() => {
+    const hint = document.querySelector('[data-hint="lb"]');
+    const t = document.createElement('button');
+    t.className = 'zone-toggle';
+    t.textContent = 'Hide tap zones';
+    t.style.display = 'none';
+    t.addEventListener('click', () => {
+      const z = document.querySelector('#lbwMobile .lbw__zones');
+      const on = z.classList.toggle('is-shown');
+      t.textContent = on ? 'Hide tap zones' : 'Show tap zones';
+    });
+    hint.appendChild(t);
+  })();
 
   // ── Spec-only mode — ?spec=teaser-reveal isolates one pattern's notes,
   // no stage demo or nav, for embedding in the portal's Motion Spec drawer ──
@@ -1457,6 +1991,126 @@ const mounts = {
 
     <StickyNote type="Decision">
       Close runs faster than open. Opening is the moment the reader is waiting for, so it takes its time settling; closing just gets out of the way. Content fades out first with no delay so it never lingers while the row collapses underneath it.
+    </StickyNote>
+  </div>,
+
+  "a-media-hover": <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+    <PatternHeader
+      num="05"
+      eyebrow="Hover / Press"
+      breakpoints={["Mobile","Desktop"]}
+      title="MediaGallery/Media"
+      titleCode
+      body="The clickable cue on a media tile in MediaGalleryGrid. On desktop the image zooms gently inside its frame on hover and on keyboard focus, and snaps back faster when the pointer leaves, so sweeping across the grid never leaves a trail of shrinking tiles. Touch has no hover, so on mobile the whole tile presses in slightly under the finger before the lightbox opens."
+      files={[{file:"wds-media-gallery-lightbox.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-media-hover&device=desktop&mode=light"}]}
+    />
+
+    <CurvePlot label="cubic-bezier(0.25, 0.1, 0.25, 1)" curveName="ease" p1x={25} p1y={90} p2x={25} p2y={0}/>
+
+    <AnnotationCard index="01" title="Hover In (Desktop)" rows={[
+      {key:"image",value:"scale 1 → 1.04, 220ms, ease"},
+      {key:"trigger",value:":hover (fine pointer only) or :focus-visible"},
+      {key:"frame",value:"overflow hidden, tile edge stays put"},
+    ]}/>
+
+    <AnnotationCard index="02" title="Hover Out (Desktop)" rows={[
+      {key:"image",value:"scale 1.04 → 1, 150ms, ease"},
+    ]}/>
+
+    <AnnotationCard index="03" title="Press (Mobile / touch)" rows={[
+      {key:"tile",value:"scale 1 → 0.97 on :active, 160ms"},
+      {key:"easing",value:"cubic-bezier(.23,1,.32,1)"},
+    ]}/>
+
+    <AnnotationCard index="04" title="Values" rows={[
+      {key:"zoom",value:"1.04"},
+      {key:"in / out",value:"220ms / 150ms, ease"},
+      {key:"press",value:"0.97, 160ms"},
+      {key:"aspectRatio",value:"1:1, radius none"},
+      {key:"placeholder",value:"fill/color/neutral/default"},
+      {key:"reduced motion",value:"no zoom or press · 8% white wash, 150ms ease"},
+      {key:"wireframe",value:"drawn at real size (1200px threeUp grid, 390px phone) and scaled to fit"},
+    ]}/>
+
+    <StickyNote type="Observation">
+      Interactive states belong to the Media component (WDS Media Gen2 in Figma), not to MediaGalleryGrid or MediaGalleryLightbox. These values are a proposal for Media, shown on the grid because that is where the tile is clickable.
+    </StickyNote>
+
+    <StickyNote type="Decision">
+      Tuned down from a 1.06 zoom over 600ms in and out. Hover happens many times per visit, so the zoom stays small and quick, and leaving is faster than entering. Keyboard focus gets the same zoom as hover so both inputs read the same.
+    </StickyNote>
+  </div>,
+
+  "a-lightbox-change": <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+    <PatternHeader
+      num="06"
+      eyebrow="Click / Swipe / Tap"
+      breakpoints={["Mobile","Desktop"]}
+      title="MediaGalleryLightbox"
+      titleCode
+      body="Moving from one image to the next. The incoming image drifts in a short distance from the direction of travel while the outgoing one drifts out the other way, with a light blur where they overlap so the change reads as one move. Desktop and Tablet use the arrows. Mobile has no arrows: the image follows the finger and leaves at the speed it was thrown, and tapping either half of the media area steps back or forward."
+      files={[
+        {file:"wds-media-gallery-lightbox.html", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-media-gallery-lightbox&device=desktop&mode=light"},
+        {file:"wds-media-gallery-lightbox.html", label:"mobile", href:"https://lux-template-portal.vercel.app/app/portal.html?proto=r-media-gallery-lightbox&device=ios&mode=light"},
+      ]}
+    />
+
+    <CurvePlot label="cubic-bezier(0.23, 1, 0.32, 1)" curveName="lb-ease-out" p1x={23} p1y={0} p2x={32} p2y={0}/>
+
+    <AnnotationCard index="01" title="Image Change (Desktop / Tablet)" rows={[
+      {key:"incoming",value:"translateX(±32px) → 0 · opacity 0 → 1 · blur 2px → 0 · 450ms"},
+      {key:"outgoing",value:"0 → translateX(∓32px) · opacity 1 → 0 · blur 0 → 2px · 300ms"},
+      {key:"direction",value:"next enters from the right, previous from the left"},
+      {key:"trigger",value:"arrow buttons"},
+      {key:"arrows",value:"hold one height (media center for a one-line caption), never shift as captions change"},
+    ]}/>
+
+    <AnnotationCard index="02" title="Caption" rows={[
+      {key:"layout",value:"new caption height reserved before the image moves"},
+      {key:"text",value:"fade out 150ms · swap · fade in 300ms"},
+      {key:"media",value:"never re-centers mid-transition"},
+    ]}/>
+
+    <AnnotationCard index="03" title="Swipe (Mobile)" rows={[
+      {key:"drag",value:"follows the finger 1:1 from its live position"},
+      {key:"dim",value:"opacity eases toward 0.4 across a full-width drag"},
+      {key:"commit",value:"past 20% of width, or a flick over 0.11 px/ms"},
+      {key:"exit",value:"60–200px, 160–300ms, set by release speed"},
+      {key:"exit curve",value:"cubic-bezier(.32,.72,0,1)"},
+      {key:"incoming",value:"same drift entrance as 01"},
+      {key:"cancel",value:"springs back, 300ms, cubic-bezier(.32,.72,0,1)"},
+    ]}/>
+
+    <AnnotationCard index="04" title="Tap (Mobile)" rows={[
+      {key:"left half",value:"previous · same drift as 01"},
+      {key:"right half",value:"next · same drift as 01"},
+      {key:"outside media",value:"closes the lightbox"},
+    ]}/>
+
+    <AnnotationCard index="05" title="Open / Close" rows={[
+      {key:"scrim",value:"opacity 0 → 1"},
+      {key:"content",value:"scale 0.98 → 1 + fade"},
+      {key:"open",value:"400ms, lb-ease-out"},
+      {key:"close",value:"260ms, lb-ease-out"},
+    ]}/>
+
+    <AnnotationCard index="06" title="Values" rows={[
+      {key:"--lb-ease-out",value:"cubic-bezier(.23,1,.32,1)"},
+      {key:"drift",value:"32px"},
+      {key:"overlap blur",value:"2px"},
+      {key:"in / out",value:"450ms / 300ms"},
+      {key:"keyboard",value:"Left / Right change instantly, no animation"},
+      {key:"interruption",value:"a new move starts from the current frame"},
+      {key:"reduced motion",value:"150ms crossfade, no travel or blur"},
+      {key:"wireframe",value:"drawn at real size (1440×900, 390×844) and scaled to fit, so px values show in true proportion"},
+    ]}/>
+
+    <StickyNote type="Observation">
+      Media shows at its original aspect ratio, scaled to fit, so the frame changes shape between items. The caption can also change line count. Layout settles before the incoming image appears, and the outgoing image holds its position while it leaves, so nothing jumps vertically.
+    </StickyNote>
+
+    <StickyNote type="Decision">
+      450ms in / 300ms out is deliberate. It is slower than the usual under-300ms guidance for interface motion, which read as rushed for a luxury gallery. The overlap blur, instant keyboard steps and velocity-based swipe exit come from a separate motion review and are kept.
     </StickyNote>
   </div>,
 };

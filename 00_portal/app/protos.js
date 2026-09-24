@@ -118,6 +118,57 @@ const PROTOS = [
     default: 'desktop',
   },
 
+  {
+    id: 'r-media-gallery-lightbox', section: 'wds-library', subsection: null,
+    label: 'MediaGalleryLightbox', tags: ['Desktop', 'Mobile'],
+    status: 'review',
+    figma: 'https://www.figma.com/design/ldhUkCq0tXwPCzYJDPZflL/WDS-10-%F0%9F%A7%AA-EXP-Components?node-id=9881-304',
+    motionSpec: 'lightbox-change',
+    about: 'Full-viewport lightbox opened from a gallery tile. WDS Scrim (Gen2) with blur, header row (counter + close), media at its original aspect ratio scaled to fit and centered, caption below. Arrows flank the media on Tablet and Desktop; Mobile uses swipe plus left/right tap zones on the media. Image-to-image transition is a short directional drift: the incoming image travels 32px from the direction of navigation and fades in over 450ms, the outgoing one fades out the opposite way over 300ms, with a 2px blur where they overlap. On swipe the image follows the finger from wherever it is and leaves at the speed it was thrown; keyboard navigation is instant. Gallery tiles (WDS Media stand-in) zoom to 1.04 on hover and focus.',
+    docs: [
+      { label: 'Transition Explorer', url: '../_prototype/wds/mediaGalleryLightbox/wip/lightbox-transition-explorer.html', hint: 'Six image-to-image directions side by side, switchable while open, with 0.25x slow-mo' },
+      { label: 'Motion Before / After', url: '../_prototype/wds/mediaGalleryLightbox/wip/lightbox-skill-compare.html', hint: 'Pre-review motion vs the adopted review-animations pass' },
+    ],
+    notes: [
+      { date: 'Sep 24', text: 'Arrows now hold one height between items instead of shifting when the caption changes line count.' },
+      { date: 'Sep 24', text: 'Fixed swipe: a drag that pauses before release no longer counts as a flick.' },
+      { date: 'Sep 24', text: 'Motion Library pattern 06 added (image to image, Desktop + Mobile) and linked as this entry\'s Interaction Spec.' },
+      { date: 'Sep 24', text: 'Icons now embedded so close/arrows render even when the file is opened directly; page renamed to wds-media-gallery-lightbox.html (responsive, not desktop-only).' },
+      { date: 'Sep 24', text: 'Adopted the review-animations pass for image change, swipe, and tile hover (drift timing kept at 450/300ms; the skill\'s 250/180 felt too fast): 2px overlap blur, instant keyboard navigation, lighter flick threshold, speed-matched swipe exit, mid-transition grab, second finger ignored; tile hover 1.04 at 220/150ms, matching focus state, 0.97 press on tap, reduced-motion wash. IconButton behavior unchanged.' },
+      { date: 'Sep 24', text: 'Fixed a small vertical jump when moving between images whose captions wrap to a different number of lines (most visible on mobile).' },
+      { date: 'Sep 24', text: 'Mobile tap zones: with no arrows, tapping the left half of the media area goes to the previous image and the right half to the next, alongside swipe.' },
+      { date: 'Sep 24', text: 'Token pass: all values mapped to named wds-tkn tokens in Regent mode (IconButton radius 0, real hover/focus/active states, weight-300 counter and caption, Media placeholder, Scrim layers). Drift slowed to 450ms in / 300ms out.' },
+      { date: 'Sep 24', text: 'Gallery trigger rebuilt as the real MediaGalleryGrid: 1:1 WDS Media tiles, 3/2/1 columns at 992/576, 32px gap, 1200px cap.' },
+      { date: 'Sep 24', text: 'Directional drift confirmed as the image-to-image transition. Matched to the latest Figma build: Canela counter (1/10 format), Inter 16/24 caption, 52px ghost IconButtons with the exported Phosphor Light glyphs, 32px arrow gap, 40px stage rhythm, 640px caption cap on Tablet and Desktop, 96px Mobile bottom padding, two-layer Scrim.' },
+      { date: 'Sep 24', text: 'Rebuilt to match the final Figma component (in-flow header and caption, Arrow-Light icons, 640px desktop caption, Tablet/Mobile breakpoints, fit-and-center media) and added image-to-image motion with interruptible transitions and finger-following swipe.' },
+    ],
+    urls: {
+      desktop: '../_prototype/wds/mediaGalleryLightbox/final/wds-media-gallery-lightbox.html',
+      ios:     '../_prototype/wds/mediaGalleryLightbox/final/wds-media-gallery-lightbox.html',
+      android: '../_prototype/wds/mediaGalleryLightbox/final/wds-media-gallery-lightbox.html',
+    },
+    default: 'desktop',
+  },
+
+  {
+    id: 'r-media-hover', section: 'wds-library', subsection: null,
+    label: 'MediaGallery/Media — Hover / Press', tags: ['Desktop', 'Mobile'],
+    status: 'review',
+    figma: 'https://www.figma.com/design/ldhUkCq0tXwPCzYJDPZflL/WDS-10-%F0%9F%A7%AA-EXP-Components?node-id=2193-10964',
+    motionSpec: 'media-hover',
+    about: 'Proposed interactive states for WDS Media (Gen2), shown on the MediaGalleryGrid tiles that open the lightbox. Desktop: the image zooms to 1.04 inside its 1:1 frame on hover and keyboard focus (220ms in, 150ms out). Mobile: touch has no hover, so the tile presses to 0.97 under the finger (160ms). Reduced motion swaps both for a light wash. These states belong to the Media component, not to the grid or the lightbox.',
+    docs: null,
+    notes: [
+      { date: 'Sep 24', text: 'Added as its own entry with Motion Library pattern 05. Values match the adopted grid hover in the MediaGalleryLightbox prototype.' },
+    ],
+    urls: {
+      desktop: '../_prototype/wds/mediaGalleryLightbox/final/wds-media-gallery-lightbox.html',
+      ios:     '../_prototype/wds/mediaGalleryLightbox/final/wds-media-gallery-lightbox.html',
+      android: '../_prototype/wds/mediaGalleryLightbox/final/wds-media-gallery-lightbox.html',
+    },
+    default: 'desktop',
+  },
+
 
   // ── Ready for Review ────────────────────────────────────────────────────────
 
