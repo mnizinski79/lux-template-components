@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>WDS MediaGalleryLightbox — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lightbox.css">
+<link rel="stylesheet" href="gallery-grid.css">
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'IBM Plex Sans', Inter, sans-serif;
+    background: var(--wds-color-bg);
+    color: var(--wds-color-body);
+  }
+
+  /* Page gutter: universal 20/48/120 system. */
+  .page {
+    padding: 0 120px 96px;
+  }
+
+  .page-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0 32px;
+  }
+
+  .page-header h1 {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-weight: 400;
+    font-size: 29px;
+    line-height: 38px;
+    color: #53389E;
+    margin: 0 0 8px;
+  }
+
+  .page-header p {
+    font-size: 14px;
+    line-height: 22px;
+    margin: 0;
+    max-width: 640px;
+  }
+
+  @media (max-width: 1199px) {
+    .page { padding: 0 48px 80px; }
+  }
+
+  @media (max-width: 767px) {
+    .page { padding: 0 20px 64px; }
+    .page-header { padding: 32px 0 24px; }
+    .page-header h1 { font-size: 24px; line-height: 32px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+  <header class="page-header">
+    <h1>Gallery</h1>
+    <p>Select any image to open it in the lightbox. Arrows or Left/Right keys to move between images, Escape or the scrim to close. On mobile, swipe.</p>
+  </header>
+
+  <main class="wds-gallery-grid" id="grid"></main>
+  </div>
+
+<script src="gallery-items.js"></script>
+<script src="lightbox.js"></script>
+<script>
+  const items = window.GALLERY_ITEMS;
+  const lb = WDSLightbox.create({ items, transition: 'drift' });
+  const grid = document.getElementById('grid');
+
+  items.forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'wds-media';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Open image: ' + item.caption);
+    btn.innerHTML = '<img src="' + item.src + '" alt="" loading="lazy">';
+    btn.addEventListener('click', () => lb.open(i, btn));
+    grid.appendChild(btn);
+  });
+</script>
+</body>
+</html>

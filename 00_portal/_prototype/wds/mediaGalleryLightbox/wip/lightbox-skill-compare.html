@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lightbox Motion Compare</title>
+<style>
+  :root {
+    --bg: #0E1330;
+    --panel: #161C40;
+    --line: #2A3160;
+    --text: #E8E6F0;
+    --muted: #9A9CB8;
+    --accent: #C9B98A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  h1 { font-size: 14px; font-weight: 600; margin: 0; letter-spacing: 0.02em; }
+  .tabs { display: flex; gap: 4px; background: var(--panel); padding: 4px; border-radius: 8px; }
+  .tabs button {
+    all: unset;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    color: var(--muted);
+  }
+  .tabs button.active { background: var(--accent); color: var(--bg); font-weight: 600; }
+  .spec { font-size: 12px; color: var(--muted); line-height: 18px; flex: 1 1 320px; }
+  .spec b { color: var(--text); font-weight: 600; }
+  iframe { flex: 1; width: 100%; border: 0; background: #F9F8F7; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Lightbox motion</h1>
+  <div class="tabs" role="tablist">
+    <button data-key="current">1 · Before (pre-skill)</button>
+    <button data-key="skill">2 · Adopted (final)</button>
+  </div>
+  <div class="spec" id="spec"></div>
+</header>
+<iframe id="frame" title="Lightbox prototype"></iframe>
+
+<script>
+  const VERSIONS = {
+    current: {
+      src: 'wds-media-gallery-lightbox-pre-skill.html',
+      spec: '<b>Before.</b> Tile hover 1.06 over 600ms (in and out) · drift 450ms in / 300ms out · Left/Right keys animate (held keys skip) · flick threshold 0.4 px/ms · swipe exit fixed 300ms / 80px · grabbing mid-transition snaps to rest.',
+    },
+    skill: {
+      src: '../final/wds-media-gallery-lightbox.html',
+      spec: '<b>Adopted Sep 24 (review-animations).</b> Tile hover 1.04, 220ms in / 150ms out on <code>ease</code>, same on keyboard focus, 0.97 press on tap, reduced-motion wash instead of zoom · drift kept at 450ms in / 300ms out (skill suggested 250/180; felt too fast) with a 2px blur on the overlap · keys never animate · flick 0.11 px/ms · swipe exit speed-matched (160–300ms, 60–200px) · grab mid-transition from where the image is · extra fingers ignored.',
+    },
+  };
+
+  const frame = document.getElementById('frame');
+  const spec = document.getElementById('spec');
+  const buttons = document.querySelectorAll('.tabs button');
+
+  function show(key) {
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.key === key));
+    frame.src = VERSIONS[key].src;
+    spec.innerHTML = VERSIONS[key].spec;
+  }
+
+  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.key)));
+  document.addEventListener('keydown', e => {
+    const key = { '1': 'current', '2': 'skill' }[e.key];
+    if (key) show(key);
+  });
+
+  show('skill');
+</script>
+</body>
+</html>

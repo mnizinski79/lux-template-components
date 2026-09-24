@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lightbox Transition Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../final/lightbox.css">
+<link rel="stylesheet" href="../final/gallery-grid.css">
+<style>
+  :root {
+    --x-bg: #0E1330;
+    --x-panel: #161C40;
+    --x-line: #2A3160;
+    --x-text: #E8E6F0;
+    --x-muted: #9A9CB8;
+    --x-accent: #C9B98A;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'IBM Plex Sans', Inter, sans-serif;
+    background: var(--wds-color-bg);
+    color: var(--wds-color-body);
+    padding-bottom: 140px;
+  }
+
+  .page { padding: 0 120px 40px; }
+
+  .intro {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0 32px;
+  }
+
+  .intro h1 {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-weight: 400;
+    font-size: 29px;
+    line-height: 38px;
+    color: #53389E;
+    margin: 0 0 8px;
+  }
+
+  .intro p { font-size: 14px; line-height: 22px; margin: 0; max-width: 680px; }
+
+  /* ── Switcher: sits above the lightbox so directions can be flipped while
+       it's open. Lightbox gets extra bottom room so the caption stays clear. ── */
+  .lb__content { padding-bottom: 132px; }
+
+  .switcher {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    z-index: 2000;
+    width: min(960px, calc(100vw - 32px));
+    background: var(--x-bg);
+    color: var(--x-text);
+    border: 1px solid var(--x-line);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: Inter, -apple-system, sans-serif;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .switcher__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--x-panel);
+    padding: 4px;
+    border-radius: 8px;
+    overflow-x: auto;
+    flex: 1 1 auto;
+    scrollbar-width: none;
+  }
+
+  .tabs button, .speed button {
+    all: unset;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    color: var(--x-muted);
+    white-space: nowrap;
+  }
+
+  .tabs button.active, .speed button.active {
+    background: var(--x-accent);
+    color: var(--x-bg);
+    font-weight: 600;
+  }
+
+  .tabs button .rec {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-left: 6px;
+    opacity: 0.8;
+  }
+
+  .speed {
+    display: flex;
+    gap: 4px;
+    background: var(--x-panel);
+    padding: 4px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .spec {
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--x-muted);
+    padding: 0 6px 2px;
+  }
+
+  .spec b { color: var(--x-text); font-weight: 600; }
+
+  @media (max-width: 1199px) {
+    .page { padding: 0 48px 40px; }
+  }
+
+  @media (max-width: 767px) {
+    .page { padding: 0 20px 40px; }
+    .intro { padding: 24px 0 24px; }
+    .intro h1 { font-size: 24px; line-height: 32px; }
+    .switcher__row { flex-direction: column; align-items: stretch; }
+    .speed { align-self: flex-start; }
+    .lb__content { padding-bottom: 176px; }
+    body { padding-bottom: 190px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="page">
+  <header class="intro">
+    <h1>Image-to-image transition</h1>
+    <p>Open any image, then move with the arrows, Left/Right keys, or a swipe/drag on the image. Switch direction with the bar below (or keys 1–6) without closing. Use 0.25× to see what each one is actually doing.</p>
+  </header>
+
+  <main class="wds-gallery-grid" id="grid"></main>
+  </div>
+
+  <div class="switcher" role="group" aria-label="Transition direction">
+    <div class="switcher__row">
+      <div class="tabs" id="tabs"></div>
+      <div class="speed" id="speed">
+        <button data-speed="1" class="active">1×</button>
+        <button data-speed="0.25">0.25×</button>
+      </div>
+    </div>
+    <div class="spec" id="spec"></div>
+  </div>
+
+<script src="../final/gallery-items.js"></script>
+<script src="../final/lightbox.js"></script>
+<script>
+  const DIRECTIONS = [
+    { key: 'cut',       spec: '<b>Baseline.</b> Instant swap, nothing moves. What the current prototype does.' },
+    { key: 'crossfade', spec: '<b>Opacity only</b> · both images overlap for 240ms on a strong ease-out · no direction cue · calmest option.' },
+    { key: 'drift',     rec: true,
+                        spec: '<b>32px travel + fade + 2px blur on the overlap</b> · incoming 450ms, outgoing 300ms, strong ease-out · tells you which way you went without the whole image crossing the screen · on swipe, the image follows your finger and keeps going the way you threw it.' },
+    { key: 'slide',     spec: '<b>Full-width carousel slide</b> · 420ms iOS drawer curve · neighbor rides in alongside your finger on swipe · flick speed sets the finish duration · most native on phones, heaviest on desktop clicks.' },
+    { key: 'zoom',      spec: '<b>Depth</b> · incoming settles from 1.04× scale + fade over 320ms, outgoing recedes to 0.97× in 200ms · no direction cue, more cinematic.' },
+    { key: 'wipe',      spec: '<b>Clip-path reveal</b> in the direction of travel with a 1.06→1 settle · 560ms iOS drawer curve · most editorial, slowest · outgoing fades underneath once the reveal is mostly done.' },
+  ];
+
+  const items = window.GALLERY_ITEMS;
+  const params = new URLSearchParams(location.search);
+  const start = DIRECTIONS.some(d => d.key === params.get('t')) ? params.get('t') : 'drift';
+  const lb = WDSLightbox.create({ items, transition: start });
+
+  const grid = document.getElementById('grid');
+  items.forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'wds-media';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Open image: ' + item.caption);
+    btn.innerHTML = '<img src="' + item.src + '" alt="">';
+    btn.addEventListener('click', () => lb.open(i, btn));
+    grid.appendChild(btn);
+  });
+
+  const tabs = document.getElementById('tabs');
+  const spec = document.getElementById('spec');
+
+  DIRECTIONS.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.key = d.key;
+    b.innerHTML = (i + 1) + ' · ' + WDSLightbox.TRANSITIONS[d.key].label + (d.rec ? '<span class="rec">Chosen</span>' : '');
+    b.addEventListener('click', () => select(d.key));
+    tabs.appendChild(b);
+  });
+
+  function select(key) {
+    lb.setTransition(key);
+    tabs.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+    spec.innerHTML = DIRECTIONS.find(d => d.key === key).spec;
+    const url = new URL(location.href);
+    url.searchParams.set('t', key);
+    history.replaceState(null, '', url);
+  }
+
+  document.getElementById('speed').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    lb.setSpeed(parseFloat(b.dataset.speed));
+    document.querySelectorAll('#speed button').forEach(x => x.classList.toggle('active', x === b));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const d = DIRECTIONS[parseInt(e.key, 10) - 1];
+    if (d && !e.metaKey && !e.ctrlKey) select(d.key);
+  });
+
+  select(start);
+</script>
+</body>
+</html>

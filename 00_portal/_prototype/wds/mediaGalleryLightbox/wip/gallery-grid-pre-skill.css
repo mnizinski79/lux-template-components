@@ -1,0 +1,81 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   PRE-SKILL SNAPSHOT (wip) — final/ as of Sep 24, before the review-animations
+   recommendations were adopted. Kept only for the before/after compare page.
+
+   WDS MediaGalleryGrid (Gen2) + WDS Media (Gen2) — the lightbox's trigger.
+   Figma: WDS-10 EXP Components, MediaGalleryGrid 5470:17200, Media 2193:10964.
+
+   Grid: row-based, 1:1 only. columns = threeUp ≥992 / twoUp 576–991 /
+   oneUp <576. Gap ui/space/static/800 (32px) both ways, content capped at
+   1200px. Page gutter follows the universal 20/48/120 system.
+
+   Media: aspectRatio=1:1, radius=none. Image fills the frame (cover) over the
+   fill/color/neutral/default placeholder.
+
+   Token values as resolved on the Figma masters. Note: the grid master
+   carries no brand mode, so fill/color/neutral/default resolves to the base
+   #384250 here, while the lightbox (Regent mode) resolves the same token to
+   #7a7a7a.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --wds-tkn-ui-space-static-800: 32px;
+  --wds-tkn-fill-color-neutral-default-grid: #384250;   /* fill/color/neutral/default, grid master (no brand mode) */
+  --wds-tkn-focusRing-color-default: #6941c6;
+  --wds-tkn-focusRing-width-default: 2px;
+  --wds-tkn-focusRing-offset-default: 2px;
+}
+
+.wds-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));   /* threeUp */
+  gap: var(--wds-tkn-ui-space-static-800);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 991px) {
+  .wds-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* twoUp */
+}
+
+@media (max-width: 575px) {
+  .wds-gallery-grid { grid-template-columns: minmax(0, 1fr); }              /* oneUp */
+}
+
+/* WDS Media (Gen2), aspectRatio=1:1, radius=none — rendered as the button
+   that opens the lightbox. */
+.wds-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--wds-tkn-fill-color-neutral-default-grid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wds-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Stand-in only. Interactive states belong to WDS Media (Gen2), not to this
+   grid or the lightbox, and are not built in Figma yet. 1.06 zoom borrowed
+   from teaserCard so the grid reads as clickable. */
+@media (hover: hover) and (pointer: fine) {
+  .wds-media:hover img { transform: scale(1.06); }
+}
+
+.wds-media:focus-visible {
+  outline: var(--wds-tkn-focusRing-width-default) solid var(--wds-tkn-focusRing-color-default);
+  outline-offset: var(--wds-tkn-focusRing-offset-default);
+}

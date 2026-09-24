@@ -1,0 +1,363 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   WDS MediaGalleryLightbox (Gen2) — shared prototype styles
+   Used by the gallery page and the wip transition explorer, so every page
+   runs the exact same component.
+
+   Source: WDS-10 EXP Components, node 9881:304 (Desktop 10505:49320,
+   Tablet 13356:37154, Mobile 10593:60989). Every value below is a named
+   wds-tkn variable resolved in the component's own Regent modes
+   (Regent_SemanticColor / Regent_SemanticStandard / Regent_SemanticResponsive).
+   Custom properties use the token path with "/" swapped for "-".
+
+   Breakpoints follow the Figma build:
+     Mobile  < 768    no arrows: swipe, or tap left/right half of the media, close top-right
+     Tablet  768–1199 same layout as Desktop
+     Desktop ≥ 1200   arrows flank the media, caption capped at 640px
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Color */
+  --wds-tkn-color-black: #000000;
+  --wds-tkn-text-color-neutral-inverse-default: #f5f5f5;   /* → color/neutral/100 */
+  --wds-tkn-fill-color-neutral-default: #7a7a7a;           /* → color/neutral/700 (WDS Media placeholder, Regent) */
+
+  /* WDS IconButton (Gen2) — size=400, variant=ghostPrimary, isInverse=true */
+  --wds-tkn-action-color-ghost-primary-inverse-fill-normal: transparent;    /* → color/transparent */
+  --wds-tkn-action-color-ghost-primary-inverse-border-normal: transparent;
+  --wds-tkn-action-color-ghost-primary-inverse-icon-normal: #ffffff;        /* → color/white */
+  --wds-tkn-action-color-ghost-primary-inverse-fill-hover: #e7eeea;         /* → color/brand/secondary/200 → regent/green/200 */
+  --wds-tkn-action-color-ghost-primary-inverse-border-hover: #e7eeea;       /* → fill/hover */
+  --wds-tkn-action-color-ghost-primary-inverse-icon-hover: #303030;         /* → color/neutral/1000 */
+  --wds-tkn-action-color-ghost-primary-inverse-fill-focus: #e7eeea;         /* → color/brand/secondary/200 */
+  --wds-tkn-action-color-ghost-primary-inverse-border-focus: #e7eeea;       /* → fill/focus */
+  --wds-tkn-action-color-ghost-primary-inverse-icon-focus: #303030;         /* → color/neutral/1000 */
+  --wds-tkn-action-color-ghost-primary-inverse-fill-active: #d6e3dc;        /* → color/brand/secondary/300 → regent/green/300 */
+  --wds-tkn-action-color-ghost-primary-inverse-border-active: #d6e3dc;      /* → fill/active */
+  --wds-tkn-action-color-ghost-primary-inverse-icon-active: #303030;        /* → color/neutral/1000 */
+  --wds-tkn-action-border-width: 1px;
+  --wds-tkn-action-border-radius: 0px;                                      /* → shape/border/radius/default (Regent) */
+  --wds-tkn-size-static-1300: 52px;
+  --wds-tkn-icon-size-600: 24px;
+
+  /* Focus ring (inverse, on the scrim) */
+  --wds-tkn-focusRing-color-inverse: #ffffff;
+  --wds-tkn-focusRing-width-default: 2px;
+  --wds-tkn-focusRing-offset-default: 2px;
+
+  /* Space */
+  --wds-tkn-ui-space-static-300: 12px;
+  --wds-tkn-ui-space-static-700: 28px;
+  --wds-tkn-ui-space-static-800: 32px;
+  --wds-tkn-ui-space-static-1000: 40px;
+  --wds-tkn-layout-space-responsive-1000-1000-1000: 40px;
+  --wds-tkn-layout-space-responsive-1000-1200-1600: 40px;   /* mobile value; Mobile component only */
+  --wds-tkn-layout-space-static-2400: 96px;
+
+  /* Type — display/text/responsive/700/w30 (counter) */
+  --wds-tkn-display-text-responsive-700-w30-family: 'Canela', Georgia, serif;
+  --wds-tkn-display-text-responsive-700-w30-weight: 300;
+  --wds-tkn-display-text-responsive-700-w30-size: 23px;
+  --wds-tkn-display-text-responsive-700-w30-line-height: 30px;
+  --wds-tkn-display-text-responsive-700-w30-letter-space: 0px;
+
+  /* Type — body/text/responsive/400/w30 (caption) */
+  --wds-tkn-body-text-responsive-400-w30-family: 'Inter', -apple-system, sans-serif;
+  --wds-tkn-body-text-responsive-400-w30-weight: 300;
+  --wds-tkn-body-text-responsive-400-w30-size: 16px;
+  --wds-tkn-body-text-responsive-400-w30-line-height: 24px;
+  --wds-tkn-body-text-responsive-400-w30-letter-space: 0.5px;
+
+  /* Component-level values with no token in Figma */
+  --lb-caption-max: 640px;       /* caption TextBody max-width */
+  --lb-scrim-blur: 10px;         /* WDS Scrim (Gen2) blur layer, Figma radius 20 */
+  --lb-scrim-opacity: 0.6;       /* WDS Scrim (Gen2) opacity=060 */
+
+  /* Motion (prototype only, not WDS tokens) */
+  --lb-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --lb-open-duration: 400ms;
+  --lb-close-duration: 260ms;
+
+  /* Page (gallery demo) */
+  --wds-color-bg: #F9F8F7;
+  --wds-color-body: #4B5563;
+}
+
+/* Canela weight 300 per display/700/w30 — Canela-Light is the 300 cut. */
+@font-face {
+  font-family: 'Canela';
+  src: url('../../../_assets/_fonts/Canela/Canela-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* ── Lightbox shell ─────────────────────────────────────────────────────── */
+
+.lb {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+  font-family: var(--wds-tkn-body-text-responsive-400-w30-family);
+}
+
+.lb.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Closing: stay visible while the exit plays, then JS drops .is-closing. */
+.lb.is-closing {
+  visibility: visible;
+}
+
+/* WDS Scrim (Gen2) — mode=solid, opacity=060, blur=true. Two layers:
+   "blur" (background blur over a black fill at 60%) and "scrim"
+   (color/black at 60% layer opacity). */
+.lb__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / var(--lb-scrim-opacity));
+  backdrop-filter: blur(var(--lb-scrim-blur));
+  -webkit-backdrop-filter: blur(var(--lb-scrim-blur));
+  opacity: 0;
+  transition: opacity var(--lb-close-duration) var(--lb-ease-out);
+}
+
+.lb__scrim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--wds-tkn-color-black);
+  opacity: var(--lb-scrim-opacity);
+}
+
+.lb.is-open .lb__scrim {
+  opacity: 1;
+  transition-duration: var(--lb-open-duration);
+}
+
+/* content/stage: fills the viewport, header and caption in flow, the media
+   row takes whatever height is left. */
+.lb__content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--wds-tkn-ui-space-static-1000) var(--wds-tkn-layout-space-responsive-1000-1000-1000);
+  gap: var(--wds-tkn-ui-space-static-1000);
+  opacity: 0;
+  transform: scale(0.98);
+  transition:
+    opacity var(--lb-close-duration) var(--lb-ease-out),
+    transform var(--lb-close-duration) var(--lb-ease-out);
+}
+
+.lb.is-open .lb__content {
+  opacity: 1;
+  transform: scale(1);
+  transition-duration: var(--lb-open-duration);
+}
+
+/* ── imageCounter: leftSpacer | counter | closeButtonSlot ───────────────── */
+
+.lb__header {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+}
+
+.lb__counter {
+  grid-column: 2;
+  text-align: center;
+  font-family: var(--wds-tkn-display-text-responsive-700-w30-family);
+  font-weight: var(--wds-tkn-display-text-responsive-700-w30-weight);
+  font-size: var(--wds-tkn-display-text-responsive-700-w30-size);
+  line-height: var(--wds-tkn-display-text-responsive-700-w30-line-height);
+  letter-spacing: var(--wds-tkn-display-text-responsive-700-w30-letter-space);
+  color: var(--wds-tkn-text-color-neutral-inverse-default);
+  font-variant-numeric: tabular-nums;
+}
+
+.lb__close { grid-column: 3; justify-self: end; }
+
+/* ── WDS IconButton (Gen2) — ghostPrimary, isInverse, size 400 ──────────── */
+
+.lb__btn {
+  width: var(--wds-tkn-size-static-1300);
+  height: var(--wds-tkn-size-static-1300);
+  padding: 0;
+  border: var(--wds-tkn-action-border-width) solid var(--wds-tkn-action-color-ghost-primary-inverse-border-normal);
+  border-radius: var(--wds-tkn-action-border-radius);
+  background: var(--wds-tkn-action-color-ghost-primary-inverse-fill-normal);
+  color: var(--wds-tkn-action-color-ghost-primary-inverse-icon-normal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lb__btn:hover {
+    background: var(--wds-tkn-action-color-ghost-primary-inverse-fill-hover);
+    border-color: var(--wds-tkn-action-color-ghost-primary-inverse-border-hover);
+    color: var(--wds-tkn-action-color-ghost-primary-inverse-icon-hover);
+  }
+}
+
+.lb__btn:focus-visible {
+  background: var(--wds-tkn-action-color-ghost-primary-inverse-fill-focus);
+  border-color: var(--wds-tkn-action-color-ghost-primary-inverse-border-focus);
+  color: var(--wds-tkn-action-color-ghost-primary-inverse-icon-focus);
+  outline: var(--wds-tkn-focusRing-width-default) solid var(--wds-tkn-focusRing-color-inverse);
+  outline-offset: var(--wds-tkn-focusRing-offset-default);
+}
+
+.lb__btn:active {
+  background: var(--wds-tkn-action-color-ghost-primary-inverse-fill-active);
+  border-color: var(--wds-tkn-action-color-ghost-primary-inverse-border-active);
+  color: var(--wds-tkn-action-color-ghost-primary-inverse-icon-active);
+}
+
+/* Glyphs are the Figma exports (Phosphor Light, final/assets/*.svg), embedded
+   as data URIs so they render even when the page is opened straight from the
+   folder (file:// blocks mask images loaded from separate files). Used as
+   masks so they take the state's icon token instead of the export's
+   placeholder fill. */
+.lb__icon {
+  display: block;
+  width: var(--wds-tkn-icon-size-600);
+  height: var(--wds-tkn-icon-size-600);
+  background: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.lb__icon--close { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 d=%22M19.1475 18.3525C19.2028 18.404 19.2471 18.4661 19.2778 18.5351C19.3086 18.6041 19.3251 18.6786 19.3264 18.7541C19.3278 18.8296 19.3139 18.9047 19.2856 18.9747C19.2573 19.0447 19.2152 19.1084 19.1618 19.1618C19.1084 19.2152 19.0447 19.2573 18.9747 19.2856C18.9047 19.3139 18.8296 19.3278 18.7541 19.3264C18.6786 19.3251 18.6041 19.3086 18.5351 19.2778C18.4661 19.2471 18.404 19.2028 18.3525 19.1475L12 12.7959L5.6475 19.1475C5.54087 19.2469 5.39983 19.301 5.25411 19.2984C5.10838 19.2958 4.96934 19.2368 4.86628 19.1337C4.76322 19.0307 4.70419 18.8916 4.70162 18.7459C4.69905 18.6002 4.75314 18.4591 4.8525 18.3525L11.2041 12L4.8525 5.6475C4.75314 5.54087 4.69905 5.39983 4.70162 5.25411C4.70419 5.10838 4.76322 4.96934 4.86628 4.86628C4.96934 4.76322 5.10838 4.70419 5.25411 4.70162C5.39983 4.69905 5.54087 4.75314 5.6475 4.8525L12 11.2041L18.3525 4.8525C18.4591 4.75314 18.6002 4.69905 18.7459 4.70162C18.8916 4.70419 19.0307 4.76322 19.1337 4.86628C19.2368 4.96934 19.2958 5.10838 19.2984 5.25411C19.301 5.39983 19.2469 5.54087 19.1475 5.6475L12.7959 12L19.1475 18.3525Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 d=%22M19.1475 18.3525C19.2028 18.404 19.2471 18.4661 19.2778 18.5351C19.3086 18.6041 19.3251 18.6786 19.3264 18.7541C19.3278 18.8296 19.3139 18.9047 19.2856 18.9747C19.2573 19.0447 19.2152 19.1084 19.1618 19.1618C19.1084 19.2152 19.0447 19.2573 18.9747 19.2856C18.9047 19.3139 18.8296 19.3278 18.7541 19.3264C18.6786 19.3251 18.6041 19.3086 18.5351 19.2778C18.4661 19.2471 18.404 19.2028 18.3525 19.1475L12 12.7959L5.6475 19.1475C5.54087 19.2469 5.39983 19.301 5.25411 19.2984C5.10838 19.2958 4.96934 19.2368 4.86628 19.1337C4.76322 19.0307 4.70419 18.8916 4.70162 18.7459C4.69905 18.6002 4.75314 18.4591 4.8525 18.3525L11.2041 12L4.8525 5.6475C4.75314 5.54087 4.69905 5.39983 4.70162 5.25411C4.70419 5.10838 4.76322 4.96934 4.86628 4.86628C4.96934 4.76322 5.10838 4.70419 5.25411 4.70162C5.39983 4.69905 5.54087 4.75314 5.6475 4.8525L12 11.2041L18.3525 4.8525C18.4591 4.75314 18.6002 4.69905 18.7459 4.70162C18.8916 4.70419 19.0307 4.76322 19.1337 4.86628C19.2368 4.96934 19.2958 5.10838 19.2984 5.25411C19.301 5.39983 19.2469 5.54087 19.1475 5.6475L12.7959 12L19.1475 18.3525Z%22/%3E%3C/svg%3E"); }
+.lb__icon--prev  { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 d=%22M20.8125 12C20.8125 12.1492 20.7532 12.2923 20.6477 12.3977C20.5423 12.5032 20.3992 12.5625 20.25 12.5625H5.10844L10.8975 18.3525C10.9528 18.404 10.9971 18.4661 11.0278 18.5351C11.0586 18.6041 11.0751 18.6786 11.0764 18.7541C11.0778 18.8296 11.0639 18.9047 11.0356 18.9747C11.0073 19.0447 10.9652 19.1084 10.9118 19.1618C10.8584 19.2152 10.7947 19.2573 10.7247 19.2856C10.6547 19.3139 10.5796 19.3278 10.5041 19.3264C10.4286 19.3251 10.3541 19.3086 10.2851 19.2778C10.2161 19.2471 10.154 19.2028 10.1025 19.1475L3.3525 12.3975C3.24716 12.292 3.18799 12.1491 3.18799 12C3.18799 11.8509 3.24716 11.708 3.3525 11.6025L10.1025 4.8525C10.2091 4.75314 10.3502 4.69905 10.4959 4.70162C10.6416 4.70419 10.7807 4.76322 10.8837 4.86628C10.9868 4.96934 11.0458 5.10838 11.0484 5.25411C11.051 5.39983 10.9969 5.54087 10.8975 5.6475L5.10844 11.4375H20.25C20.3992 11.4375 20.5423 11.4968 20.6477 11.6023C20.7532 11.7077 20.8125 11.8508 20.8125 12Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 d=%22M20.8125 12C20.8125 12.1492 20.7532 12.2923 20.6477 12.3977C20.5423 12.5032 20.3992 12.5625 20.25 12.5625H5.10844L10.8975 18.3525C10.9528 18.404 10.9971 18.4661 11.0278 18.5351C11.0586 18.6041 11.0751 18.6786 11.0764 18.7541C11.0778 18.8296 11.0639 18.9047 11.0356 18.9747C11.0073 19.0447 10.9652 19.1084 10.9118 19.1618C10.8584 19.2152 10.7947 19.2573 10.7247 19.2856C10.6547 19.3139 10.5796 19.3278 10.5041 19.3264C10.4286 19.3251 10.3541 19.3086 10.2851 19.2778C10.2161 19.2471 10.154 19.2028 10.1025 19.1475L3.3525 12.3975C3.24716 12.292 3.18799 12.1491 3.18799 12C3.18799 11.8509 3.24716 11.708 3.3525 11.6025L10.1025 4.8525C10.2091 4.75314 10.3502 4.69905 10.4959 4.70162C10.6416 4.70419 10.7807 4.76322 10.8837 4.86628C10.9868 4.96934 11.0458 5.10838 11.0484 5.25411C11.051 5.39983 10.9969 5.54087 10.8975 5.6475L5.10844 11.4375H20.25C20.3992 11.4375 20.5423 11.4968 20.6477 11.6023C20.7532 11.7077 20.8125 11.8508 20.8125 12Z%22/%3E%3C/svg%3E"); }
+.lb__icon--next  { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 d=%22M20.6475 12.3975L13.8975 19.1475C13.7909 19.2469 13.6498 19.301 13.5041 19.2984C13.3584 19.2958 13.2193 19.2368 13.1163 19.1337C13.0132 19.0307 12.9542 18.8916 12.9516 18.7459C12.949 18.6002 13.0031 18.4591 13.1025 18.3525L18.8916 12.5625H3.75C3.60082 12.5625 3.45774 12.5032 3.35225 12.3977C3.24676 12.2923 3.1875 12.1492 3.1875 12C3.1875 11.8508 3.24676 11.7077 3.35225 11.6023C3.45774 11.4968 3.60082 11.4375 3.75 11.4375H18.8916L13.1025 5.6475C13.0031 5.54087 12.949 5.39983 12.9516 5.25411C12.9542 5.10838 13.0132 4.96934 13.1163 4.86628C13.2193 4.76322 13.3584 4.70419 13.5041 4.70162C13.6498 4.69905 13.7909 4.75314 13.8975 4.8525L20.6475 11.6025C20.7528 11.708 20.812 11.8509 20.812 12C20.812 12.1491 20.7528 12.292 20.6475 12.3975Z%22/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 d=%22M20.6475 12.3975L13.8975 19.1475C13.7909 19.2469 13.6498 19.301 13.5041 19.2984C13.3584 19.2958 13.2193 19.2368 13.1163 19.1337C13.0132 19.0307 12.9542 18.8916 12.9516 18.7459C12.949 18.6002 13.0031 18.4591 13.1025 18.3525L18.8916 12.5625H3.75C3.60082 12.5625 3.45774 12.5032 3.35225 12.3977C3.24676 12.2923 3.1875 12.1492 3.1875 12C3.1875 11.8508 3.24676 11.7077 3.35225 11.6023C3.45774 11.4968 3.60082 11.4375 3.75 11.4375H18.8916L13.1025 5.6475C13.0031 5.54087 12.949 5.39983 12.9516 5.25411C12.9542 5.10838 13.0132 4.96934 13.1163 4.86628C13.2193 4.76322 13.3584 4.70419 13.5041 4.70162C13.6498 4.69905 13.7909 4.75314 13.8975 4.8525L20.6475 11.6025C20.7528 11.708 20.812 11.8509 20.812 12C20.812 12.1491 20.7528 12.292 20.6475 12.3975Z%22/%3E%3C/svg%3E"); }
+
+/* ── mediaArea: arrowLeftSlot | mediaContent | arrowRightSlot ───────────── */
+
+.lb__media {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--wds-tkn-ui-space-static-800);
+}
+
+/* Arrow slots stay in flow (they reserve the arrow's width beside the
+   media, matching the Figma structure). The button itself is pinned to one
+   height: the center of the media area when the caption is one line. That
+   way the arrows hold still when the caption changes line count between
+   items, instead of re-centering with the media row. Offset =
+   (header height − one caption line) / 2, since top/bottom padding and row
+   gaps are equal. */
+.lb__arrow-slot {
+  flex-shrink: 0;
+  width: var(--wds-tkn-size-static-1300);
+  align-self: stretch;
+}
+
+.lb__arrow {
+  position: absolute;
+  top: calc(50% + (var(--wds-tkn-size-static-1300) - var(--wds-tkn-body-text-responsive-400-w30-line-height)) / 2);
+  transform: translateY(-50%);
+}
+
+/* The stage is where transitions happen. Each image lives in its own
+   absolutely positioned layer so outgoing and incoming can overlap. */
+.lb__stage {
+  position: relative;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 0;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lb__layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+}
+
+/* WDS Media (Gen2) in the lightbox: original aspect ratio, scaled to fit and
+   centered, never cropped. Placeholder fill shows until the image paints. */
+.lb__img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: var(--wds-tkn-fill-color-neutral-default);
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* ── caption ────────────────────────────────────────────────────────────── */
+
+.lb__caption {
+  flex-shrink: 0;
+  min-height: var(--wds-tkn-body-text-responsive-400-w30-line-height);
+  width: 100%;
+  max-width: var(--lb-caption-max);
+  margin: 0 auto;
+  text-align: center;
+  font-family: var(--wds-tkn-body-text-responsive-400-w30-family);
+  font-weight: var(--wds-tkn-body-text-responsive-400-w30-weight);
+  font-size: var(--wds-tkn-body-text-responsive-400-w30-size);
+  line-height: var(--wds-tkn-body-text-responsive-400-w30-line-height);
+  letter-spacing: var(--wds-tkn-body-text-responsive-400-w30-letter-space);
+  color: var(--wds-tkn-text-color-neutral-inverse-default);
+}
+
+.lb__caption:empty { visibility: hidden; }
+
+/* ── Mobile: swipe only, media full-bleed, close keeps edge clearance ───── */
+
+@media (max-width: 767px) {
+  :root {
+    --wds-tkn-display-text-responsive-700-w30-size: 14px;
+    --wds-tkn-display-text-responsive-700-w30-line-height: 18px;
+  }
+
+  .lb { min-height: 568px; }
+
+  .lb__content {
+    padding: var(--wds-tkn-ui-space-static-1000) 0 var(--wds-tkn-layout-space-static-2400);
+    gap: var(--wds-tkn-layout-space-responsive-1000-1200-1600);
+  }
+
+  .lb__header { padding: 0 var(--wds-tkn-ui-space-static-300); }
+
+  .lb__arrow-slot { display: none; }
+
+  .lb__media { gap: 0; }
+
+  .lb__caption { max-width: none; padding: 0 var(--wds-tkn-ui-space-static-700); }
+}
+
+/* Reduced motion: keep the fades that explain what happened, drop the
+   scale on open. Image-to-image travel is handled in lightbox.js. */
+@media (prefers-reduced-motion: reduce) {
+  .lb__content,
+  .lb.is-open .lb__content { transform: none; }
+}
